@@ -1,30 +1,35 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { posts } from "@/server/db/post";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { postServiceImpl } from "@/server/api/service/post.service";
+import { CreatePostRequestSchema, UpdatePostRequestSchema } from "@/server/api/dto/post.dto";
+import { getTRPCError } from "@/utils/error";
+import { TRPCError } from "@trpc/server";
+import { post } from "@/server/db/post";
+import { eq } from "drizzle-orm";
 
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
+	create: protectedProcedure.input(CreatePostRequestSchema).mutation(async ({ input }) => {
+		const [res, error] = await postServiceImpl.create(input);
+		if (error) return new TRPCError(getTRPCError(error));
+		return res;
+	}),
 
-  create: publicProcedure
-    .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(posts).values({
-        name: input.name,
-      });
-    }),
+	update: protectedProcedure.input(UpdatePostRequestSchema).mutation(async ({ input }) => {
+		const res = await postServiceImpl.update(eq(post.id, input.id), input);
+		if (res) return new TRPCError(getTRPCError(res));
+		return null;
+	}),
 
-  getLatest: publicProcedure.query(async ({ ctx }) => {
-    const post = await ctx.db.query.posts.findFirst({
-      orderBy: (posts, { desc }) => [desc(posts.createdAt)],
-    });
-
-    return post ?? null;
-  }),
+	delete: protectedProcedure
+		.input(
+			z.object({
+				id: z.number(),
+			}),
+		)
+		.mutation(async ({ input }) => {
+			const res = await postServiceImpl.delete(eq(post.id, input.id));
+			if (res) return new TRPCError(getTRPCError(res));
+			return null;
+		}),
 });
