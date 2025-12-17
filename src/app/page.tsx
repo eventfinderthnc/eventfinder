@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea"
 import { MultiDropdown } from "@/components/ui/multidropdown";
 import { Dropdown } from "@/components/ui/dropdown";
+import Calendar from "@/components/ui/calendar";
 
 export default async function Home() {
   const content: string[] = [];
@@ -33,6 +34,10 @@ export default async function Home() {
         <Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" reactNode={reactNode} />
         <Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" buttonName="Choose" />
 
+
+				<Calendar 
+					locale="en" // For english
+				/>
 			</main>
 		</HydrateClient>
 	);
