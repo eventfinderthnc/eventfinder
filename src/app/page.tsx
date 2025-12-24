@@ -1,6 +1,5 @@
 import { HydrateClient } from "@/trpc/server";
 import { Button } from "@/components/ui/button";
-import Calendar from "@/components/ui/calendar";
 
 export default async function Home() {
 	return (
@@ -13,10 +12,6 @@ export default async function Home() {
 				<Button variant="accent" className="w-44">
 					Accent
 				</Button>
-
-				<Calendar 
-					locale="en" // For english
-				/>
 			</main>
 		</HydrateClient>
 	);

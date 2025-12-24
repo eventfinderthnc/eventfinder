@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 
 import { type Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Noto_Sans, Noto_Sans_Thai } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
 
@@ -11,16 +11,23 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-const geist = Geist({
+const notoThai = Noto_Sans_Thai({
+  subsets: ["thai"],
+  weight: ["100","300","400","500","600","700","900"],
+  variable: "--font-th",
+});
+
+const noto = Noto_Sans({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  weight: ["100","300","400","500","600","700","900"],
+  variable: "--font-en",
 });
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html lang="en" className={`${notoThai.variable} ${noto.variable}`}>
       <body>
         <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>

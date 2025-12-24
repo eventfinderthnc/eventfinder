@@ -5,12 +5,25 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import thLocale from "@fullcalendar/core/locales/th";
 
+export type eventType = {
+  id: number;
+  accountName: string;
+  profileImage: string;
+  image: string;
+  title: string;
+  description: string;
+  themeColor: string;
+  closeDate: string;
+};
+
 type CalendarProps = {
   locale?: string;
+  data: eventType[];
 };
 
 export default function Calendar({
-    locale = "th" 
+  locale = "th",
+  data,
 }: CalendarProps) {
   return (
     <div className="rounded-xl bg-white">
@@ -25,20 +38,39 @@ export default function Calendar({
           left: "title",
           right: "prev,next",
         }}
-        events={[
-          {
-            title: "Thinc. Recruitment",
-            date: "2025-12-19",
 
-          },
-        ]}
+        dayCellContent={(arg) => {
+          const day = arg.date.getDate();
+          return <span>{String(day).padStart(2, "0")}</span>;
+        }}
+
+        events={data.map((item) => ({
+          id: String(item.id),
+          title: item.title,
+          date: item.closeDate,
+          extendedProps: item,
+        }))}
+
         eventClassNames={() => ["fc-event-none"]}
-        eventContent={(arg) => (
-            <div className="relative flex items-center gap-1 bg-gray-600/60 pl-3 pr-2 py-1">
-                <span className="absolute h-full w-1 bg-gray-600 left-0" />
-                <span className="text-[10px]">{arg.event.title}</span>
+
+        eventContent={(arg) => {
+          const event = arg.event.extendedProps as eventType;
+
+          return (
+            <div
+              className="relative flex items-center gap-1 px-1 sm:pl-3 sm:pr-2 sm:py-1"
+              style={{ backgroundColor: `${event.themeColor}90` }} // alpha
+            >
+              <span
+                className="absolute left-0 h-full w-0.5 sm:w-1"
+                style={{ backgroundColor: event.themeColor }}
+              />
+              <span className="sm:text-[10px] truncate">
+                {arg.event.title}
+              </span>
             </div>
-        )}
+          );
+        }}
       />
     </div>
   );

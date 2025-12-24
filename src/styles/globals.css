@@ -5,7 +5,7 @@
 
 @theme {
   --font-sans:
-    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+    var(--font-th), var(--font-en),ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
@@ -88,11 +88,19 @@
     var(--sidebar-border);
   --color-sidebar-ring:
     var(--sidebar-ring);
+  
+  --color-stroke: var(--stroke);
+  --color-text-gray: var(--text-gray);
+  --color-text-light-gray: var(--text-light-gray);
 }
 
 :root {
   --primary: #df5c8e;
   --accent: #b73366;
+  --stroke: #d6d6d6;
+  --text-gray: #757575;
+  --text-light-gray: #949494;
+
   --radius:
     0.625rem;
   --background:
@@ -221,4 +229,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  h1 {
+    @apply font-semibold md:text-[28px] text-[24px] text-primary;
+  }
+  .body-section {
+    @apply flex flex-col lg:px-25 sm:px-10 sm:pb-20 px-5 py-5 gap-3;
+  }
 }
+
+
