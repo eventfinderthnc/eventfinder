@@ -3,12 +3,16 @@
 }   
 
 .fc-header-toolbar {
-    font-size: medium;
-    padding: 20px 20px;
+    font-size: small;
+    padding: 16px 20px;
     margin-bottom: 0 !important;
     border: solid 1px #E4E4E4;
     border-bottom: none; 
     border-radius: 12px 12px 0px 0px;
+}
+
+.fc-header-toolbar .fc-toolbar-title {
+    font-size: 24px !important;
 }
 
 .fc-col-header-cell-cushion {
@@ -114,8 +118,56 @@
 }
 
 @media (max-width: 640px) {
+
     .fc-header-toolbar {
-        font-size: small;
-        padding: 14px 14px;
+        padding: 10px 10px;
+    }
+
+    .fc-header-toolbar .fc-toolbar-title {
+        font-size: 20px !important;
+    }
+
+    /* Day names (Mon Tue Wed...) */
+    .fc-col-header-cell-cushion {
+        font-size: 10px;
+    }
+
+    /* Day number */
+    .fc-daygrid-day-number {
+        font-size: 8px;
+        padding: 4px 6px;
+    }
+
+    /* Event text */
+    .fc-event,
+    .fc-event-title,
+    .fc-event-title-container,
+    .fc-event-title-container span {
+        font-size: 6px;
+    }
+
+    /* Custom event */
+    .fc-event-none span {
+        font-size: 6px;
+    }
+
+    /* Button icon */
+    .fc .fc-button span {
+        font-size: 12px;
+    }
+
+    .fc-daygrid-day-number {
+        margin-left: 0 !important;
+        margin-right: auto;
+        font-size: 10px;
+        padding: 1px 2px !important;
+        border-radius: 9999px;
+        color: #000000;
+    }
+
+    .fc-daygrid-day-frame {
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        padding: 0px 0px;
     }
 }
