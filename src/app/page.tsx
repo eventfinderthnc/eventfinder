@@ -26,18 +26,14 @@ export default async function Home() {
 					Accent
 				</Button>
         
-        <Textarea></Textarea>
+				<Textarea></Textarea>
 
-        <MultiDropdown className="w-44" content={content} panelLabel="Faculty" reactNode={reactNode} />
-        <MultiDropdown className="w-44" content={content} panelLabel="Faculty" buttonName="Choose" />      
+				<MultiDropdown className="w-44" content={content} panelLabel="Faculty" reactNode={reactNode} />
+				<MultiDropdown className="w-44" content={content} panelLabel="Faculty" buttonName="Choose" />      
 
-        <Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" reactNode={reactNode} />
-        <Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" buttonName="Choose" />
+				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" reactNode={reactNode} />
+				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" buttonName="Choose" />
 
-
-				<Calendar 
-					locale="en" // For english
-				/>
 			</main>
 		</HydrateClient>
 	);
