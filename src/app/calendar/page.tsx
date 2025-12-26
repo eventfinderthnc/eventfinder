@@ -1,4 +1,4 @@
-import Calendar from '@/components/ui/calendar'
+import Calendar from '@/components/ui/Calendar'
 import React from 'react'
 import { Trash2 } from 'lucide-react';
 
