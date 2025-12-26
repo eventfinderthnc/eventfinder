@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import { z } from "zod";
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu-component"
+} from "@/components/ui/DropdownMenu"
 
 const schema = z.object({
   className: z.string().optional(),

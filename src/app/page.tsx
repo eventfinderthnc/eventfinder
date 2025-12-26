@@ -1,9 +1,8 @@
 import { HydrateClient } from "@/trpc/server";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea"
-import { MultiDropdown } from "@/components/ui/multidropdown";
-import { Dropdown } from "@/components/ui/dropdown";
-import Calendar from "@/components/ui/calendar";
+import { Button } from "@/components/ui/Button";
+import { Textarea } from "@/components/ui/Textarea"
+import { MultiDropdown } from "@/components/ui/MultiDropdown";
+import { Dropdown } from "@/components/ui/Dropdown";
 
 export default async function Home() {
   const content: string[] = [];

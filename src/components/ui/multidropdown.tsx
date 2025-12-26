@@ -3,7 +3,7 @@
 import * as React from "react"
 import { type DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu"
 import { z } from "zod";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu-component"
+} from "@/components/ui/DropdownMenu"
 
 const schema = z.object({
   className: z.string().optional(),
