@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Auth = () => {
+const Page = () => {
   return (
     <div className='auth-section'>
         Attendee or Organizer
@@ -8,4 +8,4 @@ const Auth = () => {
   )
 }
 
-export default Auth
+export default Page
