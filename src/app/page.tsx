@@ -1,7 +1,7 @@
 import { HydrateClient } from "@/trpc/server";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea"
-import { MultiDropdown } from "@/components/ui/MultiDropdown";
+import { MultiDropdown } from "@/components/ui/Multidropdown";
 import { Dropdown } from "@/components/ui/Dropdown";
 
 export default async function Home() {
