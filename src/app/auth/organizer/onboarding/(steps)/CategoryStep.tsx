@@ -53,7 +53,7 @@ export default function CategoryStep({
         <ArrowLeft className="text-white" />
       </div>
 
-      <div className="grid grid-cols-3 gap-6 mx-auto">
+      <div className="grid grid-cols-3 gap-4 sm:gap-6 text-sm sm:text-base mx-auto">
         {categories.map((c) => {
           const Icon = c.icon
           const active = selected.includes(c.id)
@@ -70,7 +70,7 @@ export default function CategoryStep({
                 }`}
               >
                 <Icon
-                  className={`w-5 h-5 ${
+                  className={`w-5 sm:w-6 h-5 sm:h-6 ${
                     active ? "text-white" : "text-primary"
                   }`}
                 />
