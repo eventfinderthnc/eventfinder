@@ -39,7 +39,7 @@ export const Footer = () => {
                 </div>
             </div>
             <div className="flex items-center justify-between">
-                <div className="text-[#8C8C8C] text-sm">2025 all right reserved</div>
+                <div className="text-[#8C8C8C] text-sm">Thinc. 2025 all right reserved</div>
                 <div className="text-[#8C8C8C] text-sm gap-8 flex underline">
                     <Link href="" target="_blank">Privacy Policy</Link>
                     <Link href="" target="_blank">Privacy Reference</Link>

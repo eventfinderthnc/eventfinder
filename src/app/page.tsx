@@ -20,8 +20,8 @@ export default async function Home() {
   )
 	return (
 		<HydrateClient>
+			<Navbar />
 			<main className="flex min-h-screen flex-col p-8 gap-6 pb-[1000px]">
-				<Navbar />
 				<Button className="bg-primary w-44">Primary</Button>
 				<Button variant="secondary" className="w-44">
 					Secondary

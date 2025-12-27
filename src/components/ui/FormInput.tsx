@@ -1,6 +1,8 @@
 import { Input } from "@/components/ui/Input"
 import { cn } from "@/lib/utils"
 import { Textarea } from "@/components/ui/Textarea"
+import { Dropdown } from "@/components/ui/Dropdown"
+import { MultiDropdown } from "@/components/ui/MultiDropdown"
 import { ChevronDown, SquarePlus, Link, CalendarDaysIcon, Clock} from "lucide-react"
 import type { HTMLInputTypeAttribute } from "react"
 import { forwardRef } from "react"
@@ -21,9 +23,25 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement>{
     placeholder ?: string,
     isTextArea ?: boolean,
     isDateTime ?: boolean,
+    isDropdown ?: boolean,
+    isMultiDropdown ?: boolean,
+    typeList ?: string[],
+    categoryList ?: string[],
 }
 
-const FormInput = forwardRef<HTMLInputElement, FormInputProps>(({className, icon, isTextArea, isDateTime, label, placeholder, type, ...props}, ref) => {
+const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
+    {className, 
+        icon, 
+        isTextArea = false, 
+        isDateTime, 
+        isDropdown = false, 
+        isMultiDropdown = false, 
+        typeList = [], 
+        categoryList = [], 
+        label, 
+        placeholder, 
+        type, 
+        ...props}, ref) => {
     const IconComponent = icon ? iconVariants[icon] : null;
     const inputType: HTMLInputTypeAttribute | undefined = icon == "date" ? "date" : (icon == "time" ? "time" : type);
     return (
@@ -39,8 +57,37 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(({className, icon
                         <IconComponent color="#949494"/>
                     </div>
                 )}
-                { !isTextArea ?
-                (<Input 
+                {isTextArea && (
+                    <Textarea 
+                    placeholder={placeholder}
+                    className={cn(
+                        "relative h-12 text-black border-[#D6D6D6] focus-visible:ring-0 resize-none",
+                        "pt-3 pb-3 px-3 text-left align-top",
+                        "placeholder:text-left placeholder:align-text-top",
+                        className,
+                    )}
+                    />
+                )}
+                {isDropdown && (
+                    <Dropdown 
+                    content={typeList}
+                    panelLabel="เลือกรูปแบบ"
+                    className={cn(
+                        "h-12 rounded-md border-[#D6D6D6]",
+                        className,
+                    )}/>
+                )}
+                {isMultiDropdown && (
+                    <MultiDropdown
+                    content={categoryList}
+                    panelLabel="เลือกหมวดหมู่"
+                    className={cn(
+                        "h-12 rounded-md border-[#D6D6D6]",
+                        className,
+                    )}/>
+                )}
+                {!isTextArea && !isDropdown && !isMultiDropdown && (
+                    <Input 
                     ref={ref}
                     placeholder={placeholder}
                     type={inputType}
@@ -61,17 +108,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(({className, icon
                         className,
                     )}
                     {...props}
-                />) : (
-                    <Textarea 
-                    placeholder={placeholder}
-                    className={cn(
-                        "relative h-12 text-black border-[#D6D6D6] focus-visible:ring-0 resize-none",
-                        "pt-3 pb-3 px-3 text-left align-top",
-                        "placeholder:text-left placeholder:align-text-top",
-                        className,
-                    )}
-                    />
-                )}
+                />)}
             </div>
         </div>
     );
