@@ -3,14 +3,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from "next/navigation"
-import { navItemsOrg, navItemsAtten } from '@/components/ui/NavItems'
+import { NavItemsOrg, NavItemsAtten } from '@/components/ui/NavItems'
 import { useAuth } from '@/components/ui/context/AuthContext';
 import { Button } from '@/components/ui/button';
 
 export const Navbar = () => {
     const pathname = usePathname();
     const { isLoggedIn, isOrg } = useAuth();
-    const navItems = (isOrg) ? navItemsOrg : navItemsAtten;
+    const navItems = (isOrg) ? NavItemsOrg : NavItemsAtten;
     return(
         <nav className="shadow">
             <div className="h-18.75 px-25 items-center flex justify-between">

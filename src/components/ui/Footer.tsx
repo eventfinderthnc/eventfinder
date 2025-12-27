@@ -3,12 +3,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Facebook, Linkedin, Instagram, Globe } from 'lucide-react';
-import { navItemsOrg, navItemsAtten } from '@/components/ui/NavItems';
+import { NavItemsOrg, NavItemsAtten } from '@/components/ui/NavItems';
 import { useAuth } from '@/components/ui/context/AuthContext';
 
 export const Footer = () => {
     const { isLoggedIn, isOrg } = useAuth();
-    const navItems = (isOrg) ? navItemsOrg : navItemsAtten;
+    const navItems = (isOrg) ? NavItemsOrg : NavItemsAtten;
     return (
         <footer className="shadow-[0_-1px_6px_0_rgba(0,0,0,0.12)] flex flex-col gap-y-5 px-25 pt-7.5 pb-5">
             <div className="flex relative items-center mb-5">

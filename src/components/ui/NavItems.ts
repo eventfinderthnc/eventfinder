@@ -3,14 +3,14 @@ type NavItems = {
     href: string;
 }
 
-export const navItemsOrg: NavItems[] = [
+export const NavItemsOrg: NavItems[] = [
     { label: "แดชบอร์ด", href: "/dashboard" },
     { label: "โพสต์ของฉัน", href: "/posts" },
     { label: "สร้างโพสต์", href: "/create" },
     { label: "เกี่ยวกับเรา", href: "/about" },
 ];
 
-export const navItemsAtten: NavItems[] = [
+export const NavItemsAtten: NavItems[] = [
     { label: "หน้าหลัก", href: "/"},
     { label: "กิจกรรม", href: "/activities" },
     { label: "ชมรม", href: "/clubs" },
