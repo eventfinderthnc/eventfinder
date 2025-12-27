@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Facebook, Linkedin, Instagram, Globe } from 'lucide-react';
-import { navItemsOrg, navItemsAtten } from '@/components/ui/navItems';
+import { navItemsOrg, navItemsAtten } from '@/components/ui/NavItems';
 import { useAuth } from '@/components/ui/context/AuthContext';
 
 export const Footer = () => {

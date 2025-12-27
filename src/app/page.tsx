@@ -1,9 +1,9 @@
 import { HydrateClient } from "@/trpc/server";
 import { Button } from "@/components/ui/button";
-import { Navbar } from "@/components/ui/navbar";
-import { Footer } from "@/components/ui/footer";
-import { SearchBar } from "@/components/ui/searchBar";
-import { FormInput } from "@/components/ui/formInput";
+import { Navbar } from "@/components/ui/Navbar";
+import { Footer } from "@/components/ui/Footer";
+import { SearchBar } from "@/components/ui/SearchBar";
+import { FormInput } from "@/components/ui/FormInput";
 
 export default async function Home() {
 	return (

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from "next/navigation"
-import { navItemsOrg, navItemsAtten } from '@/components/ui/navItems'
+import { navItemsOrg, navItemsAtten } from '@/components/ui/NavItems'
 import { useAuth } from '@/components/ui/context/AuthContext';
 import { Button } from '@/components/ui/button';
 
