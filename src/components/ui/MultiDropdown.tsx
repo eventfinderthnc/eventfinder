@@ -4,6 +4,7 @@ import * as React from "react"
 import { type DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu"
 import { z } from "zod";
 import { Button } from "@/components/ui/Button"
+import { ChevronDown } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -18,8 +19,7 @@ const schema = z.object({
   className: z.string().optional(),
   content: z.array(z.string()),
   panelLabel: z.string().optional(),
-  reactNode: z.any().optional(),
-  buttonName: z.string().optional(),
+  children: z.any().optional(),
 });
 
 type Arguments = z.infer<typeof schema>;
@@ -28,7 +28,7 @@ type Checked = DropdownMenuCheckboxItemProps["checked"]
 
 // For me, dropdown doesn't necessarily need to have variant. I also have no idea what the variants should be. 
 
-export function MultiDropdown(props: Arguments) {
+export function MultiDropdown({ children, ...props }: Arguments) {
   // Instead of using useState for each separate variable, we keep them as an array instead.
   const states = props.content.map((s) => {
     return React.useState<Checked>(false);
@@ -38,7 +38,8 @@ export function MultiDropdown(props: Arguments) {
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className={props.className + " hover:text-white"}>
-          { props.reactNode? props.reactNode : props.buttonName }
+          { children }
+          <ChevronDown />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">

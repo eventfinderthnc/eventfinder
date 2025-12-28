@@ -30,13 +30,21 @@ export default async function Home() {
 					Accent
 				</Button>
         
-				<Textarea></Textarea>
+				<Textarea placeholder="เขียนอะไรสักอย่าง..."></Textarea>
 
-				<MultiDropdown className="w-44" content={content} panelLabel="Faculty" reactNode={reactNode} />
-				<MultiDropdown className="w-44" content={content} panelLabel="Faculty" buttonName="Choose" />      
+				<MultiDropdown className="w-44" content={content} panelLabel="Faculty">
+          { reactNode }
+        </MultiDropdown>
+				<MultiDropdown className="w-44" content={content} panelLabel="Faculty">
+          Choose  
+        </MultiDropdown>      
 
-				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" reactNode={reactNode} />
-				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" buttonName="Choose" />
+				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah">
+          { reactNode }
+        </Dropdown>
+        <Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah">
+          Choose
+        </Dropdown>
 
 				<div className="flex flex-col justify-top items-center gap-4 mt-20">
 					<SearchBar className="w-200"/>

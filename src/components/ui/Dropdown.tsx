@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-
 import { Button } from "@/components/ui/Button"
 import { z } from "zod";
+import { ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,25 +17,25 @@ import {
 const schema = z.object({
   className: z.string().optional(),
   content: z.array(z.string()),
-  panelLabel: z.string(),
-  reactNode: z.any().optional(),
-  buttonName: z.string().optional(),
+  panelLabel: z.string().optional(),
+  children: z.any().optional(),
 });
 
 type Arguments = z.infer<typeof schema>;
 
-export function Dropdown(props: Arguments) {
+export function Dropdown({ children, ...props } : Arguments) {
   const [position, setPosition] = React.useState("");
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className={props.className + " hover:text-white"}>
-          { props.reactNode? props.reactNode : props.buttonName }
+          { position? position : children }
+          <ChevronDown />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        { props.panelLabel && (<><DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
+        { props?.panelLabel && (<><DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
         <DropdownMenuSeparator /></>) }
         <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
           {
