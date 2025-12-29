@@ -114,7 +114,7 @@ const PostsBoardPage = () => {
       </div>
       <div className="flex items-center gap-x-4">
         <SearchBar className="max-w-9999" />
-        <Dropdown className="h-12 rounded-[6px] text-[#757575] text-[16px] border-border" panelLabel="เลือก 1 อย่าง" content={["ใหม่ไปเก่า", "เก่าไปใหม่", "ไล่ตามเดดไลน์"] }>
+        <Dropdown className="h-12 rounded-[6px] text-[#757575] text-[16px] border-border" panelLabel="เลือก 1 อย่าง" content={["ใหม่ไปเก่า", "เก่าไปใหม่", "ไล่ตามเดดไลน์"] } icon={<ChevronDown />}>
           เรียงลำดับ
         </Dropdown>
         <Button className="h-12 rounded-[6px] bg-white text-[#757575] hover:bg-accent hover:text-white border-1 text-[16px] border-border">
