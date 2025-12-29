@@ -15,14 +15,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu"
 
-const schema = z.object({
-  className: z.string().optional(),
-  content: z.array(z.string()),
-  panelLabel: z.string().optional(),
-  children: z.any().optional(),
-});
-
-type Arguments = z.infer<typeof schema>;
+type Arguments = {
+  className?: string;
+  content: string[];
+  panelLabel?: string;
+  children?: React.ReactNode;
+};
 
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 
@@ -39,7 +37,6 @@ export function MultiDropdown({ children, ...props }: Arguments) {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className={props.className + " hover:text-white"}>
           { children }
-          <ChevronDown />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">

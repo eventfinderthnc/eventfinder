@@ -2,8 +2,6 @@
 
 import * as React from "react"
 import { Button } from "@/components/ui/Button"
-import { z } from "zod";
-import { ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,14 +12,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu"
 
-const schema = z.object({
-  className: z.string().optional(),
-  content: z.array(z.string()),
-  panelLabel: z.string().optional(),
-  children: z.any().optional(),
-});
-
-type Arguments = z.infer<typeof schema>;
+type Arguments = {
+  className?: string;
+  content: string[];
+  panelLabel?: string;
+  children?: React.ReactNode;
+  icon?: React.ReactNode;
+}
 
 export function Dropdown({ children, ...props } : Arguments) {
   const [position, setPosition] = React.useState("");
@@ -30,8 +27,8 @@ export function Dropdown({ children, ...props } : Arguments) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className={props.className + " hover:text-white"}>
-          { position? position : children }
-          <ChevronDown />
+          { position? <span className="truncate">{position}</span> : children }
+          { props.icon }
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
