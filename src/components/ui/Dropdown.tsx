@@ -14,6 +14,7 @@ import {
 
 type Arguments = {
   className?: string;
+  id?: string;
   content: string[];
   panelLabel?: string;
   children?: React.ReactNode;
@@ -26,7 +27,7 @@ export function Dropdown({ children, ...props } : Arguments) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className={props.className + " hover:text-white"}>
+        <Button variant="outline" id={props.id} className={props.className + " hover:text-white"}>
           { position? <span className="truncate">{position}</span> : children }
           { props.icon }
         </Button>
