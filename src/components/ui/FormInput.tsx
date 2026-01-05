@@ -73,7 +73,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                     content={typeList}
                     panelLabel="เลือกรูปแบบ"
                     className={cn(
-                        "h-12 rounded-md border-[#D6D6D6]",
+                        "h-12 rounded-md border-[#D6D6D6] hover:bg-[#DE5C8E] focus:ring-0",
                         className,
                     )}/>
                 )}
@@ -82,7 +82,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                     content={categoryList}
                     panelLabel="เลือกหมวดหมู่"
                     className={cn(
-                        "h-12 rounded-md border-[#D6D6D6]",
+                        "h-12 rounded-md border-[#D6D6D6] hover:bg-[#DE5C8E]",
                         className,
                     )}/>
                 )}

@@ -2,6 +2,9 @@ import { Navbar } from "@/components/ui/Navbar"
 import { Footer } from "@/components/ui/Footer"
 import { FormInput } from "@/components/ui/FormInput"
 import { Button } from "@/components/ui/Button"
+import { Input } from "@/components/ui/Input"
+import { Upload } from "lucide-react"
+import { FileInput } from "@/components/ui/FileInput"
 
 const CreatePage = () => {
     const type: string[] = ["ONSITE","ONLINE","HYBRID"];
@@ -25,7 +28,7 @@ const CreatePage = () => {
                                     icon="type"
                                     isDropdown= {true}
                                     typeList= {type}
-                                    className="min-w-full"
+                                    className="min-w-full focus-visible:ring-0"
                                 />
                             </div>
                             <div className="basis-2/3 gap-2.5">
@@ -72,7 +75,20 @@ const CreatePage = () => {
                     </section>
                     {/* Right: upload picture */}
                     <aside className="basis-2/5">
-                        <div className="bg-pink-300 min-w-full h-150"></div>
+                        <div className="bg-[#DE5C8E0D] rounded-md min-w-full h-150 flex flex-col items-center justify-center gap-2.5 border-dashed border-[#DE5C8E] border-2">
+                            <div className="flex flex-col items-center justify-center gap-2.5">
+                                <Upload 
+                                    width={48}
+                                    height={48}
+                                    color="#DE5C8E"
+                                    className=""/>
+                                <h1 className="text-base">ลากแล้วปล่อยรูปภาพที่นี่</h1>
+                            </div>
+                            <FileInput
+                                placeholder="เลือกจากในคอมพิวเตอร์"
+                                className="w-60 justify-center text-base bg-[#DE5C8E] text-white"
+                            />
+                        </div>
                     </aside>
                 </div>
             </main>
