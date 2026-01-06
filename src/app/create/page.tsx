@@ -45,7 +45,7 @@ const CreatePage = () => {
                             label="รายละเอียด"
                             placeholder="เขียนอะไรสักอย่าง..."
                             isTextArea= {true}
-                            className="min-w-full h-50"
+                            className="min-w-full h-50 resize-none"
                         />
                         <FormInput 
                             icon="link"
@@ -58,7 +58,7 @@ const CreatePage = () => {
                                     icon="date"
                                     label="กำหนดเวลา"
                                     placeholder="วัน/เดือน/ปี"
-                                    isDateTime = {true}
+                                    isDate = {true}
                                     className=""
                                 />
                             </div>
@@ -66,7 +66,7 @@ const CreatePage = () => {
                                 <FormInput 
                                     icon="time"
                                     placeholder="เวลา"
-                                    isDateTime = {true}
+                                    isTime = {true}
                                     className=""
                                 />
                             </div>

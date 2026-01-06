@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils"
 import { Textarea } from "@/components/ui/Textarea"
 import { Dropdown } from "@/components/ui/Dropdown"
 import { MultiDropdown } from "@/components/ui/MultiDropdown"
+import { DatePicker } from "@/components/ui/DatePicker"
+import { TimePicker } from "@/components/ui/TimePicker"
 import { ChevronDown, SquarePlus, Link, CalendarDaysIcon, Clock} from "lucide-react"
 import type { HTMLInputTypeAttribute } from "react"
 import { forwardRef } from "react"
@@ -22,7 +24,8 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement>{
     label ?: string,
     placeholder ?: string,
     isTextArea ?: boolean,
-    isDateTime ?: boolean,
+    isDate ?: boolean,
+    isTime ?: boolean,
     isDropdown ?: boolean,
     isMultiDropdown ?: boolean,
     typeList ?: string[],
@@ -33,7 +36,8 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
     {className, 
         icon, 
         isTextArea = false, 
-        isDateTime, 
+        isDate = false,
+        isTime = false, 
         isDropdown = false, 
         isMultiDropdown = false, 
         typeList = [], 
@@ -70,12 +74,12 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                 )}
                 {isDropdown && (
                     <Dropdown 
-                    content={typeList}
-                    panelLabel="เลือกรูปแบบ"
+                    content={typeList} 
                     className={cn(
                         "h-12 rounded-md border-[#D6D6D6] hover:bg-[#DE5C8E] focus:ring-0",
                         className,
-                    )}/>
+                        )}>
+                    </Dropdown>    
                 )}
                 {isMultiDropdown && (
                     <MultiDropdown
@@ -86,7 +90,24 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                         className,
                     )}/>
                 )}
-                {!isTextArea && !isDropdown && !isMultiDropdown && (
+                {isDate && (
+                    <DatePicker />
+                )}
+                {/* {isTime && (
+                    <Input 
+                    type='time'
+                    className={cn(
+                        "h-12 text-black border-[#D6D6D6]",
+                        "bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none",
+                        (label == null) && "mt-8.5",
+                        className,
+                    )}
+                    />
+                )} */}
+                { isTime && (
+                    <TimePicker />
+                )}
+                {!isTextArea && !isDropdown && !isMultiDropdown && !isDate && !isTime && (
                     <Input 
                     ref={ref}
                     placeholder={placeholder}
@@ -94,16 +115,6 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                     className={cn(
                         "relative h-12 text-black border-[#D6D6D6]",
                         "placeholder:text-left placeholder:align-text-top",
-                        isDateTime && [
-                            "[&::-webkit-calendar-picker-indicator]:absolute",
-                            "[&::-webkit-calendar-picker-indicator]:w-full",
-                            "[&::-webkit-calendar-picker-indicator]:h-full",
-                            "[&::-webkit-calendar-picker-indicator]:opacity-0",
-                            "[&::-webkit-calendar-picker-indicator]:cursor-pointer",
-                            "appearance-none"
-                        ],
-                        (icon == "date") && "focus:bg-blue-500",
-                        (icon == "time") && "",
                         (label == null) && "mt-8.5",
                         className,
                     )}
