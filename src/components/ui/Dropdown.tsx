@@ -1,9 +1,7 @@
 "use client"
 
 import * as React from "react"
-
 import { Button } from "@/components/ui/Button"
-import { z } from "zod";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,28 +12,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu"
 
-const schema = z.object({
-  className: z.string().optional(),
-  content: z.array(z.string()),
-  panelLabel: z.string(),
-  reactNode: z.any().optional(),
-  buttonName: z.string().optional(),
-});
+type Arguments = {
+  className?: string;
+  id?: string;
+  content: string[];
+  panelLabel?: string;
+  children?: React.ReactNode;
+  icon?: React.ReactNode;
+}
 
-type Arguments = z.infer<typeof schema>;
-
-export function Dropdown(props: Arguments) {
+export function Dropdown({ children, ...props } : Arguments) {
   const [position, setPosition] = React.useState("");
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className={props.className + " hover:text-white"}>
-          { props.reactNode? props.reactNode : props.buttonName }
+        <Button variant="outline" id={props.id} className={props.className + " hover:text-white"}>
+          { position? <span className="truncate">{position}</span> : children }
+          { props.icon }
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        { props.panelLabel && (<><DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
+        { props?.panelLabel && (<><DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
         <DropdownMenuSeparator /></>) }
         <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
           {
@@ -55,3 +53,4 @@ export function Dropdown(props: Arguments) {
     </DropdownMenu>
   );
 }
+
