@@ -25,7 +25,7 @@ const slideVariants = {
 }
 
 export default function Page() {
-  const [step, setStep] = useState<Step>("contact")
+  const [step, setStep] = useState<Step>("info")
   const [direction, setDirection] = useState(1)
   const router = useRouter()
 

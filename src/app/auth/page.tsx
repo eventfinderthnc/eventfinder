@@ -54,7 +54,13 @@ export default function Page() {
               >
                 <ChooseRoleStep
                   onBack={() => router.push("/")} 
-                  onNext={() => goNext("orgregis")} 
+                  onNext={(role) => {
+                    if (role === "organizer") {
+                      router.push("/auth/organizer/login")
+                    } else {
+                      router.push("/")
+                    }
+                  }} 
                 />
               </motion.div>
             )}
