@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react"
 import { FormInput } from "@/components/ui/FormInput"
 import { Dropdown } from "@/components/ui/Dropdown"
 import { Input } from "@/components/ui/Input"
-import useImageUploadHook from "@/lib/hooks/ImageUploadHook";
+import useImageUploadHook from "@/lib/hooks/image-uploader";
 
 const faculties: string[] = [
   "Allied Health Sciences", "Architecture", "Arts", "Commerce and Accountancy", "Communication Arts", "Dentistry", "Economics", "Education", "Engineering", "Fine and Applied Arts", "Laws", "Medicine", "Nursing", "Pharmaceutical Sciences", "Political Science", "Psychology", "Science", "Sports Science", "Veterinary Science", "School of Integrated Innovation", "Agricultural Resources", "Graduate School"

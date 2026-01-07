@@ -62,7 +62,7 @@ export default function CategoryStep({
             <button
               key={c.id}
               onClick={() => toggle(c.id)}
-              className="flex flex-col items-center gap-2"
+              className="cursor-pointer flex flex-col items-center gap-2"
             >
               <div
                 className={`p-4 rounded-full border-2 ${
