@@ -38,7 +38,7 @@ export default async function Home() {
 				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" reactNode={reactNode} />
 				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" buttonName="Choose" />
 
-				<div className="flex flex-col justify-top items-center gap-4 mt-20">
+				{/* <div className="flex flex-col justify-top items-center gap-4 mt-20">
 					<SearchBar className="w-200"/>
 					<FormInput 
 						label="ชื่อหัวข้อ"
@@ -70,7 +70,7 @@ export default async function Home() {
 						className="w-93.25"
 					/>
 					</div>
-				</div>
+				</div> */}
 			</main>
 			<Footer />
 		</HydrateClient>
