@@ -87,7 +87,7 @@ const CreatePage = () => {
                                 />
                             </div>
                         </div>
-                        <Button className="w-full text-white h-12 text-base">อัพโหลด</Button>
+                        <Button className="w-full text-white h-12 text-base hover:bg-accent/30">อัพโหลด</Button>
                     </section>
                     {/* Right: upload picture */}
                     <aside className="sm:basis-2/5 w-full relative">
