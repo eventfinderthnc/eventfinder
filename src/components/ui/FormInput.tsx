@@ -51,21 +51,21 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
     return (
         <div className="flex flex-col gap-2.5">
             {label && (
-                <label className="text-black text-base font-bold">
+                <label className="text-black sm:text-base text-sm font-bold">
                     {label}
                 </label>
             )}
             <div className="relative w-full">
                 {IconComponent && (
-                    <div className={cn("absolute top-3 right-2.5 w-6 h-6 pointer-events-none",(label == null) && "mt-8.5")}>
-                        <IconComponent color="#949494"/>
+                    <div className={cn("absolute top-3 right-4 w-5 h-5 sm:w-6 sm:h-6 pointer-events-none",(label == null) && "sm:mt-8.5")}>
+                        <IconComponent color="#949494" className="w-5 h-5 sm:w-6 sm:h-6"/>
                     </div>
                 )}
                 {isTextArea && (
                     <Textarea 
                     placeholder={placeholder}
                     className={cn(
-                        "relative h-12 text-black border-[#D6D6D6] focus-visible:ring-0 resize-none",
+                        "relative h-12 text-black border-[#D6D6D6] hover:border-primary/70 focus-visible:ring-0 resize-none",
                         "pt-3 pb-3 px-3 text-left align-top",
                         "placeholder:text-left placeholder:align-text-top",
                         className,
@@ -76,7 +76,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                     <Dropdown 
                     content={typeList} 
                     className={cn(
-                        "h-12 rounded-md border-[#D6D6D6] hover:bg-[#DE5C8E] focus:ring-0",
+                        "h-12 rounded-md border-[#D6D6D6] hover:bg-transparent hover:border-primary/70 focus:ring-0",
                         className,
                         )}>
                     </Dropdown>    
@@ -86,24 +86,13 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                     content={categoryList}
                     panelLabel="เลือกหมวดหมู่"
                     className={cn(
-                        "h-12 rounded-md border-[#D6D6D6] hover:bg-[#DE5C8E]",
+                        "h-12 rounded-md border-[#D6D6D6] hover:bg-transparent hover:border-primary/70",
                         className,
                     )}/>
                 )}
                 {isDate && (
                     <DatePicker />
                 )}
-                {/* {isTime && (
-                    <Input 
-                    type='time'
-                    className={cn(
-                        "h-12 text-black border-[#D6D6D6]",
-                        "bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none",
-                        (label == null) && "mt-8.5",
-                        className,
-                    )}
-                    />
-                )} */}
                 { isTime && (
                     <TimePicker />
                 )}
@@ -113,9 +102,8 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                     placeholder={placeholder}
                     type={inputType}
                     className={cn(
-                        "relative h-12 text-black border-[#D6D6D6]",
+                        "relative h-12 text-black border-[#D6D6D6] hover:border-primary/70",
                         "placeholder:text-left placeholder:align-text-top",
-                        (label == null) && "mt-8.5",
                         className,
                     )}
                     {...props}

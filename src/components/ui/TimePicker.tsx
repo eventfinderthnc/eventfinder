@@ -51,13 +51,13 @@ export function TimePicker() {
     };
 
     return (
-        <div className={cn("mt-8.5 flex min-w-full")}>
+        <div className="sm:mt-8.5 flex min-w-full">
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
                         variant="outline"
                         id="date"
-                        className="h-12 min-w-full rounded-md border-[#D6D6D6] hover:bg-[#DE5C8E] px-3 justify-start text-left pt-2.5"
+                        className="h-12 min-w-full rounded-md border-[#D6D6D6] hover:border-primary/70 hover:bg-transparent px-3 justify-start text-left pt-2.5"
                     >
                         <span className={cn(
                             "text-sm",
@@ -67,7 +67,7 @@ export function TimePicker() {
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                    <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
+                    <div className="flex flex-col sm:flex-row sm:h-75 divide-y sm:divide-y-0 sm:divide-x">
                         <ScrollArea className="w-64 sm:w-auto">
                             <div className="flex sm:flex-col p-2">
                                 {hoursArray.map((hour) => (

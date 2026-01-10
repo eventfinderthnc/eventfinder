@@ -1,3 +1,5 @@
+"use client"
+
 import { Navbar } from "@/components/ui/Navbar"
 import { Footer } from "@/components/ui/Footer"
 import { FormInput } from "@/components/ui/FormInput"
@@ -5,39 +7,53 @@ import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { Upload } from "lucide-react"
 import { FileInput } from "@/components/ui/FileInput"
+import { useState } from "react"
 
 const CreatePage = () => {
     const type: string[] = ["ONSITE","ONLINE","HYBRID"];
     const category: string[] = ["Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
+    const [imagePreview, setImagePreview] = useState<string | null>(null)
+
+    const handleFileSelect = (file: File | null, previewUrl: string) => {
+        if (imagePreview) {
+            URL.revokeObjectURL(imagePreview)
+        }
+        if (file && previewUrl) {
+            setImagePreview(previewUrl)
+        } else {
+            setImagePreview(null)
+        }
+    }
+
     return (
         <div>
             <Navbar />
-            <main className="px-25 pt-5 pb-20 min-h-screen">
-                <h1 className="text-[#DE5C8E] text-[28px] pb-5">สร้างโพสต์</h1>
+            <main className="lg:px-25 sm:px-10 px-5 pt-5 pb-5 sm:pb-20 h-full">
+                <h1 className="text-[#DE5C8E] text-[24px] sm:text-[28px] pb-4 sm:pb-6 lg:pb-5">สร้างโพสต์</h1>
                 {/* Left: form input */}
-                <div className="flex items-start gap-7">
-                    <section className="basis-3/5 min-h-screen flex flex-col gap-5">
+                <div className="flex sm:flex-row flex-col-reverse items-start gap-4 sm:gap-7">
+                    <section className="sm:basis-3/5 sm:h-full w-full flex flex-col gap-4 sm:gap-5">
                         <FormInput 
                             label="ชื่อหัวข้อ"
-                            className="min-w-full"
+                            className="w-full"
                         />
-                        <div className="flex gap-4">
+                        <div className="flex lg:flex-row flex-col lg:gap-4 gap-5 justify-between">
                             <div className="basis-1/3 gap-2.5">
                                 <FormInput 
                                     label="รูปแบบกิจกรรม"
                                     icon="type"
-                                    isDropdown= {true}
-                                    typeList= {type}
-                                    className="min-w-full focus-visible:ring-0"
+                                    isDropdown={true}
+                                    typeList={type}
+                                    className="w-full focus-visible:ring-0"
                                 />
                             </div>
                             <div className="basis-2/3 gap-2.5">
                                 <FormInput 
                                     label="หมวดหมู่"
                                     icon="category"
-                                    isMultiDropdown= {true}
-                                    categoryList= {category}
-                                    className="min-w-full"
+                                    isMultiDropdown={true}
+                                    categoryList={category}
+                                    className="w-full"
                                 />
                             </div>
                         </div>
@@ -45,20 +61,20 @@ const CreatePage = () => {
                             label="รายละเอียด"
                             placeholder="เขียนอะไรสักอย่าง..."
                             isTextArea= {true}
-                            className="min-w-full h-50 resize-none"
+                            className="w-full h-25 sm:h-75 sm:resize-none selection:bg-primary selection:text-primary-foreground placeholder:text-sm sm:placeholder:text-base"
                         />
-                        <FormInput 
+                        <FormInput
                             icon="link"
                             label="ฟอร์มรับสมัคร"
                             className="w-full"
                         />
-                        <div className="flex items-stretch gap-2.5 min-w-full">
+                        <div className="flex sm:flex-row flex-col items-stretch gap-2.5 w-full">
                             <div className="grow w-full">
                                 <FormInput 
                                     icon="date"
                                     label="กำหนดเวลา"
                                     placeholder="วัน/เดือน/ปี"
-                                    isDate = {true}
+                                    isDate={true}
                                     className=""
                                 />
                             </div>
@@ -66,29 +82,47 @@ const CreatePage = () => {
                                 <FormInput 
                                     icon="time"
                                     placeholder="เวลา"
-                                    isTime = {true}
+                                    isTime={true}
                                     className=""
                                 />
                             </div>
                         </div>
-                        <Button className="min-w-full text-white h-12 text-base">อัพโหลด</Button>
+                        <Button className="w-full text-white h-12 text-base">อัพโหลด</Button>
                     </section>
                     {/* Right: upload picture */}
-                    <aside className="basis-2/5">
-                        <div className="bg-[#DE5C8E0D] rounded-md min-w-full h-150 flex flex-col items-center justify-center gap-2.5 border-dashed border-[#DE5C8E] border-2">
+                    <aside className="sm:basis-2/5 w-full relative">
+                        {imagePreview ? (
+                            <div className="w-full">
+                            <img 
+                                src={imagePreview} 
+                                alt="Image preview"
+                                className="w-full h-auto rounded-md object-contain"
+                            />
+                            <div className="mt-5 flex justify-center">
+                                <FileInput
+                                    placeholder="เปลี่ยนรูปภาพ"
+                                    onFileSelect={handleFileSelect}
+                                    className="justify-center text-base bg-[#DE5C8E] text-white lg:h-10 rounded-full"
+                                />
+                            </div>
+                            </div>
+                        ) : (
+                            <div className="bg-[#DE5C8E0D] rounded-md w-full sm:h-155 h-100 flex flex-col items-center justify-center gap-2.5 border-dashed border-[#DE5C8E] border-2">
                             <div className="flex flex-col items-center justify-center gap-2.5">
                                 <Upload 
-                                    width={48}
-                                    height={48}
-                                    color="#DE5C8E"
-                                    className=""/>
-                                <h1 className="text-base">ลากแล้วปล่อยรูปภาพที่นี่</h1>
+                                color="#DE5C8E"
+                                className="w-8 h-auto sm:w-12"
+                                />
+                                <h1 className="font-medium text-base hidden lg:flex">ลากแล้วปล่อยรูปภาพที่นี่</h1>
+                                <h1 className="font-medium sm:text-base text-sm flex lg:hidden">อัพโหลดรูปภาพ</h1>
                             </div>
                             <FileInput
                                 placeholder="เลือกจากในคอมพิวเตอร์"
-                                className="w-60 justify-center text-base bg-[#DE5C8E] text-white"
+                                onFileSelect={handleFileSelect}
+                                className="justify-center text-base bg-[#DE5C8E] text-white absolute inset-0 w-full h-full opacity-0 cursor-pointer lg:static lg:w-60 lg:h-10 lg:opacity-100"
                             />
-                        </div>
+                            </div>
+                        )}
                     </aside>
                 </div>
             </main>

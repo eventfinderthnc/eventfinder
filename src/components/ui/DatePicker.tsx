@@ -14,7 +14,12 @@ import { cn } from "@/lib/utils"
 export function DatePicker() {
   const [open, setOpen] = React.useState(false)
   const [date, setDate] = React.useState<Date | undefined>(undefined)
-
+  const formatDate = (date: Date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
   return (
     <div className="flex flex-col gap-3">
       <Popover open={open} onOpenChange={setOpen}>
@@ -22,12 +27,12 @@ export function DatePicker() {
           <Button
             variant="outline"
             id="date"
-            className="h-12 rounded-md border-[#D6D6D6] hover:bg-[#DE5C8E] px-3 justify-start text-left py-auto"
+            className="h-12 rounded-md border-[#D6D6D6] hover:border-primary/70 hover:bg-transparent px-3 justify-start text-left py-auto"
           >
             <span className={cn(
                 "text-sm",
                 date ? "text-foreground" : "text-muted-foreground")}>
-                {date ? date.toLocaleDateString() : "วัน/เดือน/ปี"}        
+                {date ? formatDate(date) : "วัน/เดือน/ปี"}        
             </span>
           </Button>
         </PopoverTrigger>

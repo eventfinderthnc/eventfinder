@@ -38,11 +38,7 @@ export const Footer = () => {
                     <Link href="" target="_blank"><Globe size={28} color="black"/></Link>
                 </div>
             </div>
-<<<<<<< Updated upstream
-            <div className="flex items-center justify-between">
-=======
             <div className="flex items-center flex-col justify-center lg:flex-row lg:justify-between">
->>>>>>> Stashed changes
                 <div className="text-[#8C8C8C] text-sm">Thinc. 2025 all right reserved</div>
                 <div className="text-[#8C8C8C] text-sm gap-8 flex underline">
                     <Link href="" target="_blank">Privacy Policy</Link>

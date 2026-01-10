@@ -13,8 +13,8 @@ export const Navbar = () => {
     const { isLoggedIn, isOrg } = useAuth();
     const navItems = (isOrg) ? NavItemsOrg : NavItemsAtten;
     return(
-        <div className="relative w-full">
-            <nav className="shadow w-full absolute top-0 left-1/2 -translate-x-1/2">
+        <div className="w-full sticky">
+            <nav className="shadow sticky top-0 z-50 w-full">
                 <div className="py-2.5 sm:py-4 lg:px-25 sm:px-10 px-5 items-center flex justify-between">
                     <div className="flex items-center gap-7.5">
                         <Link href="/">
@@ -65,8 +65,6 @@ export const Navbar = () => {
                     </div>
                 </div>
             </nav>
-            
-            <div className="h-18.75"></div>
         </div>
     );
 }

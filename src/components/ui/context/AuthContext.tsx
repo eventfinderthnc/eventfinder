@@ -2,12 +2,7 @@
 "use client";
 import { createContext, useContext } from "react";
 const AuthContext = createContext({
-<<<<<<< Updated upstream
-    // make change here
-    isLoggedIn: false,
-=======
     isLoggedIn: true,
->>>>>>> Stashed changes
     isOrg: true,
 })
 

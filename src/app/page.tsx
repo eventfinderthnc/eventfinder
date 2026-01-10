@@ -37,40 +37,6 @@ export default async function Home() {
 
 				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" reactNode={reactNode} />
 				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" buttonName="Choose" />
-
-				{/* <div className="flex flex-col justify-top items-center gap-4 mt-20">
-					<SearchBar className="w-200"/>
-					<FormInput 
-						label="ชื่อหัวข้อ"
-						className="w-189"
-					/>
-					<FormInput
-						label="รายละเอียด"
-						placeholder="เขียนอะไรสักอย่าง..."
-						isTextArea= {true}
-						className="w-189 h-50"
-					/>
-					<FormInput 
-						icon="link"
-						label="ฟอร์มรับสมัคร"
-						className="w-189"
-					/>
-					<div className="flex gap-2.5">
-					<FormInput 
-						icon="date"
-						label="กำหนดเวลา"
-						placeholder="วัน/เดือน/ปี"
-						isDateTime = {true}
-						className="w-93.25"
-					/>
-					<FormInput 
-						icon="time"
-						placeholder="เวลา"
-						isDateTime = {true}
-						className="w-93.25"
-					/>
-					</div>
-				</div> */}
 			</main>
 			<Footer />
 		</HydrateClient>
