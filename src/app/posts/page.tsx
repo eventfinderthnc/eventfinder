@@ -1,8 +1,11 @@
+"use client";
+
 import { Button } from "@/components/ui/Button";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { SearchBar } from "@/components/ui/SearchBar";
-import type { string } from "better-auth";
 import { ChevronDown, SquarePlus, SquarePen, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type Data = {
   id: number;
@@ -107,6 +110,9 @@ const tagColor: {
 };
 
 const PostsBoardPage = () => {
+
+  const router = useRouter();
+
   return (
     <section className="body-section">
       <div className="text-primary font-[600] text-[28px]">
@@ -114,10 +120,10 @@ const PostsBoardPage = () => {
       </div>
       <div className="flex items-center gap-x-4">
         <SearchBar className="max-w-9999" />
-        <Dropdown className="h-12 rounded-[6px] text-[#757575] text-[16px] border-border" panelLabel="เลือก 1 อย่าง" content={["ใหม่ไปเก่า", "เก่าไปใหม่", "ไล่ตามเดดไลน์"] } icon={<ChevronDown />}>
+        <Dropdown itemClassName="focus:bg-primary" className="h-12 rounded-[6px] text-text-gray text-[16px] border-border hover:border-primary hover:bg-white hover:text-primary" panelLabel="เลือก 1 อย่าง" content={["ใหม่ไปเก่า", "เก่าไปใหม่", "ไล่ตามเดดไลน์"] } icon={<ChevronDown />}>
           เรียงลำดับ
         </Dropdown>
-        <Button className="h-12 rounded-[6px] bg-white text-text-gray hover:bg-accent hover:text-white border-1 text-[16px] border-border">
+        <Button className="h-12 rounded-[6px] bg-white text-text-gray hover:bg-accent hover:text-white border-1 text-[16px] border-border" onClick={() => router.push("/create")}>
           สร้างโพสต์ใหม่
           <SquarePlus />
         </Button>
@@ -171,7 +177,8 @@ const PostsBoardPage = () => {
                     <div className="flex justify-between">
                       <div className="flex gap-1">
                         <span className="font-semibold shrink-0 text-[0.75rem] sm:text-[1rem]">ฟอร์มรับสมัคร : </span>
-                        <span className="text-text-gray text-[0.75rem] sm:text-[1rem] truncate">{ event.formLink }</span>
+                        <Link href={event.formLink} target="_blank" className="text-text-gray text-[0.75rem] sm:text-[1rem] truncate hover:underline">{ event.formLink }</Link>
+                        {/* <span className="text-text-gray text-[0.75rem] sm:text-[1rem] truncate">{ event.formLink }</span> */}
                       </div>
                     </div>
                     <div className="flex justify-between">
