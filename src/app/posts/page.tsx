@@ -5,7 +5,7 @@ import type { string } from "better-auth";
 import { ChevronDown, SquarePlus, SquarePen, Trash2 } from "lucide-react";
 
 type Data = {
-  id: any;
+  id: number;
   accountName: string;
   profileImage: string;
   image: string;
@@ -117,7 +117,7 @@ const PostsBoardPage = () => {
         <Dropdown className="h-12 rounded-[6px] text-[#757575] text-[16px] border-border" panelLabel="เลือก 1 อย่าง" content={["ใหม่ไปเก่า", "เก่าไปใหม่", "ไล่ตามเดดไลน์"] } icon={<ChevronDown />}>
           เรียงลำดับ
         </Dropdown>
-        <Button className="h-12 rounded-[6px] bg-white text-[#757575] hover:bg-accent hover:text-white border-1 text-[16px] border-border">
+        <Button className="h-12 rounded-[6px] bg-white text-text-gray hover:bg-accent hover:text-white border-1 text-[16px] border-border">
           สร้างโพสต์ใหม่
           <SquarePlus />
         </Button>
@@ -148,9 +148,9 @@ const PostsBoardPage = () => {
                             <div className="font-[600] sm-none">Recruitment</div>
                           </div>
                         </div>
-                        <div className="text-[#757575] flex gap-x-3">
-                          <SquarePen className="hover:cursor-pointer" />
-                          <Trash2 className="hover:cursor-pointer" />
+                        <div className="text-text-gray flex gap-x-3">
+                          <SquarePen className="hover:cursor-pointer " />
+                          <Trash2 className="hover:cursor-pointer hover:text-red-600 hover:opacity-80" />
                         </div>
                       </div>
                     </div>
@@ -163,7 +163,7 @@ const PostsBoardPage = () => {
                         })
                       }
                     </div>
-                    <div className="text-[#757575] line-clamp-5 sm:line-clamp-4 text-[0.75rem] sm:text-[1rem] font-light tracking-tight">
+                    <div className="mt-1 text-text-gray line-clamp-5 sm:line-clamp-4 text-[0.75rem] sm:text-[1rem] font-light tracking-tight">
                       { event.description }
                     </div>
                   </div>
@@ -171,13 +171,13 @@ const PostsBoardPage = () => {
                     <div className="flex justify-between">
                       <div className="flex gap-1">
                         <span className="font-semibold shrink-0 text-[0.75rem] sm:text-[1rem]">ฟอร์มรับสมัคร : </span>
-                        <span className="text-[#757575] text-[0.75rem] sm:text-[1rem] truncate">{ event.formLink }</span>
+                        <span className="text-text-gray text-[0.75rem] sm:text-[1rem] truncate">{ event.formLink }</span>
                       </div>
                     </div>
                     <div className="flex justify-between">
                       <div className="flex gap-1 truncate">
                         <span className="font-semibold shrink-0 text-[0.75rem] sm:text-[1rem]">ปิดรับสมัคร : </span>
-                        <span className="text-[#757575] text-[0.75rem] sm:text-[1rem] truncate">{ closeDate }</span>
+                        <span className="text-text-gray text-[0.75rem] sm:text-[1rem] truncate">{ closeDate }</span>
                       </div>            
                     </div>
                   </div>

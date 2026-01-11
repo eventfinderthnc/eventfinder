@@ -14,7 +14,7 @@ export const Footer = () => {
             <div className="flex relative items-center mb-5">
                 <div className="flex flex-col gap-y-3">
                     <Image
-                        src="/images/logo[cropped].png" 
+                        src="/images/svg/logo.svg" 
                         alt="logo" 
                         width={128}
                         height={64}

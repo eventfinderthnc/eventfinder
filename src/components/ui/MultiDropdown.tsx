@@ -17,6 +17,7 @@ import {
 
 type Arguments = {
   className?: string;
+  id?: string;
   content: string[];
   panelLabel?: string;
   children?: React.ReactNode;
@@ -35,7 +36,7 @@ export function MultiDropdown({ children, ...props }: Arguments) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className={props.className + " hover:text-white"}>
+        <Button variant="outline" id={props.id} className={props.className + " hover:text-white"}>
           { children }
         </Button>
       </DropdownMenuTrigger>
