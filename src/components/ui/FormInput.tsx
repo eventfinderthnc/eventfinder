@@ -51,7 +51,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
     return (
         <div className="flex flex-col gap-2.5">
             {label && (
-                <label className="text-black sm:text-base text-sm font-bold">
+                <label className="text-black sm:text-base text-sm font-semibold">
                     {label}
                 </label>
             )}
