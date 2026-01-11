@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react"
 import { FormInput } from "@/components/ui/FormInput"
 import { Dropdown } from "@/components/ui/Dropdown"
 import { Input } from "@/components/ui/Input"
-import useImageUploadHook from "@/lib/hooks/image-uploader";
+import useImageUploadHook from "@/lib/hooks/useImageUpload";
 
 const faculties: string[] = [
   "Allied Health Sciences", "Architecture", "Arts", "Commerce and Accountancy", "Communication Arts", "Dentistry", "Economics", "Education", "Engineering", "Fine and Applied Arts", "Laws", "Medicine", "Nursing", "Pharmaceutical Sciences", "Political Science", "Psychology", "Science", "Sports Science", "Veterinary Science", "School of Integrated Innovation", "Agricultural Resources", "Graduate School"
@@ -34,7 +34,7 @@ export default function InfoStep({
       </div>
 
       <div className="flex flex-1 flex-col justify-center sm:justify-between items-center my-5">
-        <label htmlFor="profile-picture-input" className="w-[80px] h-[80px] sm:w-[130px] sm:h-[130px] relative w-full h-full flex items-center justify-center rounded-full">
+        <label htmlFor="profile-picture-input" className="w-[80px] h-[80px] sm:w-[130px] sm:h-[130px] relative w-full h-full flex items-center justify-center rounded-full cursor-pointer">
           <Input id="profile-picture-input" className="hidden" accept="image/jpeg, image/png" type="file" />
           <div id="profile-picture-div" className="w-[80px] h-[80px] sm:w-[130px] sm:h-[130px] flex items-center justify-center border-1 border-[#ffb7d3] bg-[#fff2f6] rounded-full">
             <Icon icon="bxs:user" className="text-[2.5rem] sm:text-[4rem] text-[#de5c8e] opacity-50" />
@@ -49,7 +49,7 @@ export default function InfoStep({
             <label htmlFor="faculty-dropdown" className="text-black text-base font-bold">
               คณะ
             </label>
-            <Dropdown id="faculty-dropdown" content={faculties} className="w-full h-8 sm:h-10 rounded-md flex items-center justify-between text-text-gray border-stroke text-[12px] sm:text-[14px]" icon={<ChevronDown />}>
+            <Dropdown id="faculty-dropdown" content={faculties} itemClassName="focus:bg-primary cursor-pointer" menuContentClassname="w-[240px] sm:w-[470px]" className="w-full h-8 sm:h-10 rounded-md flex items-center justify-between text-text-gray border-stroke text-[12px] sm:text-[14px]" icon={<ChevronDown />}>
               <span>เลือก</span>
             </Dropdown>
           </div>
