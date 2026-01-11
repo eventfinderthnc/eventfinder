@@ -98,8 +98,7 @@ const ClubsPage = () => {
             <div className='flex flex-col gap-4 sm:gap-6 w-full'>
                 {/* Top Section */}
                 <div className='flex gap-2 sm:gap-4 w-full'>
-                    <SearchBar className='flex-1' />
-                    
+                    <SearchBar className='w-full' />   
                     {/* Filter Icon */}
                     <div 
                         className='w-12 h-12 flex justify-center items-center border border-stroke rounded-[10px] text-text-gray  hover:text-primary hover:border-2 hover:border-primary transition-all'
