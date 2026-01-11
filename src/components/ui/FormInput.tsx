@@ -1,6 +1,10 @@
 import { Input } from "@/components/ui/Input"
 import { cn } from "@/lib/utils"
 import { Textarea } from "@/components/ui/Textarea"
+import { Dropdown } from "@/components/ui/Dropdown"
+import { MultiDropdown } from "@/components/ui/MultiDropdown"
+import { DatePicker } from "@/components/ui/DatePicker"
+import { TimePicker } from "@/components/ui/TimePicker"
 import { ChevronDown, SquarePlus, Link, CalendarDaysIcon, Clock} from "lucide-react"
 import type { HTMLInputTypeAttribute } from "react"
 import { forwardRef } from "react"
@@ -20,58 +24,90 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement>{
     label ?: string,
     placeholder ?: string,
     isTextArea ?: boolean,
-    isDateTime ?: boolean,
+    isDate ?: boolean,
+    isTime ?: boolean,
+    isDropdown ?: boolean,
+    isMultiDropdown ?: boolean,
+    typeList ?: string[],
+    categoryList ?: string[],
 }
 
-const FormInput = forwardRef<HTMLInputElement, FormInputProps>(({className, icon, isTextArea, isDateTime, label, placeholder, type, ...props}, ref) => {
+const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
+    {className, 
+        icon, 
+        isTextArea = false, 
+        isDate = false,
+        isTime = false, 
+        isDropdown = false, 
+        isMultiDropdown = false, 
+        typeList = [], 
+        categoryList = [], 
+        label, 
+        placeholder, 
+        type, 
+        ...props}, ref) => {
     const IconComponent = icon ? iconVariants[icon] : null;
     const inputType: HTMLInputTypeAttribute | undefined = icon == "date" ? "date" : (icon == "time" ? "time" : type);
     return (
         <div className="flex flex-col gap-2.5">
             {label && (
-                <label className="text-black text-base font-bold">
+                <label className="text-black sm:text-base text-sm font-semibold">
                     {label}
                 </label>
             )}
             <div className="relative w-full">
                 {IconComponent && (
-                    <div className={cn("absolute top-3 right-2.5 w-6 h-6 pointer-events-none",(label == null) && "mt-8.5")}>
-                        <IconComponent color="#949494"/>
+                    <div className={cn("absolute top-3 right-4 w-5 h-5 sm:w-6 sm:h-6 pointer-events-none",(label == null) && "sm:mt-8.5")}>
+                        <IconComponent color="#949494" className="w-5 h-5 sm:w-6 sm:h-6"/>
                     </div>
                 )}
-                { !isTextArea ?
-                (<Input 
-                    ref={ref}
-                    placeholder={placeholder}
-                    type={inputType}
-                    className={cn(
-                        "relative h-12 text-black border-[#D6D6D6]",
-                        "placeholder:text-left placeholder:align-text-top",
-                        isDateTime && [
-                            "[&::-webkit-calendar-picker-indicator]:absolute",
-                            "[&::-webkit-calendar-picker-indicator]:w-full",
-                            "[&::-webkit-calendar-picker-indicator]:h-full",
-                            "[&::-webkit-calendar-picker-indicator]:opacity-0",
-                            "[&::-webkit-calendar-picker-indicator]:cursor-pointer",
-                            "appearance-none"
-                        ],
-                        (icon == "date") && "focus:bg-blue-500",
-                        (icon == "time") && "",
-                        (label == null) && "mt-8.5",
-                        className,
-                    )}
-                    {...props}
-                />) : (
+                {isTextArea && (
                     <Textarea 
                     placeholder={placeholder}
                     className={cn(
-                        "relative h-12 text-black border-[#D6D6D6] focus-visible:ring-0 resize-none",
+                        "relative h-12 text-black border-[#D6D6D6] hover:border-primary/70 focus-visible:ring-0 resize-none",
                         "pt-3 pb-3 px-3 text-left align-top",
                         "placeholder:text-left placeholder:align-text-top",
                         className,
                     )}
                     />
                 )}
+                {isDropdown && (
+                    <Dropdown 
+                    content={typeList} 
+                    className={cn(
+                        "h-12 rounded-md border-[#D6D6D6] hover:bg-transparent hover:border-primary/70 focus:ring-0",
+                        className,
+                        )}>
+                    </Dropdown>    
+                )}
+                {isMultiDropdown && (
+                    <MultiDropdown
+                    content={categoryList}
+                    panelLabel="เลือกหมวดหมู่"
+                    className={cn(
+                        "h-12 rounded-md border-[#D6D6D6] hover:bg-transparent hover:border-primary/70",
+                        className,
+                    )}/>
+                )}
+                {isDate && (
+                    <DatePicker />
+                )}
+                { isTime && (
+                    <TimePicker />
+                )}
+                {!isTextArea && !isDropdown && !isMultiDropdown && !isDate && !isTime && (
+                    <Input 
+                    ref={ref}
+                    placeholder={placeholder}
+                    type={inputType}
+                    className={cn(
+                        "relative h-12 text-black border-[#D6D6D6] hover:border-primary/70",
+                        "placeholder:text-left placeholder:align-text-top",
+                        className,
+                    )}
+                    {...props}
+                />)}
             </div>
         </div>
     );

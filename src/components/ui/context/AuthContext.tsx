@@ -1,10 +1,9 @@
 // just for user mock navbar and footer testing
 "use client";
 import { createContext, useContext } from "react";
-
 const AuthContext = createContext({
-    isLoggedIn: false,
-    isOrg: false,
+    isLoggedIn: true,
+    isOrg: true,
 })
 
 export const AuthProvider = ({ children } : {children: React.ReactNode}) => {

@@ -56,4 +56,3 @@ export function Dropdown({ children, ...props } : Arguments) {
     </DropdownMenu>
   );
 }
-

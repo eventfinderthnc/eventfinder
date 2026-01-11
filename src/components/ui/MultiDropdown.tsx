@@ -60,4 +60,3 @@ export function MultiDropdown({ children, ...props }: Arguments) {
     </DropdownMenu>
   )
 }
-
