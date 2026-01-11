@@ -19,20 +19,15 @@ const ClubCard = (props: ClubCardProps) => {
     const { name, description, tag, imageUrl, categories } = props;
 
     return (
-        <div className='w-full flex flex-col px-2.5 py-4 sm:p-4 gap-3 sm:gap-4 bg-white border border-stroke rounded-[12px]'>
+        <div className='w-full flex flex-col px-3 py-5 sm:p-4 gap-3 sm:gap-4 bg-white border border-stroke rounded-[12px]'>
             <div className='w-full flex items-center justify-between'>
                 {/* Left */}
-                <div className='flex flex-col sm:flex-row gap-1 sm:gap-3 items-center w-full'>
+                <div className='flex gap-2 sm:gap-3 items-center w-full'>
                     <Image width={48} height={48} alt="club-profile" src={imageUrl} />
                     <div className='flex flex-col'>
                         <p className='font-semibold'>{name}</p>
                         <p className='text-text-gray text-[10px] sm:text-sm'>{tag}</p>
                     </div>
-
-                    {/* Description for mobile*/}
-                    <p className='sm:hidden text-text-gray text-center text-[10px] w-full'>
-                        {description}
-                    </p>
                 </div>
                 
                 {/* Right */}
@@ -45,12 +40,12 @@ const ClubCard = (props: ClubCardProps) => {
             </div>
 
             {/* Description */}
-            <p className='hidden sm:flex text-text-gray text-sm w-full'>
+            <p className='text-text-gray text-[10px] sm:text-sm w-full line-clamp-2'>
                 {description}
             </p>
 
             {/* Categories */}
-            <div className='flex gap-1 sm:gap-2 w-full flex-wrap items-center justify-center sm:justify-start'>
+            <div className='flex gap-1 sm:gap-2 w-full flex-wrap items-center'>
             {categories.map((category, idx) => (
                 <div 
                     key={idx} 
