@@ -14,6 +14,8 @@ import {
 
 type Arguments = {
   className?: string;
+  menuContentClassname?: string;
+  itemClassName?: string;
   id?: string;
   content: string[];
   panelLabel?: string;
@@ -27,12 +29,12 @@ export function Dropdown({ children, ...props } : Arguments) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" id={props.id} className={props.className + " hover:text-white"}>
+        <Button variant="outline" id={props.id} className={"hover:text-white " + props.className}>
           { position? <span className="truncate">{position}</span> : children }
           { props.icon }
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className={props.menuContentClassname}>
         { props?.panelLabel && (<><DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
         <DropdownMenuSeparator /></>) }
         <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
@@ -42,6 +44,7 @@ export function Dropdown({ children, ...props } : Arguments) {
                 <DropdownMenuRadioItem
                   value={state}
                   key={idx}
+                  className={props.itemClassName}
                 >
                   {state}
                 </DropdownMenuRadioItem>

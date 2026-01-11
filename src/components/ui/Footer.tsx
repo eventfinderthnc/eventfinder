@@ -14,7 +14,7 @@ export const Footer = () => {
             <div className="w-full flex lg:flex-row flex-col justify-center lg:justify-between lg:relative lg:items-center mb-5 gap-y-12.5 lg:gap-auto">
                 <div className="flex flex-col items-center lg:items-start gap-y-3">
                     <Image
-                        src="/images/logo.svg" 
+                        src="/images/svg/logo.svg" 
                         alt="logo" 
                         width={128}
                         height={64}

@@ -91,6 +91,7 @@
   
   --color-stroke: var(--stroke);
   --color-text-gray: var(--text-gray);
+  --color-text-gray-hover: var(--text-gray-hover);
   --color-text-light-gray: var(--text-light-gray);
 }
 
@@ -99,6 +100,7 @@
   --accent: #b73366;
   --stroke: #d6d6d6;
   --text-gray: #757575;
+  --text-gray-hover: #df5c8e; 
   --text-light-gray: #949494;
 
   --radius:
@@ -235,6 +237,16 @@
   .body-section {
     @apply flex flex-col lg:px-25 sm:px-10 sm:pb-20 px-5 py-5 gap-3;
   }
+  .auth-section {
+    @apply h-screen w-screen flex flex-col items-center justify-center;
+  }
+}
+
+.auth-bg {
+  background-image: url("/images/auth-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 

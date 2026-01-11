@@ -7,6 +7,7 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { FormInput } from "@/components/ui/FormInput";
+import { ChevronDown, SquarePlus } from "lucide-react";
 
 export default async function Home() {
   const content: string[] = [];
@@ -16,8 +17,8 @@ export default async function Home() {
 
   const reactNode: React.ReactNode = (
     <svg className="gb_F" focusable="false" viewBox="0 0 24 24"><path d="M6,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM16,6c0,1.1 0.9,2 2,2s2,-0.9 2,-2 -0.9,-2 -2,-2 -2,0.9 -2,2zM12,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2z"></path></svg>
-  
   )
+
 	return (
 		<HydrateClient>
 			<Navbar />
@@ -30,10 +31,15 @@ export default async function Home() {
 					Accent
 				</Button>
         
-				<Textarea></Textarea>
+				<Textarea placeholder="เขียนอะไรสักอย่าง..."></Textarea>
 
-				<MultiDropdown className="w-44" content={content} panelLabel="Faculty" reactNode={reactNode} />
-				<MultiDropdown className="w-44" content={content} panelLabel="Faculty" buttonName="Choose" />      
+				<MultiDropdown className="w-44" content={content} panelLabel="Faculty">
+          { reactNode }
+        </MultiDropdown>
+				<MultiDropdown className="w-44" content={content} panelLabel="Faculty">
+           <span>Choose</span>
+           <SquarePlus />
+        </MultiDropdown>
 
 				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" reactNode={reactNode} />
 				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" buttonName="Choose" />
