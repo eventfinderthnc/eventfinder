@@ -95,7 +95,7 @@ export function TimePicker() {
                                         key={minute}
                                         size="icon"
                                         variant={
-                                            date && date.getMinutes() === parseInt(minute)
+                                            date?.getMinutes() === parseInt(minute)
                                                 ? "default"
                                                 : "ghost"
                                         }

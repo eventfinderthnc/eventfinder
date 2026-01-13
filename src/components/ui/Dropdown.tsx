@@ -21,6 +21,8 @@ type Arguments = {
   panelLabel?: string;
   children?: React.ReactNode;
   icon?: React.ReactNode;
+  buttonName?: string;
+  reactNode?: React.ReactNode;
 }
 
 export function Dropdown({ children, ...props } : Arguments) {
