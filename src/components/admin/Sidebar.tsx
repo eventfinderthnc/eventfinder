@@ -34,10 +34,10 @@ export const Sidebar = () => {
             )}
         >
         {/* Top */}
-        <div className="text-sm sm:text-base flex items-center justify-between h-16 px-1 sm:px-3 border-b border-stroke mx-4">
+        <div className="text-sm sm:text-base flex items-center justify-between h-16 sm:h-19 px-2 sm:px-3 border-b border-stroke mx-3 sm:mx-4">
             <span
                 className={clsx(
-                "text-base sm:text-lg font-semibold whitespace-nowrap overflow-hidden transition-all duration-300",
+                "text-base sm:text-lg font-semibold whitespace-nowrap overflow-hidden transition-all duration-300 truncate",
                 isOpen
                     ? "opacity-100 translate-x-0 max-w-50"
                     : "opacity-0 -translate-x-2 max-w-0"
@@ -54,12 +54,12 @@ export const Sidebar = () => {
         </div>
 
         {/* Menu */}
-        <div className="pt-5 flex flex-col gap-1">
+        <div className="pt-5 flex flex-col gap-2">
             {menu.map(({ title, path, icon: Icon }, index) => (
             <div
                 key={index}
                 className={clsx(
-                    "flex items-center px-1 py-2 sm:px-3 mx-4 rounded-lg cursor-pointer",
+                    "flex items-center px-2 py-2 sm:px-3 mx-3 sm:mx-4 rounded-lg cursor-pointer",
                     path == page && "bg-white/15"
                 )}
                 onClick={() => {
@@ -73,7 +73,7 @@ export const Sidebar = () => {
 
                 <span
                 className={clsx(
-                    "whitespace-nowrap overflow-hidden",
+                    "whitespace-nowrap overflow-hidden truncate",
                     "transition-all duration-300",
                     isOpen
                     ? "opacity-100 translate-x-0 max-w-50"
