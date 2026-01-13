@@ -27,11 +27,11 @@ export const Sidebar = () => {
 
     return (
         <div
-        className={clsx(
-            "h-screen bg-primary text-white flex flex-col",
-            "transition-[width] duration-300 ease-in-out overflow-hidden",
-            isOpen ? "w-70 sm:w-85" : "w-16 sm:w-20"
-        )}
+            className={clsx(
+                "h-screen bg-primary text-white flex flex-col",
+                "transition-[width] duration-300 ease-in-out overflow-hidden",
+                isOpen ? "w-70 sm:w-85" : "w-16 sm:w-20"
+            )}
         >
         {/* Top */}
         <div className="text-sm sm:text-base flex items-center justify-between h-16 px-1 sm:px-3 border-b border-stroke mx-4">
@@ -46,8 +46,8 @@ export const Sidebar = () => {
                 Admin Dashboard
             </span>
             <button
-            className=" cursor-pointer"
-            onClick={() => setIsOpen(!isOpen)}
+                className=" cursor-pointer"
+                onClick={() => setIsOpen(!isOpen)}
             >
                 {isOpen ? <SidebarCloseIcon /> : <SidebarOpenIcon />}
             </button>
