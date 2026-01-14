@@ -6,7 +6,7 @@ import { SearchBar } from "@/components/ui/SearchBar";
 import { ChevronDown, SquarePlus, SquarePen, Trash2, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 type Data = {
   id: number;
@@ -113,7 +113,7 @@ const tagColor: {
 const PostsBoardPage = () => {
 
   const router = useRouter();
-  const [up, setUp] = useState<boolean>(false);
+  const [up, setUp] = useState(false);
 
   return (
     <section className="body-section gap-[1px] sm:gap-3">
@@ -122,7 +122,9 @@ const PostsBoardPage = () => {
       </div>
       <div className="flex flex-col items-end sm:flex-row items-center gap-y-2 sm:gap-x-4">
         <div className="sm:hidden flex gap-x-2">
-          <Dropdown itemClassName="focus:bg-primary cursor-pointer" className="h-[34px] sm:h-[40px] lg:h-[48px] rounded-[6px] text-text-gray text-xs sm:text-sm lg:text-base border-stroke hover:border-primary hover:bg-white hover:text-primary" panelLabel="เลือก 1 อย่าง" content={["ใหม่ไปเก่า", "เก่าไปใหม่", "ไล่ตามเดดไลน์"] } icon={up? <ChevronUp /> : <ChevronDown />} setState={setUp}>
+          <Dropdown menuContentClassName="w-[30px]" itemClassName="focus:bg-[#de5c8e4d] cursor-pointer text-xs sm:text-sm lg:text-base" className="h-[34px] sm:h-[40px] lg:h-[48px] rounded-[6px] text-text-gray text-xs sm:text-sm lg:text-base border-stroke hover:border-primary hover:bg-white hover:text-primary" content={["ใหม่ไปเก่า", "เก่าไปใหม่", "ไล่ตามเดดไลน์"] } icon={up? <ChevronUp /> : <ChevronDown />} onOpenChange={(open) => {
+            setUp(current => !current);
+          }}>
             เรียงลำดับ
           </Dropdown>
           <Button className="h-[34px] sm:h-[40px] lg:h-[48px] rounded-[6px] bg-white text-text-gray border-1 text-xs sm:text-sm lg:text-base border-stroke hover:border-primary hover:bg-white hover:text-primary" onClick={() => router.push("/create")}>
@@ -131,7 +133,9 @@ const PostsBoardPage = () => {
           </Button>
         </div>
         <SearchBar searchIconClassName="sm:left-4 sm:top-2 lg:top-3 sm:h-6 sm:w-6 h-5 w-5 top-2 left-4" className="max-w-9999" inputClassName="placeholder:text-text-gray h-[34px] sm:h-[40px] lg:h-[48px] lg:text-base sm:text-sm text-xs placeholder:lg:text-base placeholder:sm:text-sm placeholder:text-xs" />
-        <Dropdown itemClassName="focus:bg-[#de5c8e4d] cursor-pointer" className="hidden sm:flex h-[34px] sm:h-[40px] lg:h-[48px] rounded-[6px] text-text-gray text-xs sm:text-sm lg:text-base border-stroke hover:border-primary hover:bg-white hover:text-primary" panelLabel="เลือก 1 อย่าง" content={["ใหม่ไปเก่า", "เก่าไปใหม่", "ไล่ตามเดดไลน์"] } icon={up? <ChevronUp /> : <ChevronDown />} setState={setUp}>
+        <Dropdown itemClassName="cursor-pointer text-xs sm:text-sm lg:text-base" className="hidden sm:flex h-[34px] sm:h-[40px] lg:h-[48px] rounded-[6px] text-text-gray text-xs sm:text-sm lg:text-base border-stroke hover:border-primary hover:bg-white hover:text-primary" content={["ใหม่ไปเก่า", "เก่าไปใหม่", "ไล่ตามเดดไลน์"] } icon={up? <ChevronUp /> : <ChevronDown />} onOpenChange={(open) => {
+            setUp(current => !current);
+          }}>
           เรียงลำดับ
         </Dropdown>
         <Button className="hidden sm:flex h-[34px] sm:h-[40px] lg:h-[48px] rounded-[6px] bg-white text-text-gray hover:border-primary hover:text-primary border-1 text-xs sm:text-sm lg:text-base border-stroke hover:border-primary hover:bg-white hover:text-primary" onClick={() => router.push("/create")}>

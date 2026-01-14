@@ -33,16 +33,16 @@ export default async function Home() {
         
 				<Textarea placeholder="เขียนอะไรสักอย่าง..."></Textarea>
 
-				<MultiDropdown className="w-44" content={content} panelLabel="Faculty">
+				<MultiDropdown className="w-44 hover:bg-primary text-white" content={content}>
           { reactNode }
         </MultiDropdown>
-				<MultiDropdown className="w-44" content={content} panelLabel="Faculty">
+				<MultiDropdown className="w-44 hover:border-primary hover:bg-white hover:text-primary" content={content}>
            <span>Choose</span>
            <SquarePlus />
         </MultiDropdown>
 
-				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" reactNode={reactNode} />
-				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" buttonName="Choose" />
+				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" />
+				<Dropdown className="w-44" content={['a', 'b', 'c', 'asdflkhtiohwiethoihiosdifhisdfiohoishdf', 'e', 'f', 'g', 'h']} panelLabel="Just choose brah" />
 			</main>
 			<Footer />
 		</HydrateClient>
