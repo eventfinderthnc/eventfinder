@@ -2,7 +2,7 @@
 
 import { ConfirmModal } from "@/components/popup/ConfirmModal"
 import { SearchBar } from "@/components/ui/SearchBar"
-import { Trash2, FileText, ChevronLeft, ChevronRight } from "lucide-react"
+import { Trash2, ChevronLeft, ChevronRight, SquareMousePointerIcon } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 
@@ -94,7 +94,7 @@ export default function AdminListPage() {
                     <div className="flex justify-end gap-1 sm:gap-3">
                     <button className="cursor-pointer flex items-center gap-2 px-2 lg:px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">
                         <span className="hidden lg:flex truncate">ดูโพสต์</span>
-                        <FileText size={18} className="text-blue-600" />
+                        <SquareMousePointerIcon size={18} className="text-blue-600" />
                     </button>
 
                     <button 
