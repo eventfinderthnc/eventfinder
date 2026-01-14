@@ -28,6 +28,7 @@ export const Sidebar = () => {
     return (
         <div
             className={clsx(
+                "fixed inset-y-0 left-0 z-50 lg:relative",
                 "h-screen bg-primary text-white flex flex-col",
                 "transition-[width] duration-300 ease-in-out overflow-hidden",
                 isOpen ? "w-70 sm:w-85" : "w-16 sm:w-20"

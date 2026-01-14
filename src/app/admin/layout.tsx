@@ -3,13 +3,15 @@ import { Sidebar } from '@/components/admin/Sidebar'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="relative lg:flex h-screen overflow-hidden">
+      {/* Sidebar (overlay) */}
       <Sidebar />
 
-      <main className="flex flex-col flex-1 h-full">
+      {/* Main */}
+      <main className="pl-16 sm:pl-20 lg:pl-0 flex flex-col lg:flex-1 h-full lg:min-w-0 w-full">
         <AdminNavbar />
-
-        <div className="flex-1 overflow-y-auto">
+        {/* Scroll area */}
+        <div className="flex-1 overflow-y-auto relative">
           {children}
         </div>
       </main>
