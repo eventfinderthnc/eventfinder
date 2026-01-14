@@ -1,5 +1,6 @@
 "use client"
 
+import { ConfirmModal } from "@/components/popup/ConfirmModal"
 import { SearchBar } from "@/components/ui/SearchBar"
 import { Trash2, FileText, ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
@@ -14,6 +15,9 @@ const data = Array.from({ length: 18 }).map((_, i) => ({
 export default function AdminListPage() {
     const [page, setPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(7)
+
+    const [openDelete, setOpenDelete] = useState(false)
+    const [selectedId, setSelectedId] = useState<number | null>(null)       
 
     useEffect(() => {
         const calculateItemsPerPage = () => {
@@ -88,12 +92,18 @@ export default function AdminListPage() {
 
                     {/* Actions */}
                     <div className="flex justify-end gap-1 sm:gap-3">
-                    <button className="flex items-center gap-2 px-2 lg:px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">
+                    <button className="cursor-pointer flex items-center gap-2 px-2 lg:px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">
                         <span className="hidden lg:flex truncate">ดูโพสต์</span>
                         <FileText size={18} className="text-blue-600" />
                     </button>
 
-                    <button className="flex items-center gap-2 px-2 lg:px-4 py-2 border rounded-lg text-gray-700 hover:bg-red-50">
+                    <button 
+                        className="cursor-pointer flex items-center gap-2 px-2 lg:px-4 py-2 border rounded-lg text-gray-700 hover:bg-red-50"
+                         onClick={() => {
+                            setSelectedId(item.id)
+                            setOpenDelete(true)
+                        }}
+                    >
                         <span className="hidden lg:flex truncate">ลบบัญชี</span>
                         <Trash2 size={18} className="text-red-600" />
                     </button>
@@ -122,6 +132,23 @@ export default function AdminListPage() {
                 <ChevronRight />
                 </button>
             </div>
+
+            {/* Delete Popup */}
+            <ConfirmModal
+                open={openDelete}
+                title="ลบบัญชีชมรม"
+                description="คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีนี้?"
+                confirmText="ลบ"
+                cancelText="ยกเลิก"
+                onCancel={() => setOpenDelete(false)}
+                onConfirm={() => {
+                    if (selectedId !== null) {
+                    console.log("delete id:", selectedId)
+                    // call API delete here
+                    }
+                    setOpenDelete(false)
+                }}
+            />
         </div>
     )
 }
