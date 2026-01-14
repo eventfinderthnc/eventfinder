@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
-import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
+import { CheckIcon, CheckSquareIcon, ChevronRightIcon, CircleIcon, Square } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -42,7 +42,7 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-[10rem] min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md",
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-[10rem] min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md",
           className
         )}
         {...props}
@@ -93,18 +93,27 @@ function DropdownMenuCheckboxItem({
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       className={cn(
-        "focus:bg-primary focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "focus:bg-[#f7dae5] focus:text-accent-foreground relative flex cursor-pointer items-center gap-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       checked={checked}
       {...props}
     >
-      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+      {/* <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
-          <CheckIcon className="size-4" />
+          <CheckIcon className="size-4 bg-primary text-white" />
         </DropdownMenuPrimitive.ItemIndicator>
-      </span>
-      <div className="w-full wrap-break-word">
+      </span> */}
+      <DropdownMenuPrimitive.ItemIndicator>
+        <div className="w-full pointer-events-none absolute left-0 right-0 top-0 bottom-0 flex items-center pl-2 gap-x-2 bg-[#f7dae5] text-primary z-9999">
+          <CheckIcon className="size-4 bg-primary text-white" />
+          {children}
+        </div>
+      </DropdownMenuPrimitive.ItemIndicator>
+
+      <div className="w-full flex items-center gap-x-2 pl-2 wrap-break-word">
+        <div className="size-4 border-primary border-1"></div>
+        {/* <CheckIcon className="size-4 border-primary border-1" /> */}
         {children}
       </div>
     </DropdownMenuPrimitive.CheckboxItem>
@@ -130,17 +139,23 @@ function DropdownMenuRadioItem({
   return (
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
+      //pr-2 pl-8 gap-2
       className={cn(
-        "focus:bg-primary focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "focus:bg-[#f7dae5] focus:text-primary relative flex cursor-default items-center py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 justify-center",
         className
       )}
       {...props}
     >
-      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+      {/* <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
           <CircleIcon className="size-2 fill-current" />
         </DropdownMenuPrimitive.ItemIndicator>
-      </span>
+      </span> */}
+      <DropdownMenuPrimitive.ItemIndicator>
+        <div className="w-full pointer-events-none absolute left-0 right-0 top-0 bottom-0 flex bg-[#f7dae5] text-primary z-9999">
+          {children}
+        </div>
+      </DropdownMenuPrimitive.ItemIndicator>
       <div className="w-full wrap-break-word">
         {children}
       </div>
