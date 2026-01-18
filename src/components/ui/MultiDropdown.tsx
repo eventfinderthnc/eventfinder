@@ -33,9 +33,17 @@ type Checked = DropdownMenuCheckboxItemProps["checked"]
 
 export function MultiDropdown({ children, ...props }: Arguments) {
   // Instead of using useState for each separate variable, we keep them as an array instead.
-  const states = props.content.map((s) => {
-    return React.useState<Checked>(false);
-  });
+  // const states = props.content.map((s) => {
+  //   return React.useState<Checked>(false);
+  // });
+  const [checkedStates, setCheckedStates] = React.useState<Record<string, Checked>>({});
+
+  const handleCheckedChange = (item: string, isChecked: Checked) => {
+    setCheckedStates((prev) => ({
+      ...prev,
+      [item]: isChecked,
+    }));
+  };
 
   return (
     <DropdownMenu modal={false}>
@@ -49,18 +57,29 @@ export function MultiDropdown({ children, ...props }: Arguments) {
         { props.panelLabel && (<><DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
         <DropdownMenuSeparator /></>) }
         {
-          states.map((state, idx) => {
+          // states.map((state, idx) => {
+          //   return (
+          //     <DropdownMenuCheckboxItem
+          //       checked={state[0]}
+          //       onCheckedChange={state[1]}
+          //       key={idx}
+          //     >
+          //       {props.content[idx]}
+          //     </DropdownMenuCheckboxItem>
+          //   );
+          // })
+          props.content.map((item, idx) => {
             return (
               <DropdownMenuCheckboxItem
                 className={props.checkBoxItemClassName}
-                checked={state[0]}
-                onCheckedChange={state[1]}
+                checked={checkedStates[item] ?? false}
+                onCheckedChange={(checked) => handleCheckedChange(item, checked)}
                 key={idx}
                 onSelect={(e) => {
                   e.preventDefault();
                 }}
               >
-                {props.content[idx]}
+                {item}
               </DropdownMenuCheckboxItem>
             );
           })

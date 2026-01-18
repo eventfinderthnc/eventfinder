@@ -102,9 +102,15 @@ const data: Data[] = [
   },
 ];
 
-const tagColor: {
-  [key: string]: string
-} = {
+// ESLint Error
+// const tagColor: {
+//   [key: string]: string
+// } = {
+//   "Tech": "#4369c1",
+//   "UX/UI": "#c16ddd",
+//   "Marketing": "#e7935f",
+// };
+const tagColor: Record<string, string> = {
   "Tech": "#4369c1",
   "UX/UI": "#c16ddd",
   "Marketing": "#e7935f",

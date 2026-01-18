@@ -27,7 +27,7 @@ function FileInput({
       previewUrl = URL.createObjectURL(file)
     }
     
-    onFileSelect?.(file || null, previewUrl)
+    onFileSelect?.(file ?? null, previewUrl)
     onChange?.(e)
   }
 
