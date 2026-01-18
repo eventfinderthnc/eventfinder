@@ -88,7 +88,7 @@
     var(--sidebar-border);
   --color-sidebar-ring:
     var(--sidebar-ring);
-  
+
   --color-stroke: var(--stroke);
   --color-text-gray: var(--text-gray);
   --color-text-gray-hover: var(--text-gray-hover);
@@ -248,5 +248,4 @@
   background-position: center;
   background-repeat: no-repeat;
 }
-
 
