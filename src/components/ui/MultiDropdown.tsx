@@ -17,11 +17,15 @@ import {
 
 type Arguments = {
   className?: string;
+  menuContentClassName?: string;
+  checkBoxItemClassName?: string;
   id?: string;
   content: string[];
   panelLabel?: string;
   children?: React.ReactNode;
-};
+  icon?: React.ReactNode;
+  onOpenChange?: (open: boolean) => void;
+}
 
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 
@@ -44,11 +48,12 @@ export function MultiDropdown({ children, ...props }: Arguments) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" id={props.id} className={props.className + " hover:text-white"}>
+        <Button variant="outline" id={props.id} className={"hover:text-white " + props.className}>
           { children }
+          { props.icon }
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className={props.menuContentClassName}>
         { props.panelLabel && (<><DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
         <DropdownMenuSeparator /></>) }
         {
@@ -66,9 +71,13 @@ export function MultiDropdown({ children, ...props }: Arguments) {
           props.content.map((item, idx) => {
             return (
               <DropdownMenuCheckboxItem
-                key={idx}
-                checked={checkedStates[item] ?? false} 
+                className={props.checkBoxItemClassName}
+                checked={checkedStates[item] ?? false}
                 onCheckedChange={(checked) => handleCheckedChange(item, checked)}
+                key={idx}
+                onSelect={(e) => {
+                  e.preventDefault();
+                }}
               >
                 {item}
               </DropdownMenuCheckboxItem>

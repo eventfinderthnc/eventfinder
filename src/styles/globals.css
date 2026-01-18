@@ -7,6 +7,8 @@
   --font-sans:
     var(--font-th), var(--font-en),ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  
+  --breakpoint-ssm: 350px;
 }
 
 @theme inline {
@@ -88,7 +90,7 @@
     var(--sidebar-border);
   --color-sidebar-ring:
     var(--sidebar-ring);
-  
+
   --color-stroke: var(--stroke);
   --color-text-gray: var(--text-gray);
   --color-text-gray-hover: var(--text-gray-hover);
@@ -248,5 +250,4 @@
   background-position: center;
   background-repeat: no-repeat;
 }
-
 
