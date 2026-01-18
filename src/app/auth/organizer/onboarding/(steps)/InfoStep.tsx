@@ -1,12 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/Button"
-import { ArrowLeft, ChevronDown } from "lucide-react"
+import { ArrowLeft, ChevronDown, ChevronUp } from "lucide-react"
 import { Icon } from "@iconify/react"
 import { FormInput } from "@/components/ui/FormInput"
 import { Dropdown } from "@/components/ui/Dropdown"
 import { Input } from "@/components/ui/Input"
 import useImageUploadHook from "@/lib/hooks/useImageUpload";
+import { useState } from "react";
 
 const faculties: string[] = [
   "Allied Health Sciences", "Architecture", "Arts", "Commerce and Accountancy", "Communication Arts", "Dentistry", "Economics", "Education", "Engineering", "Fine and Applied Arts", "Laws", "Medicine", "Nursing", "Pharmaceutical Sciences", "Political Science", "Psychology", "Science", "Sports Science", "Veterinary Science", "School of Integrated Innovation", "Agricultural Resources", "Graduate School"
@@ -21,6 +22,8 @@ export default function InfoStep({
 }) {
 
   useImageUploadHook("profile-picture-input", "profile-picture-div");
+
+  const [up, setUp] = useState(false);
   
   return (
     <div className="flex flex-col h-full justify-between">
@@ -49,7 +52,9 @@ export default function InfoStep({
             <label htmlFor="faculty-dropdown" className="text-black text-base font-bold">
               คณะ
             </label>
-            <Dropdown id="faculty-dropdown" content={faculties} itemClassName="focus:bg-primary cursor-pointer" menuContentClassname="w-[240px] sm:w-[470px]" className="w-full h-8 sm:h-10 rounded-md flex items-center justify-between text-text-gray border-stroke text-[12px] sm:text-[14px]" icon={<ChevronDown />}>
+            <Dropdown id="faculty-dropdown" content={faculties} itemClassName="cursor-pointer" menuContentClassName="w-[240px] sm:w-[470px]" className="w-full h-8 sm:h-10 rounded-md flex items-center justify-between text-text-gray border-stroke text-[12px] sm:text-[14px] hover:border-primary hover:text-primary hover:bg-white" icon={up? (<ChevronUp />) : (<ChevronDown />)} onOpenChange={(open) => {
+              setUp(current => !current);
+            }}>
               <span>เลือก</span>
             </Dropdown>
           </div>
