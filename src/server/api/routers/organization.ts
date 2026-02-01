@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { organizationServiceImpl } from "@/server/api/service/organization.service";
 import { CreateOrganizationRequestSchema, UpdateOrganizationRequestSchema } from "@/server/api/dto/organization.dto";
 import { getTRPCError } from "@/utils/error";
@@ -31,5 +31,20 @@ export const organizationRouter = createTRPCRouter({
 			const res = await organizationServiceImpl.delete(eq(organization.id, input.id));
 			if (res) return new TRPCError(getTRPCError(res));
 			return null;
+		}),
+
+	getOne: publicProcedure
+		.input(z.object({ id: z.number() }))
+		.query(async ({ input }) => {
+			const [res, error] = await organizationServiceImpl.getOneByFilter(eq(organization.id, input.id));
+			if (error) return new TRPCError(getTRPCError(error));
+			return res;
+		}),
+
+	getAll: publicProcedure
+		.query(async () => {
+			const [res, error] = await organizationServiceImpl.getByFilter();
+			if (error) return new TRPCError(getTRPCError(error));
+			return res;
 		}),
 });

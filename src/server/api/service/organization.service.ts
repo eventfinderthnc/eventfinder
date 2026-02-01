@@ -1,7 +1,7 @@
 import type { SQL } from "drizzle-orm";
 import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
-import type { Organization, CreateOrganizationRequest } from "@/server/api/dto/organization.dto";
+import type { Organization, OrganizationWithUser, CreateOrganizationRequest } from "@/server/api/dto/organization.dto";
 import { organization } from "@/server/db/organization";
 import { user } from "@/server/db/user";
 import { eq } from "drizzle-orm";
@@ -9,8 +9,8 @@ import { userServiceImpl } from "@/server/api/service/user.service";
 
 export interface IOrganizationService {
     create(req: CreateOrganizationRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]>;
-    getByFilter(filter?: SQL): Promise<[Organization[] | [], ErrorOrNull]>;
-    getOneByFilter(filter: SQL): Promise<[Organization | null, ErrorOrNull]>;
+    getByFilter(filter?: SQL): Promise<[OrganizationWithUser[] | [], ErrorOrNull]>;
+    getOneByFilter(filter: SQL): Promise<[OrganizationWithUser | null, ErrorOrNull]>;
     update(filter: SQL, update: Partial<Organization>, trx?: typeof db): Promise<ErrorOrNull>;
     delete(filter: SQL): Promise<ErrorOrNull>;
 }
@@ -30,25 +30,31 @@ class OrganizationService implements IOrganizationService {
         if (res instanceof Error) return [null, res];
         return [res[0]?.id ?? 0, null];
     }
-    async getByFilter(filter?: SQL): Promise<[Organization[], ErrorOrNull]> {
-        const res = await db.query.organization.findMany({ where: filter }).catch((e) => {
+    async getByFilter(filter?: SQL): Promise<[OrganizationWithUser[], ErrorOrNull]> {
+        const res = await db.query.organization.findMany({
+            where: filter,
+            with: { user: true }
+        }).catch((e) => {
             console.log(e);
             return new PostgreSQLError();
         });
 
         if (res instanceof Error) return [[], res];
-        return [res, null];
+        return [res as OrganizationWithUser[], null];
     }
 
-    async getOneByFilter(filter: SQL): Promise<[Organization | null, ErrorOrNull]> {
-        const res = await db.query.organization.findFirst({ where: filter }).catch((e) => {
+    async getOneByFilter(filter: SQL): Promise<[OrganizationWithUser | null, ErrorOrNull]> {
+        const res = await db.query.organization.findFirst({
+            where: filter,
+            with: { user: true }
+        }).catch((e) => {
             console.log(e);
             return new PostgreSQLError();
         });
 
         if (res instanceof Error) return [null, res];
         if (!res) return [null, new ErrorWithCategory("Organization not found", ErrorCategory.ResourceNotFound)];
-        return [res, null];
+        return [res as OrganizationWithUser, null];
     }
 
     async update(filter: SQL, update: Partial<Organization>, trx?: typeof db): Promise<ErrorOrNull> {
