@@ -3,6 +3,9 @@ import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
 import type { Organization, CreateOrganizationRequest } from "@/server/api/dto/organization.dto";
 import { organization } from "@/server/db/organization";
+import { user } from "@/server/db/user";
+import { eq } from "drizzle-orm";
+import { userServiceImpl } from "@/server/api/service/user.service";
 
 export interface IOrganizationService {
     create(req: CreateOrganizationRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]>;
@@ -67,16 +70,37 @@ class OrganizationService implements IOrganizationService {
     }
 
     async delete(filter: SQL): Promise<ErrorOrNull> {
-        const res = await db
-            .delete(organization)
-            .where(filter)
-            .catch((e) => {
-                console.log(e);
-                return new PostgreSQLError();
-            });
+        return await db.transaction(async (tx) => {
+            const orgs = await tx
+                .select({ userId: organization.userId })
+                .from(organization)
+                .where(filter);
 
-        if (res instanceof Error) return res;
-        return null;
+            const org = orgs[0];
+            if (!org) return null;
+
+            const userId = org.userId;
+
+            const deleteOrgRes = await tx
+                .delete(organization)
+                .where(filter)
+                .catch((e) => {
+                    console.log(e);
+                    return new PostgreSQLError();
+                });
+
+            if (deleteOrgRes instanceof Error) return deleteOrgRes;
+
+            const deleteUserRes = await userServiceImpl.delete(eq(user.id, Number(userId)), tx);
+
+            if (deleteUserRes instanceof Error) throw deleteUserRes;
+
+            return null;
+
+        }).catch((e) => {
+            if (e instanceof ErrorWithCategory || e instanceof PostgreSQLError) return e;
+            return new PostgreSQLError();
+        });
     }
 }
 

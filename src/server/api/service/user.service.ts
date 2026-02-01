@@ -9,7 +9,7 @@ export interface IUserService {
     getByFilter(filter?: SQL): Promise<[User[] | [], ErrorOrNull]>;
     getOneByFilter(filter: SQL): Promise<[User | null, ErrorOrNull]>;
     update(filter: SQL, update: Partial<User>, trx?: typeof db): Promise<ErrorOrNull>;
-    delete(filter: SQL): Promise<ErrorOrNull>;
+    delete(filter: SQL, trx?: typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0]): Promise<ErrorOrNull>;
 }
 
 class UserService implements IUserService {
@@ -67,8 +67,9 @@ class UserService implements IUserService {
         return null;
     }
 
-    async delete(filter: SQL): Promise<ErrorOrNull> {
-        const res = await db
+    async delete(filter: SQL, trx?: typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0]): Promise<ErrorOrNull> {
+        const database = trx ?? db;
+        const res = await database
             .delete(user)
             .where(filter)
             .catch((e) => {
