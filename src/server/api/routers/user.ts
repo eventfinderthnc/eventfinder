@@ -1,5 +1,3 @@
-// import { z } from "zod";
-
 import { TRPCError } from "@trpc/server";
 import { CreateUserRequestSchema, UpdateUserRequestSchema } from "../dto/user.dto";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
@@ -8,14 +6,6 @@ import { user } from "@/server/db/user"
 import z from "zod";
 import { eq } from "drizzle-orm";
 import { userServiceImpl } from "@/server/api/service/user.service";
-
-// import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-// import { organizationServiceImpl } from "@/server/api/service/organization.service";
-// import { CreateOrganizationRequestSchema, UpdateOrganizationRequestSchema } from "@/server/api/dto/organization.dto";
-// import { getTRPCError } from "@/utils/error";
-// import { TRPCError } from "@trpc/server";
-// import { organization } from "@/server/db/organization";
-// import { eq } from "drizzle-orm";
 
 export const userRouter = createTRPCRouter({
     create: publicProcedure.input(CreateUserRequestSchema).mutation(async ({ input }) => {
