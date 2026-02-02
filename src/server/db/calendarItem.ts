@@ -4,8 +4,6 @@ import { user } from "./user";
 
 export const calendarItem = pgTable("calendar_item", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 256 }).notNull(),
-  description: text("description"),
   postId: serial("post_id")
     .references(() => post.id)
     .notNull(),
