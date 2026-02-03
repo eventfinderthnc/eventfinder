@@ -6,16 +6,12 @@ export type CalendarItem = typeof calendarItem.$inferSelect;
 export type CreateCalendarItemRequest = Omit<typeof calendarItem.$inferInsert, "id" | "createdAt" | "updatedAt">;
 
 export const CreateCalendarItemRequestSchema: ZodSchema<CreateCalendarItemRequest> = z.object({
-    name: z.string().min(1).max(256),
-    description: z.string().optional(),
     postId: z.number(),
     userId: z.string(),
 });
 
 export const UpdateCalendarItemRequestSchema = z.object({
     id: z.number(),
-    name: z.string().optional(),
-    description: z.string().optional(),
     postId: z.number().optional(),
     userId: z.string().optional()
 });
