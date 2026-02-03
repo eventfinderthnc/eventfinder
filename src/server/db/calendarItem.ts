@@ -5,10 +5,10 @@ import { user } from "./user";
 export const calendarItem = pgTable("calendar_item", {
   id: serial("id").primaryKey(),
   postId: serial("post_id")
-    .references(() => post.id)
+    .references(() => post.id, { onDelete: 'cascade' })
     .notNull(),
   userId: text("user_id")
-    .references(() => user.id)
+    .references(() => user.id, { onDelete: 'cascade' })
     .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

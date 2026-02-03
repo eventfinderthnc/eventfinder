@@ -1,12 +1,14 @@
-import type { SQL } from "drizzle-orm";
+import { and, asc, desc, eq, type SQL } from "drizzle-orm";
 import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
 import type { CalendarItem, CreateCalendarItemRequest } from "@/server/api/dto/calendarItem.dto";
 import { calendarItem } from "@/server/db/calendarItem";
+import { post } from "@/server/db/post";
 
 export interface ICalendarItemService {
     create(req: CreateCalendarItemRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]>;
-    getByFilter(filter?: SQL): Promise<[CalendarItem[] | [], ErrorOrNull]>;
+    getByMonth(filter?: SQL): Promise<[CalendarItem[], ErrorOrNull]>;
+    getByFilter(filter?: SQL): Promise<[CalendarItem[] | [], ErrorOrNull]>; // getAll
     getOneByFilter(filter: SQL): Promise<[CalendarItem | null, ErrorOrNull]>;
     update(filter: SQL, update: Partial<CalendarItem>, trx?: typeof db): Promise<ErrorOrNull>;
     delete(filter: SQL): Promise<ErrorOrNull>;
@@ -27,6 +29,27 @@ class CalendarItemService implements ICalendarItemService {
         if (res instanceof Error) return [null, res];
         return [res[0]?.id ?? 0, null];
     }
+
+    async getByMonth(filter?: SQL): Promise<[CalendarItem[], ErrorOrNull]> {
+        const tmp = await db
+          .select()
+          .from(calendarItem)
+          .innerJoin(post, eq(calendarItem.postId, post.id))
+          .where(filter)
+          .orderBy(desc(post.date), asc(post.title));
+
+        if (tmp instanceof Error) return [[], tmp];
+        const res: CalendarItem[] = [];
+        if(tmp.length > 0) {
+          tmp.forEach((t: typeof tmp[0]) => {
+            if(tmp[0]) {
+              res.push(tmp[0].calendar_item);
+            }
+          });
+        }
+        return [res, null];
+    }
+
     async getByFilter(filter?: SQL): Promise<[CalendarItem[], ErrorOrNull]> {
         const res = await db.query.calendarItem.findMany({ where: filter }).catch((e) => {
             console.log(e);
