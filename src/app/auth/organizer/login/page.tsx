@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import OrganizerLoginStep from "./(steps)/OrganizerLoginStep"
+import OrganizerLoginStep from "./_components/OrganizerLoginStep"
 import { useRouter } from "next/navigation"
 
 export type Step = "role" | "orgregis"

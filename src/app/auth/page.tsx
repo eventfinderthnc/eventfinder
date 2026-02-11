@@ -58,7 +58,7 @@ export default function Page() {
                     if (role === "organizer") {
                       router.push("/auth/organizer/login")
                     } else {
-                      router.push("/")
+                      router.push("/auth/attendee/login")
                     }
                   }} 
                 />
