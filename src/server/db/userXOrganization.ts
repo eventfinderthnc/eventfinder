@@ -1,5 +1,5 @@
 import { pgTable, serial, primaryKey } from "drizzle-orm/pg-core";
-import { user } from "./user";
+import { user } from "./auth-schema";
 import { organization } from "./organization";
 
 export const userXOrganization = pgTable(

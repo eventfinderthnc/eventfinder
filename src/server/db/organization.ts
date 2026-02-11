@@ -8,7 +8,7 @@ import {
   jsonb,
   smallint,
 } from "drizzle-orm/pg-core";
-import { user } from "./user";
+import { user } from "./auth-schema";
 
 export const categoryEnum = pgEnum("category", ["CLUB", "EVENT"]);
 

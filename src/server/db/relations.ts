@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { user } from "./user";
+import { user } from "./auth-schema";
 import { faculty } from "./faculty";
 import { organization } from "./organization";
 import { interest } from "./interest";

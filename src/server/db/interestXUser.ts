@@ -1,6 +1,6 @@
 import { pgTable, serial, primaryKey } from "drizzle-orm/pg-core";
 import { interest } from "./interest";
-import { user } from "./user";
+import { user } from "./auth-schema";
 
 export const interestXUser = pgTable(
   "interest_x_user",
