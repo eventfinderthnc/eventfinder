@@ -1,0 +1,190 @@
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+interface LoginStepProps {
+    type: "attendee" | "organizer";
+    onBack: () => void;
+    onNext: () => void;
+}
+
+export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
+    const [isLogin, setIsLogin] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+
+    const showRegister = type === "attendee";
+
+    const handleAuth = async () => {
+        setError("");
+        setLoading(true);
+        try {
+            if (isLogin || type === "organizer") {
+                const { error } = await authClient.signIn.email({
+                    email,
+                    password,
+                    callbackURL: "/", 
+                });
+                if (error) throw error;
+            } else {
+                // Only attendee can register here
+                const { error } = await authClient.signUp.email({
+                    email,
+                    password,
+                    name: "", 
+                    callbackURL: "/auth/attendee/onboarding", 
+                });
+                if (error) throw error;
+                onNext(); 
+            }
+        } catch (e: any) {
+            setError(e.message || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const imageSrc =
+        type === "attendee"
+            ? "/images/svg/attendee_auth.svg"
+            : "/images/undraw_projections_fhch 1.svg"; // Keeping original image name
+
+    const title = type === "attendee" ? "ผู้เข้าร่วมกิจกรรม" : "ผู้จัดกิจกรรม";
+
+    const googleLogin = async () => {
+        await authClient.signIn.social({
+            provider: "google",
+            callbackURL: "/dashboard",
+        });
+    }
+
+    return (
+        <div className="flex flex-col h-full justify-between gap-6">
+            <div className="flex justify-between items-center">
+                <ArrowLeft
+                    onClick={onBack}
+                    className="cursor-pointer text-text-gray hover:text-text-gray-hover"
+                />
+                <ArrowLeft className="text-white" />
+            </div>
+            <div className="flex flex-col justify-between items-center gap-6 w-full">
+                <Image
+                    src={imageSrc}
+                    alt={type}
+                    width={170}
+                    height={170}
+                    className="w-[152px] h-auto"
+                />
+                <div className="flex flex-col justify-between items-center gap-6 w-full">
+                    <h1 className="text-[26px] font-semibold">
+                        {type === "attendee"
+                            ? isLogin
+                                ? "เข้าสู่ระบบผู้เข้าร่วม"
+                                : "ลงทะเบียนผู้เข้าร่วม"
+                            : "เข้าสู่ระบบผู้จัดกิจกรรม"}
+                    </h1>
+                    <div className="flex flex-col gap-2.5 items-center justify-between w-full">
+                        <Input
+                            placeholder="อีเมล"
+                            className="w-full focus:border-primary"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <Input
+                            type="password"
+                            placeholder="รหัสผ่าน"
+                            className="w-full focus:border-primary"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        {error && <p className="text-red-500 text-sm">{error}</p>}
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+                <Button
+                    onClick={handleAuth}
+                    className="h-10.5 text-base"
+                    disabled={loading}
+                >
+                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isLogin || type === "organizer" ? "เข้าสู่ระบบ" : "ลงทะเบียน"}
+                </Button>
+
+                {type === "attendee" && (
+                    <Button
+                        variant="outline"
+                        className="border-stroke h-10.5 text-base w-full flex items-center justify-center gap-2 bg-white hover:bg-white text-black/54 hover:text-black/54"
+                        disabled={loading}
+                        onClick={googleLogin}
+                    >
+                        <Image
+                            src="/images/svg/google_logo.svg"
+                            alt="Google"
+                            width={20}
+                            height={20}
+                        />
+                        เข้าสู่ระบบด้วย Google
+                    </Button>
+                )}
+
+                {type === "organizer" && (
+                    <div className="text-center text-sm text-text-gray mt-2">
+                        หากต้องการสร้างแอคเค้าให้ติดต่อแอดมินผ่านไอจี <span className="font-semibold text-primary">@cuatclub</span>
+                    </div>
+                )}
+            </div>
+
+            <div className="flex justify-between flex-row">
+                <div className="flex flex-col items-start">
+                    {/* Forgot Password Link - Common for both? */}
+                    {/* Attendee Toggle */}
+                    {type === "attendee" && (
+                        <>
+                            <Link href="" className={`${isLogin ? "flex" : "hidden"}`}>
+                                <span className="font-regular text-sm text-text-gray underline">
+                                    ลืมรหัสผ่าน
+                                </span>
+                            </Link>
+                            <button onClick={() => setIsLogin(!isLogin)}>
+                                <span className="font-regular text-sm text-text-gray underline">
+                                    {isLogin ? "ยังไม่มีบัญชี? ลงทะเบียน" : "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ"}
+                                </span>
+                            </button>
+                            {/* Spacer to keep layout consistent if needed, or remove */}
+                            <Link href="" className={`opacity-0 ${isLogin ? "hidden" : "flex"}`}>
+                                <span className="font-regular text-sm text-text-gray underline">
+                                    Nothing just free space
+                                </span>
+                            </Link>
+                        </>
+                    )}
+                    {/* Organizer specific links? Organizer just has login */}
+                    {type === "organizer" && (
+                        <Link href="">
+                            <span className="font-regular text-sm text-text-gray underline">
+                                ลืมรหัสผ่าน
+                            </span>
+                        </Link>
+                    )}
+
+                </div>
+
+                {/* Switch Role Link */}
+                <Link href={type === "attendee" ? "/auth/organizer/login" : "/auth/attendee/login"}>
+                    <span className="font-regular text-sm text-text-gray underline">
+                        {type === "attendee" ? "ลงชื่อในฐานะผู้จัดกิจกรรม" : "ลงชื่อในฐานะผู้เข้าร่วมกิจกรรม"}
+                    </span>
+                </Link>
+            </div>
+        </div>
+    );
+}

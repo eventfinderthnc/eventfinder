@@ -25,11 +25,15 @@ const categories = [
   { id: "education", label: "การศึกษา", icon: GraduationCap },
 ]
 
+interface CategoryStepProps {
+  onBack: () => void;
+  type?: "attendee" | "organizer";
+}
+
 export default function CategoryStep({
-    onBack,
-}: {
-    onBack: () => void
-}) {
+  onBack,
+  type = "organizer",
+}: CategoryStepProps) {
   const [selected, setSelected] = useState<string[]>([])
 
   const toggle = (id: string) => {
@@ -42,6 +46,8 @@ export default function CategoryStep({
 
   const canContinue = selected.length > 0
 
+  const title = type === "attendee" ? "สิ่งที่สนใจ" : "เลือกหมวดหมู่";
+
   return (
     <div className="flex flex-col h-full justify-between">
       <div className="flex justify-between items-center">
@@ -49,7 +55,7 @@ export default function CategoryStep({
           className="cursor-pointer text-text-gray hover:text-text-gray-hover"
           onClick={onBack}
         />
-        <h1 className="text-xl sm:text-2xl">เลือกหมวดหมู่</h1>
+        <h1 className="text-xl sm:text-2xl">{title}</h1>
         <ArrowLeft className="text-white" />
       </div>
 
@@ -65,14 +71,12 @@ export default function CategoryStep({
               className="cursor-pointer flex flex-col items-center gap-2"
             >
               <div
-                className={`p-4 rounded-full border-2 ${
-                  active ? "bg-primary border-primary" : "border-primary"
-                }`}
+                className={`p-4 rounded-full border-2 ${active ? "bg-primary border-primary" : "border-primary"
+                  }`}
               >
                 <Icon
-                  className={`w-5 sm:w-6 h-5 sm:h-6 ${
-                    active ? "text-white" : "text-primary"
-                  }`}
+                  className={`w-5 sm:w-6 h-5 sm:h-6 ${active ? "text-white" : "text-primary"
+                    }`}
                 />
               </div>
               <p>{c.label}</p>
@@ -84,13 +88,22 @@ export default function CategoryStep({
       <div className="flex flex-col gap-4">
 
         <Button disabled={!canContinue}>
-            เสร็จสิ้น
+          เสร็จสิ้น
         </Button>
 
         <div className="w-full items-center justify-center flex gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#d4d4d4]" />
-            <div className="w-1.5 h-1.5 rounded-full bg-[#d4d4d4]" />
-            <div className="w-1.5 h-1.5 rounded-full bg-[#949494]" />
+          {type === "attendee" ? (
+            <>
+              <div className="w-1.5 h-1.5 rounded-full bg-[#d4d4d4]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#949494]" />
+            </>
+          ) : (
+            <>
+              <div className="w-1.5 h-1.5 rounded-full bg-[#d4d4d4]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#d4d4d4]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#949494]" />
+            </>
+          )}
         </div>
       </div>
     </div>

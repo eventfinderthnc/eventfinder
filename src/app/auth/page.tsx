@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import ChooseRoleStep from "./ChooseRoleStep"
+import ChooseRoleStep from "./_components/ChooseRoleStep"
 import { useRouter } from "next/navigation"
 
 export type Step = "role" | "orgregis"

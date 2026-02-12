@@ -2,9 +2,8 @@
 
 import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import OrganizerLoginStep from "./_components/OrganizerLoginStep"
 import { useRouter } from "next/navigation"
-import AttendeeLoginStep from "./_components/OrganizerLoginStep"
+import LoginStep from "../../_components/LoginStep"
 
 export type Step = "role" | "orgregis"
 
@@ -54,9 +53,10 @@ export default function Page() {
                             transition={{ duration: 0.35, ease: "easeOut" }}
                             className="h-full"
                         >
-                            <AttendeeLoginStep
+                            <LoginStep
+                                type="attendee"
                                 onBack={() => router.push("/auth")}
-                                onNext={() => router.push("/auth/attendee/interest")}
+                                onNext={() => router.push("/auth/attendee/onboarding")}
                             />
                         </motion.div>
                     )}

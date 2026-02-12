@@ -2,9 +2,9 @@
 
 import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import ContactStep from "./(steps)/ContactStep"
-import CategoryStep from "./(steps)/CategoryStep"
-import InfoStep from "./(steps)/InfoStep"
+import ContactStep from "../../_components/ContactStep"
+import CategoryStep from "../../_components/CategoryStep"
+import InfoStep from "../../_components/InfoStep"
 import { useRouter } from "next/navigation"
 
 export type Step = "info" | "contact" | "category"
@@ -44,23 +44,24 @@ export default function Page() {
       <div className="relative overflow-hidden flex flex-col p-10 w-[320px] h-[510px] sm:w-[550px] sm:h-[660px] rounded-4xl bg-white shadow-[0_6px_16px_0_rgba(0,0,0,0.25)]">
 
         <AnimatePresence custom={direction} mode="wait">
-            {step === "info" && (
-              <motion.div
-                key="info"
-                custom={direction}
-                variants={slideVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.35, ease: "easeOut" }}
-                className="h-full"
-              >
-                  <InfoStep 
-                      onBack={() => router.push("/")} 
-                      onNext={() => goNext("contact")}
-                  />
-              </motion.div>
-            )}
+          {step === "info" && (
+            <motion.div
+              key="info"
+              custom={direction}
+              variants={slideVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="h-full"
+            >
+              <InfoStep
+                type="organizer"
+                onBack={() => router.push("/")}
+                onNext={() => goNext("contact")}
+              />
+            </motion.div>
+          )}
 
           {step === "contact" && (
             <motion.div
@@ -73,9 +74,9 @@ export default function Page() {
               transition={{ duration: 0.35, ease: "easeOut" }}
               className="h-full"
             >
-              <ContactStep 
-                onBack={() => goBack("info")} 
-                onNext={() => goNext("category")} 
+              <ContactStep
+                onBack={() => goBack("info")}
+                onNext={() => goNext("category")}
               />
             </motion.div>
           )}
@@ -92,6 +93,7 @@ export default function Page() {
               className="h-full"
             >
               <CategoryStep
+                type="organizer"
                 onBack={() => goBack("contact")}
               />
             </motion.div>
