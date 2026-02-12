@@ -43,7 +43,7 @@ export default function ChooseRoleStep({
           )}
         >
           <Image
-            src="/images/undraw_knowledge_0ty5 1.svg"
+            src="/images/svg/attendee_auth.svg"
             alt="attendee"
             width={120}
             height={120}
@@ -65,7 +65,7 @@ export default function ChooseRoleStep({
           )}
         >
           <Image
-            src="/images/undraw_projections_fhch 1.svg"
+            src="/images/svg/organizer_auth.svg"
             alt="organizer"
             width={120}
             height={120}
