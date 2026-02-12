@@ -54,7 +54,7 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
     const imageSrc =
         type === "attendee"
             ? "/images/svg/attendee_auth.svg"
-            : "/images/undraw_projections_fhch 1.svg"; // Keeping original image name
+            : "/images/svg/organizer_auth.svg"; // Keeping original image name
 
     const title = type === "attendee" ? "ผู้เข้าร่วมกิจกรรม" : "ผู้จัดกิจกรรม";
 
