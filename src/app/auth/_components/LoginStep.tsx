@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 interface LoginStepProps {
     type: "attendee" | "organizer";
@@ -13,55 +13,59 @@ interface LoginStepProps {
     onNext: () => void;
 }
 
+type LoginFormValues = {
+    email: string;
+    password: string;
+};
+
 export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
     const [isLogin, setIsLogin] = useState(true);
-    const [loading, setLoading] = useState(false);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-
-    const showRegister = type === "attendee";
-
-    const handleAuth = async () => {
-        setError("");
-        setLoading(true);
-        try {
-            if (isLogin || type === "organizer") {
-                const { error } = await authClient.signIn.email({
-                    email,
-                    password,
-                    callbackURL: "/", 
-                });
-                if (error) throw error;
-            } else {
-                // Only attendee can register here
-                const { error } = await authClient.signUp.email({
-                    email,
-                    password,
-                    name: "", 
-                    callbackURL: "/auth/attendee/onboarding", 
-                });
-                if (error) throw error;
-                onNext(); 
-            }
-        } catch (e: any) {
-            setError(e.message || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    const [submitError, setSubmitError] = useState("");
+    
     const imageSrc =
         type === "attendee"
             ? "/images/svg/attendee_auth.svg"
             : "/images/svg/organizer_auth.svg";
 
-    const title = type === "attendee" ? "ผู้เข้าร่วมกิจกรรม" : "ผู้จัดกิจกรรม";
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm<LoginFormValues>({
+        defaultValues: { email: "", password: "" },
+    });
+
+    const onSubmit = async (data: LoginFormValues) => {
+        setSubmitError("");
+        try {
+            if (isLogin || type === "organizer") {
+                const { error } = await authClient.signIn.email({
+                    email: data.email,
+                    password: data.password,
+                    callbackURL: "/",
+                });
+                if (error) throw new Error(error.message ?? "เกิดข้อผิดพลาด");
+            } else {
+                const { error } = await authClient.signUp.email({
+                    email: data.email,
+                    password: data.password,
+                    name: "",
+                    callbackURL: "/auth/attendee/onboarding",
+                });
+                if (error) throw new Error(error.message ?? "เกิดข้อผิดพลาด");
+                onNext();
+            }
+        } catch (e: unknown) {
+            const message = e instanceof Error ? e.message : "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+            setSubmitError(message);
+        }
+    };
 
     const googleLogin = async () => {
         await authClient.signIn.social({
             provider: "google",
-            callbackURL: "/dashboard",
+            callbackURL: "/",
         });
     }
 
@@ -90,40 +94,71 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
                                 : "ลงทะเบียนผู้เข้าร่วม"
                             : "เข้าสู่ระบบผู้จัดกิจกรรม"}
                     </h1>
-                    <div className="flex flex-col gap-2.5 items-center justify-between w-full">
-                        <Input
-                            placeholder="อีเมล"
-                            className="w-full focus:border-primary"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                        <Input
-                            type="password"
-                            placeholder="รหัสผ่าน"
-                            className="w-full focus:border-primary"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        {error && <p className="text-red-500 text-sm">{error}</p>}
-                    </div>
+                    <form
+                        id="login-form"
+                        onSubmit={handleSubmit(onSubmit)}
+                        className="flex flex-col gap-2.5 items-center justify-between w-full"
+                    >
+                        <div className="w-full flex flex-col gap-1">
+                            <Input
+                                placeholder="อีเมล"
+                                type="email"
+                                className="w-full focus:border-primary"
+                                aria-invalid={!!errors.email}
+                                {...register("email", {
+                                    required: "กรุณากรอกอีเมล",
+                                    pattern: {
+                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                        message: "รูปแบบอีเมลไม่ถูกต้อง",
+                                    },
+                                })}
+                            />
+                            {errors.email && (
+                                <p className="text-red-500 text-sm">{errors.email.message}</p>
+                            )}
+                        </div>
+                        <div className="w-full flex flex-col gap-1">
+                            <Input
+                                type="password"
+                                placeholder="รหัสผ่าน"
+                                className="w-full focus:border-primary"
+                                aria-invalid={!!errors.password}
+                                {...register("password", {
+                                    required: "กรุณากรอกรหัสผ่าน",
+                                    minLength: {
+                                        value: 6,
+                                        message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
+                                    },
+                                })}
+                            />
+                            {errors.password && (
+                                <p className="text-red-500 text-sm">{errors.password.message}</p>
+                            )}
+                        </div>
+                        {submitError && (
+                            <p className="text-red-500 text-sm w-full">{submitError}</p>
+                        )}
+                    </form>
                 </div>
             </div>
 
             <div className="flex flex-col gap-2">
                 <Button
-                    onClick={handleAuth}
+                    type="submit"
+                    form="login-form"
                     className="h-10.5 text-base"
-                    disabled={loading}
+                    disabled={isSubmitting}
                 >
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isLogin || type === "organizer" ? "เข้าสู่ระบบ" : "ลงทะเบียน"}
                 </Button>
 
                 {type === "attendee" && (
                     <Button
+                        type="button"
                         variant="outline"
                         className="border-stroke h-10.5 text-base w-full flex items-center justify-center gap-2 bg-white hover:bg-white text-black/54 hover:text-black/54"
-                        disabled={loading}
+                        disabled={isSubmitting}
                         onClick={googleLogin}
                     >
                         <Image
