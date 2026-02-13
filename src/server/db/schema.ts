@@ -9,3 +9,4 @@ export * from "./interestXOrganization";
 export * from "./interestXUser";
 export * from "./interestXPost";
 export * from "./relations";
+export * from "./activityType";
