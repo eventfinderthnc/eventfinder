@@ -1,4 +1,4 @@
-export * from "./user";
+export * from "./auth-schema";
 export * from "./faculty";
 export * from "./organization";
 export * from "./interest";
