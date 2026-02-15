@@ -95,7 +95,7 @@ CREATE TABLE "interest_x_post" (
 --> statement-breakpoint
 CREATE TABLE "interest_x_user" (
 	"interest_id" serial NOT NULL,
-	"user_id" serial NOT NULL,
+	"user_id" text NOT NULL,
 	CONSTRAINT "interest_x_user_interest_id_user_id_pk" PRIMARY KEY("interest_id","user_id")
 );
 --> statement-breakpoint
@@ -126,7 +126,7 @@ CREATE TABLE "post" (
 );
 --> statement-breakpoint
 CREATE TABLE "user_x_organization" (
-	"user_id" serial NOT NULL,
+	"user_id" text NOT NULL,
 	"organization_id" serial NOT NULL,
 	CONSTRAINT "user_x_organization_user_id_organization_id_pk" PRIMARY KEY("user_id","organization_id")
 );
