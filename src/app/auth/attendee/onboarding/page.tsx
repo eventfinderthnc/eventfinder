@@ -2,10 +2,11 @@
 
 import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
+import CategoryStep from "../../_components/CategoryStep"
+import InfoStep from "../../_components/InfoStep"
 import { useRouter } from "next/navigation"
-import LoginStep from "../../_components/LoginStep"
 
-export type Step = "role" | "orgregis"
+export type Step = "info" | "category"
 
 const slideVariants = {
   initial: (direction: number) => ({
@@ -23,7 +24,7 @@ const slideVariants = {
 }
 
 export default function Page() {
-  const [step, setStep] = useState<Step>("role")
+  const [step, setStep] = useState<Step>("info")
   const [direction, setDirection] = useState(1)
   const router = useRouter()
 
@@ -42,9 +43,9 @@ export default function Page() {
       <div className="relative overflow-hidden flex flex-col p-10 w-[320px] h-[510px] sm:w-[550px] sm:h-[660px] rounded-4xl bg-white shadow-[0_6px_16px_0_rgba(0,0,0,0.25)]">
 
         <AnimatePresence custom={direction} mode="wait">
-          {step === "role" && (
+          {step === "info" && (
             <motion.div
-              key="contact"
+              key="info"
               custom={direction}
               variants={slideVariants}
               initial="initial"
@@ -53,13 +54,32 @@ export default function Page() {
               transition={{ duration: 0.35, ease: "easeOut" }}
               className="h-full"
             >
-              <LoginStep
-                type="organizer"
-                onBack={() => router.push("/auth")}
-                onNext={() => router.push("/dashboard")}
+              <InfoStep
+                type="attendee"
+                onBack={() => router.push("/")}
+                onNext={() => goNext("category")}
               />
             </motion.div>
           )}
+
+          {step === "category" && (
+            <motion.div
+              key="category"
+              custom={direction}
+              variants={slideVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="h-full"
+            >
+              <CategoryStep
+                type="attendee"
+                onBack={() => goBack("info")}
+              />
+            </motion.div>
+          )}
+
         </AnimatePresence>
       </div>
     </div>

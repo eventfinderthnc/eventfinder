@@ -3,16 +3,16 @@ import { user } from "./auth-schema";
 import { organization } from "./organization";
 
 export const userXOrganization = pgTable(
-	"user_x_organization",
-	{
-		userId: text("user_id")
-			.references(() => user.id)
-			.notNull(),
-		organizationId: serial("organization_id")
-			.references(() => organization.id)
-			.notNull(),
-	},
-	(table) => ({
-		pk: primaryKey({ columns: [table.userId, table.organizationId] }),
-	}),
+  "user_x_organization",
+  {
+    userId: text("user_id")
+      .references(() => user.id)
+      .notNull(),
+    organizationId: serial("organization_id")
+      .references(() => organization.id)
+      .notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.userId, table.organizationId] }),
+  }),
 );

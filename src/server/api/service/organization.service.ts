@@ -3,7 +3,7 @@ import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
 import type { Organization, OrganizationWithUser, CreateOrganizationRequest } from "@/server/api/dto/organization.dto";
 import { organization } from "@/server/db/organization";
-import { user } from "@/server/db/user";
+import { user } from "@/server/db/auth-schema";
 import { eq } from "drizzle-orm";
 import { userServiceImpl } from "@/server/api/service/user.service";
 
@@ -97,7 +97,7 @@ class OrganizationService implements IOrganizationService {
 
             if (deleteOrgRes instanceof Error) return deleteOrgRes;
 
-            const deleteUserRes = await userServiceImpl.delete(eq(user.id, Number(userId)), tx);
+            const deleteUserRes = await userServiceImpl.delete(eq(user.id, userId), tx);
 
             if (deleteUserRes instanceof Error) throw deleteUserRes;
 
