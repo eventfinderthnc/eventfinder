@@ -21,6 +21,33 @@ export const postRouter = createTRPCRouter({
 		return null;
 	}),
 
+	getAll: protectedProcedure.query(async () => {
+		const [res, error] = await postServiceImpl.getAll();
+		if (error) throw new TRPCError(getTRPCError(error));
+		return res;
+	}),
+
+	getOne: protectedProcedure
+		.input(z.object({ id: z.number() }))
+		.query(async ({ input }) => {
+			const [res, error] = await postServiceImpl.getOne(input.id);
+			if (error) throw new TRPCError(getTRPCError(error));
+			return res;
+		}),
+
+	getBySearch: protectedProcedure
+		.input(
+			z.object({
+				searchQuery: z.string().optional(),
+				createdByAsc: z.boolean().default(false),
+			})
+		)
+		.query(async ({ input }) => {
+			const [res, error] = await postServiceImpl.getBySearch(input);
+			if (error) throw new TRPCError(getTRPCError(error));
+			return res;
+		}),
+
 	delete: protectedProcedure
 		.input(
 			z.object({

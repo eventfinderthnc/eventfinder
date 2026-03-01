@@ -1,10 +1,21 @@
 import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { organization } from "./organization";
+import { activityType } from "./activityType";
 
 export const post = pgTable("post", {
 	id: serial("id").primaryKey(),
+	organizationId: serial("organization_id")
+		.references(() => organization.id)
+		.notNull(),
+	activityTypeId: serial("activity_type_id")
+		.references(() => activityType.id)
+		.notNull(),
+
 	title: text("title").notNull(),
 	description: text("description"),
 	instaLink: text("insta_link"), // nullable for now, but future will be required
+	image: text("image").notNull(),
+
 	date: timestamp("date").notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 	updatedAt: timestamp("updated_at")
