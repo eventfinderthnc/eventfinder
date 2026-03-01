@@ -1,4 +1,4 @@
-import { pgTable, serial, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, serial, primaryKey, text } from "drizzle-orm/pg-core";
 import { interest } from "./interest";
 import { user } from "./auth-schema";
 
@@ -8,7 +8,7 @@ export const interestXUser = pgTable(
     interestId: serial("interest_id")
       .references(() => interest.id)
       .notNull(),
-    userId: serial("user_id")
+    userId: text("user_id")
       .references(() => user.id)
       .notNull(),
   },
