@@ -21,7 +21,7 @@ type LoginFormValues = {
 export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
     const [isLogin, setIsLogin] = useState(true);
     const [submitError, setSubmitError] = useState("");
-    
+
     const imageSrc =
         type === "attendee"
             ? "/images/svg/attendee_auth.svg"
@@ -50,7 +50,8 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
                 const { error } = await authClient.signUp.email({
                     email: data.email,
                     password: data.password,
-                    name: "",
+                    name: "username",
+                    role: type === "attendee" ? "ATTENDEE" : "ORGANIZATION",
                     callbackURL: "/auth/attendee/onboarding",
                 });
                 if (error) throw new Error(error.message ?? "เกิดข้อผิดพลาด");
@@ -63,11 +64,18 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
     };
 
     const googleLogin = async () => {
-        await authClient.signIn.social({
-            provider: "google",
-            callbackURL: "/",
-        });
-    }
+        setSubmitError("");
+        try {
+            const { error } = await authClient.signIn.social({
+                provider: "google",
+                callbackURL: "/auth/attendee/google-redirect",
+            });
+            if (error) throw new Error(error.message ?? "เข้าสู่ระบบด้วย Google ไม่สำเร็จ");
+        } catch (e: unknown) {
+            const message = e instanceof Error ? e.message : "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+            setSubmitError(message);
+        }
+    };
 
     return (
         <div className="flex flex-col h-full justify-between gap-6">
