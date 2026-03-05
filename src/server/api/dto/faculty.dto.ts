@@ -10,7 +10,7 @@ export const CreateFacultyRequestSchema: ZodSchema<CreateFacultyRequest> = z.obj
 });
 
 export const UpdateFacultyRequestSchema = z.object({
-  id: z.number(),
+  id: z.string().uuid(),
   name: z.string().optional(),
 })
 // name is optional because we can find it based on id

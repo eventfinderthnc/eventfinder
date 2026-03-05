@@ -4,7 +4,7 @@ import { user } from "./auth-schema";
 export const categoryEnum = pgEnum("category", ["CLUB", "EVENT"]);
 
 export const organization = pgTable("organization", {
-	id: serial("id").primaryKey(),
+	id: text("id").primaryKey(),
 	category: categoryEnum("category").notNull(),
 	averageHoursPerWeek: smallint("average_hours_per_week"),
 	bio: text("bio"),

@@ -28,7 +28,7 @@ export const postRouter = createTRPCRouter({
 	}),
 
 	getOne: protectedProcedure
-		.input(z.object({ id: z.number() }))
+		.input(z.object({ id: z.string().uuid() }))
 		.query(async ({ input }) => {
 			const [res, error] = await postServiceImpl.getOne(input.id);
 			if (error) throw new TRPCError(getTRPCError(error));
@@ -51,7 +51,7 @@ export const postRouter = createTRPCRouter({
 	delete: protectedProcedure
 		.input(
 			z.object({
-				id: z.number(),
+				id: z.string().uuid(),
 			}),
 		)
 		.mutation(async ({ input }) => {

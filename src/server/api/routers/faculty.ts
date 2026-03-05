@@ -22,7 +22,7 @@ export const facultyRouter = createTRPCRouter({
 
   delete: protectedProcedure.input(
     z.object({
-      id: z.number(),
+      id: z.string().uuid(),
     }),
   ).mutation(async ({ input }) => {
     const res = await facultyServiceImpl.delete(eq(faculty.id, input.id));

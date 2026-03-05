@@ -24,7 +24,7 @@ export const organizationRouter = createTRPCRouter({
 	delete: protectedProcedure
 		.input(
 			z.object({
-				id: z.number(),
+				id: z.string().uuid(),
 			}),
 		)
 		.mutation(async ({ input }) => {
@@ -34,7 +34,7 @@ export const organizationRouter = createTRPCRouter({
 		}),
 
 	getOne: publicProcedure
-		.input(z.object({ id: z.number() }))
+		.input(z.object({ id: z.string().uuid() }))
 		.query(async ({ input }) => {
 			const [res, error] = await organizationServiceImpl.getOneByFilter(eq(organization.id, input.id));
 			if (error) return new TRPCError(getTRPCError(error));

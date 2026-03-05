@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, pgEnum } from "drizzle-orm/pg-core";
 import { faculty } from "./faculty";
 
 export const roleEnum = pgEnum("role", ["ATTENDEE", "ORGANIZATION", "ADMIN"]);
@@ -10,7 +10,7 @@ export const user = pgTable("user", {
 	emailVerified: boolean("email_verified").default(false),
 	image: text("image"),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
-	facultyId: integer("faculty_id").references(() => faculty.id),
+	facultyId: text("faculty_id").references(() => faculty.id),
 	isReceiveMail: boolean("is_receive_mail").default(false).notNull(),
 	role: roleEnum("role").default("ATTENDEE").notNull(),
 	updatedAt: timestamp("updated_at")

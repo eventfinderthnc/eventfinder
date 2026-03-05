@@ -10,6 +10,6 @@ export const CreateInterestRequestSchema: ZodSchema<CreateInterestRequest> = z.o
 });
 
 export const UpdateInterestRequestSchema = z.object({
-    id: z.number(),
+    id: z.string().uuid(),
     name: z.string().optional(),
 });
