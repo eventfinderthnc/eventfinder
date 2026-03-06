@@ -8,6 +8,13 @@
       "when": 1771137339352,
       "tag": "0000_calm_red_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1741300000000,
+      "tag": "0001_add_interest_icon",
+      "breakpoints": true
     }
   ]
 }
