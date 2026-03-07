@@ -1,4 +1,5 @@
 import type { SQL } from "drizzle-orm";
+import { randomUUID } from "crypto";
 import { and, asc, desc, ilike, or } from "drizzle-orm";
 import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
@@ -6,9 +7,9 @@ import type { Post, CreatePostRequest } from "@/server/api/dto/post.dto";
 import { post } from "@/server/db/post";
 
 export interface IPostService {
-	create(req: CreatePostRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]>;
+	create(req: CreatePostRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
 	getAll(): Promise<[Post[], ErrorOrNull]>;
-	getOne(id: number): Promise<[Post | null, ErrorOrNull]>;
+	getOne(id: string): Promise<[Post | null, ErrorOrNull]>;
 	getBySearch(input: {
 		searchQuery?: string;
 		createdByAsc: boolean;
@@ -20,11 +21,12 @@ export interface IPostService {
 }
 
 class PostService implements IPostService {
-	async create(req: CreatePostRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]> {
+	async create(req: CreatePostRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]> {
 		const database = trx ?? db;
+		const id = randomUUID();
 		const res = await database
 			.insert(post)
-			.values(req)
+			.values({ ...req, id })
 			.returning({ id: post.id })
 			.catch((e) => {
 				console.log(e);
@@ -32,7 +34,7 @@ class PostService implements IPostService {
 			});
 
 		if (res instanceof Error) return [null, res];
-		return [res[0]?.id ?? 0, null];
+		return [res[0]?.id ?? null, null];
 	}
 
 	async getAll(): Promise<[Post[], ErrorOrNull]> {
@@ -49,7 +51,7 @@ class PostService implements IPostService {
 		return [res, null];
 	}
 
-	async getOne(id: number): Promise<[Post | null, ErrorOrNull]> {
+	async getOne(id: string): Promise<[Post | null, ErrorOrNull]> {
 		const res = await db.query.post
 			.findFirst({
 				where: (post, { eq }) => eq(post.id, id),

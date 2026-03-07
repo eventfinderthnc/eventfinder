@@ -15,7 +15,7 @@ export const userRouter = createTRPCRouter({
         return null;
     }),
 
-    delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input }) => {
+    delete: protectedProcedure.input(z.object({ id: z.string().uuid() })).mutation(async ({ input }) => {
         const res = await userServiceImpl.delete(eq(user.id, input.id));
         if (res) return new TRPCError(getTRPCError(res));
         return null;

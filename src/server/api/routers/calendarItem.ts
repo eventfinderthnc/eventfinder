@@ -13,7 +13,7 @@ export const calendarItemRouter = createTRPCRouter({
 	getByMonth: protectedProcedure
 		.input(
 			z.object({
-				userId: z.string(),
+				userId: z.string().uuid(),
 				month: z.number().gt(0).lt(13),
 				year: z.number().gte(0),
 			}),
@@ -31,17 +31,19 @@ export const calendarItemRouter = createTRPCRouter({
 	getOneByFilter: protectedProcedure
 		.input(
 			z.object({
-				userId: z.string(),
+				userId: z.string().uuid(),
 			}),
 		)
 		.query(async ({ input }) => {
 			const [res, error] = await calendarItemServiceImpl.getOneByFilter(eq(calendarItem.userId, input.userId));
+			if (error) throw new TRPCError(getTRPCError(error));
+			return res;
 		}),
 
 	getAllByFilter: protectedProcedure
 		.input(
 			z.object({
-				userId: z.string(),
+				userId: z.string().uuid(),
 			}),
 		)
 		.query(async ({ input }) => {
@@ -65,7 +67,7 @@ export const calendarItemRouter = createTRPCRouter({
 	delete: protectedProcedure
 		.input(
 			z.object({
-				id: z.number(),
+				id: z.string().uuid(),
 			}),
 		)
 		.mutation(async ({ input }) => {

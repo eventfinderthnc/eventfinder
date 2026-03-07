@@ -13,10 +13,10 @@ export const CreateUserRequestSchema: ZodSchema<CreateUserRequest> = z.object({
 });
 
 export const UpdateUserRequestSchema = z.object({
-    id: z.string(),
+    id: z.string().uuid(),
     name: z.string().optional(),
     image: z.string().optional(),
-    facultyId: z.number().optional(),
+    facultyId: z.string().uuid().optional(),
     isReceiveMail: z.boolean().optional(),
     username: z.string().optional(),
     password: z.string().optional(),

@@ -1,4 +1,5 @@
 import type { SQL } from "drizzle-orm";
+import { randomUUID } from "crypto";
 import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
 import type { Organization, OrganizationWithUser, CreateOrganizationRequest } from "@/server/api/dto/organization.dto";
@@ -8,7 +9,7 @@ import { eq } from "drizzle-orm";
 import { userServiceImpl } from "@/server/api/service/user.service";
 
 export interface IOrganizationService {
-    create(req: CreateOrganizationRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]>;
+    create(req: CreateOrganizationRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
     getByFilter(filter?: SQL): Promise<[OrganizationWithUser[] | [], ErrorOrNull]>;
     getOneByFilter(filter: SQL): Promise<[OrganizationWithUser | null, ErrorOrNull]>;
     update(filter: SQL, update: Partial<Organization>, trx?: typeof db): Promise<ErrorOrNull>;
@@ -16,11 +17,12 @@ export interface IOrganizationService {
 }
 
 class OrganizationService implements IOrganizationService {
-    async create(req: CreateOrganizationRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]> {
+    async create(req: CreateOrganizationRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]> {
         const database = trx ?? db;
+        const id = randomUUID();
         const res = await database
             .insert(organization)
-            .values(req)
+            .values({ ...req, id })
             .returning({ id: organization.id })
             .catch((e) => {
                 console.log(e);
@@ -28,7 +30,7 @@ class OrganizationService implements IOrganizationService {
             });
 
         if (res instanceof Error) return [null, res];
-        return [res[0]?.id ?? 0, null];
+        return [res[0]?.id ?? null, null];
     }
     async getByFilter(filter?: SQL): Promise<[OrganizationWithUser[], ErrorOrNull]> {
         const res = await db.query.organization.findMany({
