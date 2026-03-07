@@ -49,6 +49,7 @@
     "react-day-picker": "^9.13.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.71.1",
+    "resend": "^6.9.3",
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
     "tailwind-merge": "^3.4.0",
