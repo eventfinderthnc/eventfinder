@@ -1,13 +1,13 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { organization } from "./organization";
 import { activityType } from "./activityType";
 
 export const post = pgTable("post", {
-	id: serial("id").primaryKey(),
-	organizationId: serial("organization_id")
+	id: text("id").primaryKey(),
+	organizationId: text("organization_id")
 		.references(() => organization.id)
 		.notNull(),
-	activityTypeId: serial("activity_type_id")
+	activityTypeId: text("activity_type_id")
 		.references(() => activityType.id)
 		.notNull(),
 

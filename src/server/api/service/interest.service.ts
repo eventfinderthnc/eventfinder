@@ -1,11 +1,12 @@
 import { db } from "@/server/db";
+import { randomUUID } from "crypto";
 import type { CreateInterestRequest, Interest } from "../dto/interest.dto";
 import { ErrorCategory, ErrorWithCategory, PostgreSQLError, type ErrorOrNull } from "@/utils/error";
 import type { SQL } from "drizzle-orm";
 import { interest } from "@/server/db/interest";
 
 export interface IInterestService {
-    create(req: CreateInterestRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]>
+    create(req: CreateInterestRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>
     getByFilter(filter?: SQL): Promise<[Interest[] | [], ErrorOrNull]>;
     getOneByFilter(filter: SQL): Promise<[Interest | null, ErrorOrNull]>;
     update(filter: SQL, update: Partial<Interest>, trx?: typeof db): Promise<ErrorOrNull>;
@@ -13,11 +14,12 @@ export interface IInterestService {
 }
 
 class InterestService implements IInterestService {
-    async create(req: CreateInterestRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]> {
+    async create(req: CreateInterestRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]> {
         const database = trx ?? db;
+        const id = randomUUID();
         const res = await database
             .insert(interest)
-            .values(req)
+            .values({ ...req, id })
             .returning({ id: interest.id })
             .catch((e) => {
                 console.log(e);
@@ -26,7 +28,7 @@ class InterestService implements IInterestService {
 
         if (res instanceof Error) return [null, res];
 
-        return [res[0]?.id ?? 0, null];
+        return [res[0]?.id ?? null, null];
     }
 
     async getByFilter(filter?: SQL): Promise<[Interest[] | [], ErrorOrNull]> {

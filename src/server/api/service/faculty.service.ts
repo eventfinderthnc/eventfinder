@@ -1,11 +1,12 @@
 import type { SQL } from "drizzle-orm";
+import { randomUUID } from "crypto";
 import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
 import type { Faculty, CreateFacultyRequest } from "@/server/api/dto/faculty.dto"
 import { faculty } from "@/server/db/faculty";
 
 export interface IFacultyService {
-  create(req: CreateFacultyRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]>;
+  create(req: CreateFacultyRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
   getByFilter(filter?: SQL): Promise<[Faculty[] | [], ErrorOrNull]>;
   getOneByFilter(filter: SQL): Promise<[Faculty | null, ErrorOrNull]>;
   update(filter: SQL, update: Partial<Faculty>, trx?: typeof db): Promise<ErrorOrNull>;
@@ -13,11 +14,12 @@ export interface IFacultyService {
 }
 
 class FacultyService implements IFacultyService {
-  async create(req: CreateFacultyRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]> {
+  async create(req: CreateFacultyRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]> {
     const database = trx ?? db; // trx? trx : db;
+    const id = randomUUID();
     const res = await database
       .insert(faculty)
-      .values(req)
+      .values({ ...req, id })
       .returning({ id: faculty.id })
       .catch((e) => {
         console.log(e);
@@ -25,7 +27,7 @@ class FacultyService implements IFacultyService {
       });
     
     if(res instanceof Error) return [null, res];
-    return [res[0]?.id ?? 0, null];
+    return [res[0]?.id ?? null, null];
   }
 
   async getByFilter(filter?: SQL): Promise<[Faculty[], ErrorOrNull]> {

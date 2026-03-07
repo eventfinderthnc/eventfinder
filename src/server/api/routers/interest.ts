@@ -35,15 +35,15 @@ export const interestRouter = createTRPCRouter({
       return null;
     }),
 
-  delete: protectedProcedure
-    .input(
-      z.object({
-        id: z.number(),
-      }),
-    )
-    .mutation(async ({ input }) => {
-      const res = await interestServiceImpl.delete(eq(interest.id, input.id));
-      if (res) return new TRPCError(getTRPCError(res));
+    delete: protectedProcedure
+        .input(
+            z.object({
+                id: z.string().uuid(),
+            }),
+        )
+        .mutation(async ({ input }) => {
+            const res = await interestServiceImpl.delete(eq(interest.id, input.id));
+            if (res) return new TRPCError(getTRPCError(res));
 
       return null;
     }),

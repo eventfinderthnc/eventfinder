@@ -30,18 +30,18 @@ export const CreateOrganizationRequestSchema: ZodSchema<CreateOrganizationReques
     averageHoursPerWeek: SmallIntSchema.optional(),
     bio: z.string(),
     recruitmentPeriod: RecruitmentPeriodSchema,
-    userId: z.string(),
+    userId: z.string().uuid(),
     isBanned: z.boolean(),
     socials: SocialsSchema,
 });
 
 export const UpdateOrganizationRequestSchema = z.object({
-    id: z.number(),
+    id: z.string().uuid(),
     category: z.enum(categoryEnum.enumValues).optional(),
     averageHoursPerWeek: SmallIntSchema.optional(),
     bio: z.string().optional(),
     recruitmentPeriod: RecruitmentPeriodSchema.optional(),
-    userId: z.string().optional(),
+    userId: z.string().uuid().optional(),
     isBanned: z.boolean().optional(),
     socials: SocialsSchema.optional(),
 });

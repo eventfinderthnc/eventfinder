@@ -1,12 +1,15 @@
 import { and, asc, desc, eq, type SQL } from "drizzle-orm";
+import { randomUUID } from "crypto";
 import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
 import type { CalendarItem, CreateCalendarItemRequest } from "@/server/api/dto/calendarItem.dto";
 import { calendarItem } from "@/server/db/calendarItem";
 import { post } from "@/server/db/post";
+import { user } from "@/server/db/auth-schema";
+import { organization } from "@/server/db/organization";
 
 export interface ICalendarItemService {
-    create(req: CreateCalendarItemRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]>;
+    create(req: CreateCalendarItemRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
     getByMonth(filter?: SQL): Promise<[CalendarItem[], ErrorOrNull]>;
     getByFilter(filter?: SQL): Promise<[CalendarItem[] | [], ErrorOrNull]>; // getAll
     getOneByFilter(filter: SQL): Promise<[CalendarItem | null, ErrorOrNull]>;
@@ -15,11 +18,12 @@ export interface ICalendarItemService {
 }
 
 class CalendarItemService implements ICalendarItemService {
-    async create(req: CreateCalendarItemRequest, trx?: typeof db): Promise<[number | null, ErrorOrNull]> {
+    async create(req: CreateCalendarItemRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]> {
         const database = trx ?? db;
+        const id = randomUUID();
         const res = await database
             .insert(calendarItem)
-            .values(req)
+            .values({ ...req, id })
             .returning({ id: calendarItem.id })
             .catch((e) => {
                 console.log(e);
@@ -27,24 +31,29 @@ class CalendarItemService implements ICalendarItemService {
             });
 
         if (res instanceof Error) return [null, res];
-        return [res[0]?.id ?? 0, null];
+        return [res[0]?.id ?? null, null];
     }
 
-    async getByMonth(filter?: SQL): Promise<[CalendarItem[], ErrorOrNull]> {
+    async getByMonth(filter?: SQL): Promise<[any[], ErrorOrNull]> {
         const tmp = await db
           .select()
           .from(calendarItem)
+          .innerJoin(user, eq(calendarItem.userId, user.id))
           .innerJoin(post, eq(calendarItem.postId, post.id))
+          .innerJoin(organization, eq(post.organizationId, organization.id))
           .where(filter)
           .orderBy(desc(post.date), asc(post.title));
 
         if (tmp instanceof Error) return [[], tmp];
-        const res: CalendarItem[] = [];
+        const res: any[] = [];
         if(tmp.length > 0) {
           tmp.forEach((t: typeof tmp[0]) => {
-            if(tmp[0]) {
-              res.push(tmp[0].calendar_item);
-            }
+            res.push({
+              ...t.post,
+              ...t.organization,
+              ...t.user,
+              ...t.calendar_item,
+            });
           });
         }
         return [res, null];
