@@ -43,4 +43,5 @@ export const facultyRouter = createTRPCRouter({
       const res = await facultyServiceImpl.delete(eq(faculty.id, input.id));
       if (res) return new TRPCError(getTRPCError(res));
       return null;
+    }),
 });
