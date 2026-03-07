@@ -24,40 +24,44 @@ type Arguments = {
   buttonName?: string;
   reactNode?: React.ReactNode;
   onOpenChange?: (open: boolean) => void;
+  /** Controlled: selected value (e.g. faculty name) */
+  value?: string;
+  /** Called when user picks an item; pass selected string (e.g. faculty name) */
+  onValueChange?: (value: string) => void;
 }
 
-export function Dropdown({ children, ...props } : Arguments) {
+export function Dropdown({ children, ...props }: Arguments) {
   const [position, setPosition] = React.useState("");
+  const displayValue = props.value ?? position;
+  const handleChange = (v: string) => {
+    if (props.value === undefined) setPosition(v);
+    props.onValueChange?.(v);
+  };
   return (
     <DropdownMenu onOpenChange={props.onOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" id={props.id} className={"hover:text-white " + props.className}>
-          { position? <span className="truncate">{position}</span> : children }
-          { props.icon }
+          {displayValue ? <span className="truncate">{displayValue}</span> : children}
+          {props.icon}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className={props.menuContentClassName}>
-        { props?.panelLabel && (<><DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
-        <DropdownMenuSeparator /></>) }
-        <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-          {
-            props.content.map((state, idx) => {
-              return (
-                <DropdownMenuRadioItem
-                  value={state}
-                  key={idx}
-                  className={props.itemClassName}
-                >
-                  {<div className={`w-full flex items-center pl-4 py-1`}>{state}</div>}
-                </DropdownMenuRadioItem>
-              );
-              // equivalent opaque color = 255 - P * (255 - transparent color)
-              // #de5c8e4d
-              // 255 - 0.23 * (255 - 208 - 14)
-              // 255 - 0.23 * (255 - 80 - 12)
-              // 255 - 0.23 * (255 - 128 - 14)
-            })
-          }
+        {props?.panelLabel && (
+          <>
+            <DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        <DropdownMenuRadioGroup value={displayValue} onValueChange={handleChange}>
+          {props.content.map((state, idx) => (
+            <DropdownMenuRadioItem
+              value={state}
+              key={idx}
+              className={props.itemClassName}
+            >
+              <div className="flex w-full items-center py-1 pl-4">{state}</div>
+            </DropdownMenuRadioItem>
+          ))}
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>

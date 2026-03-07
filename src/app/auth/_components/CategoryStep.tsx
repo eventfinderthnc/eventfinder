@@ -1,7 +1,10 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/Button"
-import {
-  ArrowLeft,
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { ArrowLeft, BriefcaseBusiness, Cpu, GraduationCap, HandHeart, HeartPulse, Monitor, Music, Palette, Volleyball } from "lucide-react";
+import { api } from "@/trpc/react";
+import { useRouter } from "next/navigation";
+
+const iconMap = {
   BriefcaseBusiness,
   Cpu,
   HeartPulse,
@@ -11,19 +14,7 @@ import {
   Palette,
   Music,
   GraduationCap,
-} from "lucide-react"
-
-const categories = [
-  { id: "business", label: "ธุรกิจ", icon: BriefcaseBusiness },
-  { id: "technology", label: "เทคโนโลยี", icon: Cpu },
-  { id: "medical", label: "แพทย์", icon: HeartPulse },
-  { id: "sport", label: "กีฬา", icon: Volleyball },
-  { id: "community", label: "พัฒนาชุมชน", icon: HandHeart },
-  { id: "it", label: "สารสนเทศ", icon: Monitor },
-  { id: "art", label: "ศิลปะ", icon: Palette },
-  { id: "music", label: "ดนตรี", icon: Music },
-  { id: "education", label: "การศึกษา", icon: GraduationCap },
-]
+} as const;
 
 interface CategoryStepProps {
   onBack: () => void;
@@ -34,23 +25,39 @@ export default function CategoryStep({
   onBack,
   type = "organizer",
 }: CategoryStepProps) {
-  const [selected, setSelected] = useState<string[]>([])
 
-  const toggle = (id: string) => {
-    setSelected((prev) =>
-      prev.includes(id)
-        ? prev.filter((i) => i !== id)
-        : [...prev, id]
-    )
-  }
+  const [selected, setSelected] = useState<number[]>([]);
+  const router = useRouter();
 
-  const canContinue = selected.length > 0
-
+  const canContinue = selected.length > 0;
   const title = type === "attendee" ? "สิ่งที่สนใจ" : "เลือกหมวดหมู่";
+  
+  const { data: interests } = api.interest.getAll.useQuery();
+  const { data: me } = api.user.me.useQuery();
+  const utils = api.useUtils();
+  const updateInterests = api.user.updateInterests.useMutation();
 
+  useEffect(() => {
+    if (me?.interests) setSelected(me.interests);
+  }, [me]);
+
+  const byId = useMemo(() => interests ?? [], [interests]);
+
+  const toggle = (id: number) => {
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  };
+
+  const handleSubmit = async () => {
+    await updateInterests.mutateAsync({ interests: selected });
+    await utils.user.me.invalidate();
+    router.push("/");
+  };
+  
   return (
-    <div className="flex flex-col h-full justify-between">
-      <div className="flex justify-between items-center">
+    <div className="flex h-full flex-col justify-between">
+      <div className="flex items-center justify-between">
         <ArrowLeft
           className="cursor-pointer text-text-gray hover:text-text-gray-hover"
           onClick={onBack}
@@ -59,53 +66,54 @@ export default function CategoryStep({
         <ArrowLeft className="text-white" />
       </div>
 
-      <div className="grid grid-cols-3 gap-4 sm:gap-6 text-sm sm:text-base mx-auto">
-        {categories.map((c) => {
-          const Icon = c.icon
-          const active = selected.includes(c.id)
+      <div className="mx-auto grid grid-cols-3 gap-4 text-sm sm:gap-6 sm:text-base">
+        {byId.map((interest) => {
+          const Icon = interest.icon ? iconMap[interest.icon as keyof typeof iconMap] : BriefcaseBusiness;
+          const active = selected.includes(interest.id);
 
           return (
             <button
-              key={c.id}
-              onClick={() => toggle(c.id)}
-              className="cursor-pointer flex flex-col items-center gap-2"
+              key={interest.id}
+              onClick={() => toggle(interest.id)}
+              className="flex cursor-pointer flex-col items-center gap-2"
             >
               <div
-                className={`p-4 rounded-full border-2 ${active ? "bg-primary border-primary" : "border-primary"
-                  }`}
+                className={`rounded-full border-2 p-4 ${
+                  active ? "border-primary bg-primary" : "border-primary"
+                }`}
               >
                 <Icon
-                  className={`w-5 sm:w-6 h-5 sm:h-6 ${active ? "text-white" : "text-primary"
-                    }`}
+                  className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                    active ? "text-white" : "text-primary"
+                  }`}
                 />
               </div>
-              <p>{c.label}</p>
+              <p>{interest.name}</p>
             </button>
-          )
+          );
         })}
       </div>
 
       <div className="flex flex-col gap-4">
-
-        <Button disabled={!canContinue}>
+        <Button disabled={!canContinue} onClick={handleSubmit}>
           เสร็จสิ้น
         </Button>
 
-        <div className="w-full items-center justify-center flex gap-1.5">
+        <div className="flex w-full items-center justify-center gap-1.5">
           {type === "attendee" ? (
             <>
-              <div className="w-1.5 h-1.5 rounded-full bg-[#d4d4d4]" />
-              <div className="w-1.5 h-1.5 rounded-full bg-[#949494]" />
+              <div className="h-1.5 w-1.5 rounded-full bg-[#d4d4d4]" />
+              <div className="h-1.5 w-1.5 rounded-full bg-[#949494]" />
             </>
           ) : (
             <>
-              <div className="w-1.5 h-1.5 rounded-full bg-[#d4d4d4]" />
-              <div className="w-1.5 h-1.5 rounded-full bg-[#d4d4d4]" />
-              <div className="w-1.5 h-1.5 rounded-full bg-[#949494]" />
+              <div className="h-1.5 w-1.5 rounded-full bg-[#d4d4d4]" />
+              <div className="h-1.5 w-1.5 rounded-full bg-[#d4d4d4]" />
+              <div className="h-1.5 w-1.5 rounded-full bg-[#949494]" />
             </>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }
