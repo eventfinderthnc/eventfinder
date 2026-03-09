@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import { type Metadata } from "next";
 import { Noto_Sans, Noto_Sans_Thai } from "next/font/google";
 
+import { AuthProvider } from "@/components/ui/context/AuthContext";
 import { TRPCReactProvider } from "@/trpc/react";
 
 export const metadata: Metadata = {
@@ -29,7 +30,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${notoThai.variable} ${noto.variable}`}>
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </TRPCReactProvider>
       </body>
     </html>
   );
