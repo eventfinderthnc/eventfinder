@@ -4,6 +4,7 @@ import { calendarItemRouter } from "@/server/api/routers/calendarItem";
 import { organizationRouter } from "@/server/api/routers/organization";
 import { facultyRouter } from "@/server/api/routers/faculty";
 import { userRouter } from "@/server/api/routers/user";
+import { uploadRouter } from "@/server/api/routers/upload";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   organization: organizationRouter,
   faculty: facultyRouter,
   user: userRouter,
+  upload: uploadRouter,
 });
 
 // export type definition of API
