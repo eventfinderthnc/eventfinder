@@ -1,5 +1,10 @@
 "use client"
 
+import { api } from "@/trpc/react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useSession } from "@/lib/auth-client"
+
 import { Navbar } from "@/components/ui/Navbar"
 import { Footer } from "@/components/ui/Footer"
 import { FormInput } from "@/components/ui/FormInput"
@@ -7,24 +12,64 @@ import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { Upload } from "lucide-react"
 import { FileInput } from "@/components/ui/FileInput"
-import { useState } from "react"
 
 const CreatePage = () => {
+    const router = useRouter()
+    const { data: session } = useSession()
+
+    const [title, setTitle] = useState("")
+    const [organizationId, setOrganizationId] = useState("")
+    const [activityTypeId, setActivityTypeId] = useState("")
+    const [description, setDescription] = useState("")
+    const [instaLink, setInstaLink] = useState("")
+    const [date, setDate] = useState<Date>(new Date())
+    const [time, setTime] = useState<Date | null>(null)
+    const [imageUrl, setImageUrl] = useState<String | null>(null)
+
     const type: string[] = ["ONSITE","ONLINE","HYBRID"];
     const category: string[] = ["Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
-    const [imagePreview, setImagePreview] = useState<string | null>(null)
-
-    const handleFileSelect = (file: File | null, previewUrl: string) => {
-        if (imagePreview) {
-            URL.revokeObjectURL(imagePreview)
+    const createPost = api.post.create.useMutation({
+        onSuccess: () => {
+            router.push("/")
+        },
+        onError: (error) => {
+            console.error("Failed to create post:", error)
+        },
+    })
+    const getMergedDate = (): Date | null => {
+        if(!date) return null
+        const merged = new Date(date)
+        if(time){
+            merged.setHours(time.getHours())
+            merged.setMinutes(time.getMinutes())
         }
-        if (file && previewUrl) {
-            setImagePreview(previewUrl)
-        } else {
-            setImagePreview(null)
-        }
+        return merged
     }
 
+    const handleSubmit = () => {
+        if (!session?.user?.id) {
+            console.error("No user session found");
+            return;
+        }
+        if (!imagePreview) {
+            console.error("No image selected")
+            return;
+        }
+        const mergedDate = getMergedDate()
+        if(!mergedDate){
+            console.error("No date selected")
+            return;
+        }
+        createPost.mutate({
+            title,
+            organizationId: session.user.id,
+            activityTypeId,
+            description,
+            instaLink,
+            image: imagePreview,
+            date,
+        })
+    }   
     return (
         <div>
             <Navbar />
@@ -36,6 +81,7 @@ const CreatePage = () => {
                         <FormInput 
                             label="ชื่อหัวข้อ"
                             className="w-full"
+                            onTextChange={(value) => setTitle(value)}
                         />
                         <div className="flex lg:flex-row flex-col lg:gap-4 gap-5 justify-between">
                             <div className="basis-1/3 gap-2.5">
@@ -45,6 +91,7 @@ const CreatePage = () => {
                                     isDropdown={true}
                                     typeList={type}
                                     className="w-full focus-visible:ring-0"
+                                    onDropdownChange={(value) => setActivityTypeId(value)}
                                 />
                             </div>
                             <div className="basis-2/3 gap-2.5">
@@ -54,6 +101,7 @@ const CreatePage = () => {
                                     isMultiDropdown={true}
                                     categoryList={category}
                                     className="w-full"
+                                    onMultiDropdownChange={(values) => console.log(values)}
                                 />
                             </div>
                         </div>
@@ -62,11 +110,13 @@ const CreatePage = () => {
                             placeholder="เขียนอะไรสักอย่าง..."
                             isTextArea= {true}
                             className="w-full h-25 sm:h-75 sm:resize-none selection:bg-primary selection:text-primary-foreground placeholder:text-sm sm:placeholder:text-base"
+                            onTextChange={(value) => setDescription(value)}
                         />
                         <FormInput
                             icon="link"
                             label="ฟอร์มรับสมัคร"
                             className="w-full"
+                            onTextChange={(value) => setInstaLink(value)}
                         />
                         <div className="flex sm:flex-row flex-col items-stretch gap-2.5 w-full">
                             <div className="grow w-full">
@@ -76,6 +126,7 @@ const CreatePage = () => {
                                     placeholder="วัน/เดือน/ปี"
                                     isDate={true}
                                     className=""
+                                    onDateChange={(date) => setDate(date)}
                                 />
                             </div>
                             <div className="grow w-full">
@@ -84,6 +135,7 @@ const CreatePage = () => {
                                     placeholder="เวลา"
                                     isTime={true}
                                     className=""
+                                    onTimeChange={(time) => setTime(time)}
                                 />
                             </div>
                         </div>
@@ -91,10 +143,10 @@ const CreatePage = () => {
                     </section>
                     {/* Right: upload picture */}
                     <aside className="sm:basis-2/5 w-full relative">
-                        {imagePreview ? (
+                        {imageUrl ? (
                             <div className="w-full">
                             <img 
-                                src={imagePreview} 
+                                src={imageUrl}
                                 alt="Image preview"
                                 className="w-full h-auto rounded-md object-contain"
                             />

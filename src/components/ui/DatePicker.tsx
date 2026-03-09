@@ -11,7 +11,11 @@ import {
 } from "@/components/ui/Popover"
 import { cn } from "@/lib/utils"
 
-export function DatePicker() {
+type DatePickerProps = {
+    onChange?: (date: Date) => void
+}
+
+export function DatePicker({ onChange }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
   const [date, setDate] = React.useState<Date | undefined>(undefined)
   const formatDate = (date: Date) => {
@@ -20,6 +24,7 @@ export function DatePicker() {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
+  
   return (
     <div className="flex flex-col gap-3">
       <Popover open={open} onOpenChange={setOpen}>
@@ -44,6 +49,9 @@ export function DatePicker() {
             onSelect={(date) => {
               setDate(date)
               setOpen(false)
+              if (date) {
+                onChange?.(date)
+              }
             }}
           />
         </PopoverContent>
