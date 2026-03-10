@@ -12,7 +12,7 @@ export interface UseImageUploadOptions {
 const PREVIEW_IMG_STYLE =
 	"height:100%; width:100%; border-radius: 9999px; object-fit:cover; border: 1px solid #d6d6d6";
 
-function fileToBase64(file: File): Promise<string> {
+export function fileToBase64(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const r = new FileReader();
 		r.onload = () => {

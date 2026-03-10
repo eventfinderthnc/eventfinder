@@ -1,10 +1,13 @@
 "use client"
 
 import { api } from "@/trpc/react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "@/lib/auth-client"
-import useImageUpload from "@/lib/hooks/useImageUpload"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { fileToBase64 } from "@/lib/hooks/useImageUpload"
  
 import { Navbar } from "@/components/ui/Navbar"
 import { Footer } from "@/components/ui/Footer"
@@ -13,23 +16,40 @@ import { Button } from "@/components/ui/Button"
 import { Upload } from "lucide-react"
 import { FileInput } from "@/components/ui/FileInput"
 
+import { CreatePostRequestSchema } from "@/server/api/dto/post.dto"
+
+const CreatePostWithInterestsSchema = CreatePostRequestSchema.and(
+    z.object({
+        interestIds: z.array(z.string().uuid()).min(1),
+    })
+)
+
+type CreatePostWithInterests = z.infer<typeof CreatePostWithInterestsSchema>
+
 const CreatePage = () => {
+    const type: string[] = ["ONSITE","ONLINE","HYBRID"];
+    const category: string[] = ["Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
+
     const router = useRouter()
     const { data: session } = useSession()
 
-    const [title, setTitle] = useState("")
-    const [organizationId, setOrganizationId] = useState("")
-    const [activityTypeId, setActivityTypeId] = useState("")
-    const [interests, setInterests] = useState<string[]>([])
-    const [description, setDescription] = useState("")
-    const [instaLink, setInstaLink] = useState("")  
-    const [date, setDate] = useState<Date>(new Date())
-    const [time, setTime] = useState<Date | null>(null)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null)
+    
+    const { handleSubmit, getValues, setValue, formState: { errors } } = useForm<CreatePostWithInterests>({
+        resolver: zodResolver(CreatePostWithInterestsSchema),
+        defaultValues: {
+            title: "",
+            organizationId: "",
+            activityTypeId: "",
+            interestIds: [],
+            description: "",
+            instaLink: "",
+            image: "",
+            date: new Date(),
+        }
+    })
 
-    const type: string[] = ["ONSITE","ONLINE","HYBRID"];
-    const category: string[] = ["Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
     const createPost = api.post.create.useMutation({
         onSuccess: () => {
             router.push("/")
@@ -50,17 +70,10 @@ const CreatePage = () => {
         }
     }
 
-    const getMergedDate = (): Date | null => {
-        if(!date) return null
-        const merged = new Date(date)
-        if(time){
-            merged.setHours(time.getHours())
-            merged.setMinutes(time.getMinutes())
-        }
-        return merged
-    }
-
-    const handleSubmit = async () => {
+    const uploadMutation = api.upload.uploadImage.useMutation()
+    
+    const onSubmit = async (data: CreatePostWithInterests) => {
+        console.log("form data:", data)
         if (!session?.user?.id) {
             console.error("No user session found");
             return;
@@ -69,26 +82,21 @@ const CreatePage = () => {
             console.error("No image selected")
             return;
         }
-        const mergedDate = getMergedDate()
-        if(!mergedDate){
-            console.error("No date selected")
-            return;
-        }
 
-        const formData = new FormData()
-        formData.append("file", imageFile)
-        const uploadRes = await fetch("/api/upload", { method: "POST", body: formData })
-        const { url } = await uploadRes.json() as { url: string }
-
+        const base64 = await fileToBase64(imageFile)
+        const uploadRes = await uploadMutation.mutateAsync({
+            data: base64,
+            contentType: imageFile.type as "image/jpeg" | "image/png" | "image/webp",
+        })
         createPost.mutate({
-            title,
+            title: data.title,
             organizationId: session.user.id,
-            activityTypeId,
-            description,
-            instaLink,
-            image: url,
-            date: mergedDate,
-            interestIds: interests,
+            activityTypeId: data.activityTypeId,
+            description: data.description,
+            instaLink: data.instaLink,
+            image: uploadRes.url,
+            date: data.date,
+            interestIds: data.interestIds,
         })
     }   
     return (
@@ -102,7 +110,7 @@ const CreatePage = () => {
                         <FormInput 
                             label="ชื่อหัวข้อ"
                             className="w-full"
-                            onTextChange={(value) => setTitle(value)}
+                            onTextChange={(value) => setValue("title", value)}
                         />
                         <div className="flex lg:flex-row flex-col lg:gap-4 gap-5 justify-between">
                             <div className="basis-1/3 gap-2.5">
@@ -112,7 +120,7 @@ const CreatePage = () => {
                                     isDropdown={true}
                                     typeList={type}
                                     className="w-full focus-visible:ring-0"
-                                    onDropdownChange={(value) => setActivityTypeId(value)}
+                                    onDropdownChange={(value) => setValue("activityTypeId", value)}
                                 />
                             </div>
                             <div className="basis-2/3 gap-2.5">
@@ -122,7 +130,7 @@ const CreatePage = () => {
                                     isMultiDropdown={true}
                                     categoryList={category}
                                     className="w-full"
-                                    onMultiDropdownChange={(values) => setInterests(values)}
+                                    onMultiDropdownChange={(values) => setValue("interestIds", values)}
                                 />
                             </div>
                         </div>
@@ -131,13 +139,13 @@ const CreatePage = () => {
                             placeholder="เขียนอะไรสักอย่าง..."
                             isTextArea= {true}
                             className="w-full h-25 sm:h-75 sm:resize-none selection:bg-primary selection:text-primary-foreground placeholder:text-sm sm:placeholder:text-base"
-                            onTextChange={(value) => setDescription(value)}
+                            onTextChange={(value) => setValue("description", value)}
                         />
                         <FormInput
                             icon="link"
                             label="ฟอร์มรับสมัคร"
                             className="w-full"
-                            onTextChange={(value) => setInstaLink(value)}
+                            onTextChange={(value) => setValue("instaLink", value)}
                         />
                         <div className="flex sm:flex-row flex-col items-stretch gap-2.5 w-full">
                             <div className="grow w-full">
@@ -147,7 +155,7 @@ const CreatePage = () => {
                                     placeholder="วัน/เดือน/ปี"
                                     isDate={true}
                                     className=""
-                                    onDateChange={(date) => setDate(date)}
+                                    onDateChange={(value) => setValue("date",value)}
                                 />
                             </div>
                             <div className="grow w-full">
@@ -156,12 +164,17 @@ const CreatePage = () => {
                                     placeholder="เวลา"
                                     isTime={true}
                                     className=""
-                                    onTimeChange={(time) => setTime(time)}
+                                    onTimeChange={(time) => {
+                                        const current = new Date(getValues("date"))
+                                        current.setHours(time.getHours())
+                                        current.setMinutes(time.getMinutes())
+                                        setValue("date",current)
+                                    }}
                                 />
                             </div>
                         </div>
                         <Button
-                            onClick={handleSubmit}
+                            onClick={handleSubmit(onSubmit)}
                             disabled={createPost.isPending}
                             className="w-full text-white h-12 text-base hover:bg-primary/90"
                         >
