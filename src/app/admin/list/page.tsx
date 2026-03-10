@@ -1,6 +1,6 @@
 "use client"
 
-import { ConfirmModal } from "@/components/popup/ConfirmModal"
+import { ConfirmModal } from "@/components/modal/ConfirmModal"
 import { SearchBar } from "@/components/ui/SearchBar"
 import { Trash2, ChevronLeft, ChevronRight, SquareMousePointerIcon } from "lucide-react"
 import Image from "next/image"
