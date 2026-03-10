@@ -35,7 +35,7 @@ function FileInput({
     <label
       className={cn(
         "flex items-center h-9 w-full cursor-pointer rounded-md border border-input bg-transparent px-3 text-sm text-muted-foreground shadow-xs",
-        "hover:bg-accent/30",
+        "hover:bg-primary/90",
         className
       )}
     >

@@ -5,6 +5,7 @@ import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
 import type { Post, CreatePostRequest } from "@/server/api/dto/post.dto";
 import { post } from "@/server/db/post";
+import { interestXPost } from "@/server/db/interestXPost";
 
 export interface IPostService {
 	create(req: CreatePostRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
@@ -21,7 +22,7 @@ export interface IPostService {
 }
 
 class PostService implements IPostService {
-	async create(req: CreatePostRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]> {
+	async create(req: CreatePostRequest, trx?: typeof db, interestIds?: string[]): Promise<[string | null, ErrorOrNull]> {
 		const database = trx ?? db;
 		const id = randomUUID();
 		const res = await database
@@ -34,7 +35,25 @@ class PostService implements IPostService {
 			});
 
 		if (res instanceof Error) return [null, res];
-		return [res[0]?.id ?? null, null];
+		const postId = res[0]?.id ?? null;
+		if (!postId) return [null, new PostgreSQLError()];
+
+		if (interestIds && interestIds.length > 0) {
+			const interestRes = await database
+				.insert(interestXPost)
+				.values(interestIds.map((interestId) => ({
+					interestId,
+					postId,
+				})))
+				.catch((e) => {
+					console.log(e);
+					return new PostgreSQLError();
+				});
+
+			if (interestRes instanceof Error) return [null, interestRes];
+		}
+
+		return [postId, null];
 	}
 
 	async getAll(): Promise<[Post[], ErrorOrNull]> {

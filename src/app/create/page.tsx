@@ -1,15 +1,15 @@
 "use client"
 
 import { api } from "@/trpc/react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "@/lib/auth-client"
-
+import useImageUpload from "@/lib/hooks/useImageUpload"
+ 
 import { Navbar } from "@/components/ui/Navbar"
 import { Footer } from "@/components/ui/Footer"
 import { FormInput } from "@/components/ui/FormInput"
 import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/Input"
 import { Upload } from "lucide-react"
 import { FileInput } from "@/components/ui/FileInput"
 
@@ -20,11 +20,13 @@ const CreatePage = () => {
     const [title, setTitle] = useState("")
     const [organizationId, setOrganizationId] = useState("")
     const [activityTypeId, setActivityTypeId] = useState("")
+    const [interests, setInterests] = useState<string[]>([])
     const [description, setDescription] = useState("")
-    const [instaLink, setInstaLink] = useState("")
+    const [instaLink, setInstaLink] = useState("")  
     const [date, setDate] = useState<Date>(new Date())
     const [time, setTime] = useState<Date | null>(null)
-    const [imageUrl, setImageUrl] = useState<String | null>(null)
+    const [imagePreview, setImagePreview] = useState<string | null>(null)
+    const [imageFile, setImageFile] = useState<File | null>(null)
 
     const type: string[] = ["ONSITE","ONLINE","HYBRID"];
     const category: string[] = ["Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
@@ -36,6 +38,18 @@ const CreatePage = () => {
             console.error("Failed to create post:", error)
         },
     })
+
+    const handleFileSelect = (file: File | null, previewUrl: string) => {
+        if (imagePreview) URL.revokeObjectURL(imagePreview)
+        if (file && previewUrl) {
+            setImagePreview(previewUrl)
+            setImageFile(file)
+        } else {
+            setImagePreview(null)
+            setImageFile(null)
+        }
+    }
+
     const getMergedDate = (): Date | null => {
         if(!date) return null
         const merged = new Date(date)
@@ -46,12 +60,12 @@ const CreatePage = () => {
         return merged
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!session?.user?.id) {
             console.error("No user session found");
             return;
         }
-        if (!imagePreview) {
+        if (!imageFile) {
             console.error("No image selected")
             return;
         }
@@ -60,14 +74,21 @@ const CreatePage = () => {
             console.error("No date selected")
             return;
         }
+
+        const formData = new FormData()
+        formData.append("file", imageFile)
+        const uploadRes = await fetch("/api/upload", { method: "POST", body: formData })
+        const { url } = await uploadRes.json() as { url: string }
+
         createPost.mutate({
             title,
             organizationId: session.user.id,
             activityTypeId,
             description,
             instaLink,
-            image: imagePreview,
-            date,
+            image: url,
+            date: mergedDate,
+            interestIds: interests,
         })
     }   
     return (
@@ -101,7 +122,7 @@ const CreatePage = () => {
                                     isMultiDropdown={true}
                                     categoryList={category}
                                     className="w-full"
-                                    onMultiDropdownChange={(values) => console.log(values)}
+                                    onMultiDropdownChange={(values) => setInterests(values)}
                                 />
                             </div>
                         </div>
@@ -139,40 +160,43 @@ const CreatePage = () => {
                                 />
                             </div>
                         </div>
-                        <Button className="w-full text-white h-12 text-base hover:bg-accent/30">อัพโหลด</Button>
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={createPost.isPending}
+                            className="w-full text-white h-12 text-base hover:bg-primary/90"
+                        >
+                            {createPost.isPending ? "กำลังสร้างโพสต์..." : "อัพโหลด"}
+                        </Button>
                     </section>
                     {/* Right: upload picture */}
                     <aside className="sm:basis-2/5 w-full relative">
-                        {imageUrl ? (
+                        {imagePreview ? (
                             <div className="w-full">
-                            <img 
-                                src={imageUrl}
-                                alt="Image preview"
-                                className="w-full h-auto rounded-md object-contain"
-                            />
-                            <div className="mt-5 flex justify-center">
-                                <FileInput
-                                    placeholder="เปลี่ยนรูปภาพ"
-                                    onFileSelect={handleFileSelect}
-                                    className="justify-center text-base bg-[#DE5C8E] text-white lg:h-10 rounded-full"
+                                <img
+                                    src={imagePreview}
+                                    alt="Image preview"
+                                    className="w-full h-auto rounded-md object-contain"
                                 />
-                            </div>
+                                <div className="mt-5 flex justify-center">
+                                    <FileInput
+                                        placeholder="เปลี่ยนรูปภาพ"
+                                        onFileSelect={handleFileSelect}
+                                        className="justify-center text-base bg-[#DE5C8E] text-white lg:h-10 lg:w-60"
+                                    />
+                                </div>
                             </div>
                         ) : (
                             <div className="bg-[#DE5C8E0D] rounded-md w-full sm:h-155 h-100 flex flex-col items-center justify-center gap-2.5 border-dashed border-[#DE5C8E] border-2">
-                            <div className="flex flex-col items-center justify-center gap-2.5">
-                                <Upload 
-                                color="#DE5C8E"
-                                className="w-8 h-auto sm:w-12"
+                                <div className="flex flex-col items-center justify-center gap-2.5">
+                                    <Upload color="#DE5C8E" className="w-8 h-auto sm:w-12"/>
+                                    <h1 className="font-medium text-base hidden lg:flex">ลากแล้วปล่อยรูปภาพที่นี่</h1>
+                                    <h1 className="font-medium sm:text-base text-sm flex lg:hidden">อัพโหลดรูปภาพ</h1>
+                                </div>
+                                <FileInput
+                                    placeholder="เลือกจากในคอมพิวเตอร์"
+                                    onFileSelect={handleFileSelect}
+                                    className="justify-center text-base bg-[#DE5C8E] text-white absolute inset-0 w-full h-full opacity-0 cursor-pointer lg:static lg:w-60 lg:h-10 lg:opacity-100"
                                 />
-                                <h1 className="font-medium text-base hidden lg:flex">ลากแล้วปล่อยรูปภาพที่นี่</h1>
-                                <h1 className="font-medium sm:text-base text-sm flex lg:hidden">อัพโหลดรูปภาพ</h1>
-                            </div>
-                            <FileInput
-                                placeholder="เลือกจากในคอมพิวเตอร์"
-                                onFileSelect={handleFileSelect}
-                                className="justify-center text-base bg-[#DE5C8E] text-white absolute inset-0 w-full h-full opacity-0 cursor-pointer lg:static lg:w-60 lg:h-10 lg:opacity-100"
-                            />
                             </div>
                         )}
                     </aside>
