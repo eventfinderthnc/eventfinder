@@ -27,11 +27,12 @@ const CreatePostWithInterestsSchema = CreatePostRequestSchema.and(
 type CreatePostWithInterests = z.infer<typeof CreatePostWithInterestsSchema>
 
 const CreatePage = () => {
-    const type: string[] = ["ONSITE","ONLINE","HYBRID"];
-    const category: string[] = ["Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
+    const type: string[] = ["550e8400-e29b-41d4-a716-446655440000","ONSITE","ONLINE","HYBRID"];
+    const category: string[] = ["550e8400-e29b-41d4-a716-446655440000","Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
 
     const router = useRouter()
     const { data: session } = useSession()
+    // console.log("session user:", session?.user)
 
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null)
@@ -40,7 +41,7 @@ const CreatePage = () => {
         resolver: zodResolver(CreatePostWithInterestsSchema),
         defaultValues: {
             title: "",
-            organizationId: "",
+            organizationId: "550e8400-e29b-41d4-a716-446655440000",
             activityTypeId: "",
             interestIds: [],
             description: "",
@@ -51,7 +52,8 @@ const CreatePage = () => {
     })
 
     const createPost = api.post.create.useMutation({
-        onSuccess: () => {
+        onSuccess: (res) => {
+            console.log("post created: ", res)
             router.push("/")
         },
         onError: (error) => {
@@ -62,11 +64,14 @@ const CreatePage = () => {
     const handleFileSelect = (file: File | null, previewUrl: string) => {
         if (imagePreview) URL.revokeObjectURL(imagePreview)
         if (file && previewUrl) {
+            console.log("Test: ", file)
             setImagePreview(previewUrl)
             setImageFile(file)
+            setValue("image", previewUrl)
         } else {
             setImagePreview(null)
             setImageFile(null)
+            setValue("image", "")
         }
     }
 
@@ -74,10 +79,10 @@ const CreatePage = () => {
     
     const onSubmit = async (data: CreatePostWithInterests) => {
         console.log("form data:", data)
-        if (!session?.user?.id) {
-            console.error("No user session found");
-            return;
-        }
+        // if (!session?.user?.id) {
+        //     console.error("No user session found");
+        //     return;
+        // }
         if (!imageFile) {
             console.error("No image selected")
             return;
@@ -88,9 +93,11 @@ const CreatePage = () => {
             data: base64,
             contentType: imageFile.type as "image/jpeg" | "image/png" | "image/webp",
         })
+        console.log("uploaded image URL: ", uploadRes.url)
         createPost.mutate({
             title: data.title,
-            organizationId: session.user.id,
+            // organizationId: session.user.id,
+            organizationId: "550e8400-e29b-41d4-a716-446655440000",
             activityTypeId: data.activityTypeId,
             description: data.description,
             instaLink: data.instaLink,
@@ -174,7 +181,11 @@ const CreatePage = () => {
                             </div>
                         </div>
                         <Button
-                            onClick={handleSubmit(onSubmit)}
+                            onClick={() => {
+                                handleSubmit(onSubmit)()
+                                console.log("current form values:", getValues())
+                                console.log("form errors:", errors)
+                            }}
                             disabled={createPost.isPending}
                             className="w-full text-white h-12 text-base hover:bg-primary/90"
                         >
