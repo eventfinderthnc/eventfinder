@@ -22,9 +22,14 @@ export interface IPostService {
 }
 
 class PostService implements IPostService {
-	async create(req: CreatePostRequest, trx?: typeof db, interestIds?: string[]): Promise<[string | null, ErrorOrNull]> {
+	async create(
+		req: CreatePostRequest,
+		trx?: typeof db, 
+		interestIds?: string[]
+	): Promise<[string | null, ErrorOrNull]> {
 		const database = trx ?? db;
 		const id = randomUUID();
+		console.log("in service: ", req)
 		const res = await database
 			.insert(post)
 			.values({ ...req, id })

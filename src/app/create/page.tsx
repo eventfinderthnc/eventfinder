@@ -27,8 +27,11 @@ const CreatePostWithInterestsSchema = CreatePostRequestSchema.and(
 type CreatePostWithInterests = z.infer<typeof CreatePostWithInterestsSchema>
 
 const CreatePage = () => {
-    const type: string[] = ["550e8400-e29b-41d4-a716-446655440000","ONSITE","ONLINE","HYBRID"];
-    const category: string[] = ["550e8400-e29b-41d4-a716-446655440000","Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
+    //need to link with actual uuid
+    const type: string[] = ["ONSITE","ONLINE","HYBRID"];
+    const category: string[] = ["Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
+    // const type: string[] = ["550e8400-e29b-41d4-a716-446655440000", "ONSITE","ONLINE","HYBRID"];
+    // const category: string[] = ["550e8400-e29b-41d4-a716-446655440000", "Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
 
     const router = useRouter()
     const { data: session } = useSession()
@@ -41,7 +44,8 @@ const CreatePage = () => {
         resolver: zodResolver(CreatePostWithInterestsSchema),
         defaultValues: {
             title: "",
-            organizationId: "550e8400-e29b-41d4-a716-446655440000",
+            organizationId: "",
+            // organizationId: "550e8400-e29b-41d4-a716-446655440000",
             activityTypeId: "",
             interestIds: [],
             description: "",
@@ -78,11 +82,11 @@ const CreatePage = () => {
     const uploadMutation = api.upload.uploadImage.useMutation()
     
     const onSubmit = async (data: CreatePostWithInterests) => {
-        console.log("form data:", data)
-        // if (!session?.user?.id) {
-        //     console.error("No user session found");
-        //     return;
-        // }
+        // console.log("form data:", data)
+        if (!session?.user?.id) {
+            console.error("No user session found");
+            return;
+        }
         if (!imageFile) {
             console.error("No image selected")
             return;
@@ -93,11 +97,11 @@ const CreatePage = () => {
             data: base64,
             contentType: imageFile.type as "image/jpeg" | "image/png" | "image/webp",
         })
-        console.log("uploaded image URL: ", uploadRes.url)
+        // console.log("uploaded image URL: ", uploadRes.url)
         createPost.mutate({
             title: data.title,
-            // organizationId: session.user.id,
-            organizationId: "550e8400-e29b-41d4-a716-446655440000",
+            organizationId: session.user.id,
+            // organizationId: "550e8400-e29b-41d4-a716-446655440000",
             activityTypeId: data.activityTypeId,
             description: data.description,
             instaLink: data.instaLink,
