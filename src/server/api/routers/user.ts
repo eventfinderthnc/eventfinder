@@ -1,15 +1,64 @@
 import { TRPCError } from "@trpc/server";
-import { CreateUserRequestSchema, UpdateUserRequestSchema } from "../dto/user.dto";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { UpdateUserRequestSchema } from "../dto/user.dto";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { getTRPCError } from "@/utils/error";
 import { user } from "@/server/db/auth-schema";
 import z from "zod";
-import { and, eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { userServiceImpl } from "@/server/api/service/user.service";
 import { db } from "@/server/db";
 import { interestXUser } from "@/server/db/interestXUser";
+import { auth } from "@/utils/auth";
 
 export const userRouter = createTRPCRouter({
+  getAllOrganizers: protectedProcedure.query(async () => {
+    const organizers = await db.query.user.findMany({
+      where: eq(user.role, "ORGANIZATION"),
+      columns: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+      },
+    });
+
+    return organizers;
+  }),
+
+  createOrganizerAccount: protectedProcedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        password: z.string().min(6),
+        name: z.string().min(1).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const fallbackName = input.email.split("@")[0] ?? "Organizer";
+
+      try {
+        const result = await auth.api.signUpEmail({
+          headers: ctx.headers,
+          body: {
+            email: input.email,
+            password: input.password,
+            name: input.name ?? fallbackName,
+            role: "ORGANIZATION",
+          },
+        });
+
+        return {
+          id: result.user.id,
+          email: result.user.email,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: error instanceof Error ? error.message : "Unable to create organizer account",
+        });
+      }
+    }),
+
   me: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
 
