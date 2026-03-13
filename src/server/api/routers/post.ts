@@ -15,7 +15,7 @@ const CreatePostWithInterestsSchema = CreatePostRequestSchema.and(
 )
 
 export const postRouter = createTRPCRouter({
-	create: publicProcedure
+	create: protectedProcedure
 	.input(CreatePostWithInterestsSchema)
 	.mutation(async ({ input }) => {
 		console.log("in router:", input)
