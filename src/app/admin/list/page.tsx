@@ -5,19 +5,21 @@ import { SearchBar } from "@/components/ui/SearchBar"
 import { Trash2, ChevronLeft, ChevronRight, SquareMousePointerIcon } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-
-const data = Array.from({ length: 18 }).map((_, i) => ({
-    id: i,
-    name: "Thailand Incubator Club",
-    email: "thicclub@gmail.com",
-}))
+import { api } from "@/trpc/react"
 
 export default function AdminListPage() {
     const [page, setPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(7)
 
     const [openDelete, setOpenDelete] = useState(false)
-    const [selectedId, setSelectedId] = useState<number | null>(null)       
+    const [selectedId, setSelectedId] = useState<string | null>(null)
+
+    const { data: organizers = [], isLoading, refetch } = api.user.getAllOrganizers.useQuery()
+    const deleteOrganizer = api.user.delete.useMutation({
+        onSuccess: async () => {
+            await refetch()
+        },
+    })
 
     useEffect(() => {
         const calculateItemsPerPage = () => {
@@ -50,9 +52,21 @@ export default function AdminListPage() {
         return () => window.removeEventListener("resize", calculateItemsPerPage)
     }, [])
 
-    const totalPages = Math.ceil(data.length / itemsPerPage)
+    const data = organizers.map((item) => ({
+        id: item.id,
+        name: item.name?.trim() ? item.name : "Organizer",
+        email: item.email,
+    }))
+
+    const totalPages = Math.max(1, Math.ceil(data.length / itemsPerPage))
     const startIndex = (page - 1) * itemsPerPage
     const pageData = data.slice(startIndex, startIndex + itemsPerPage)
+
+    useEffect(() => {
+        if (page > totalPages) {
+            setPage(totalPages)
+        }
+    }, [page, totalPages])
 
     return (
         <div className="text-sm sm:text-base relative w-full h-full flex flex-col gap-5 px-5 sm:px-10 lg:pr-25 py-5">
@@ -74,7 +88,15 @@ export default function AdminListPage() {
                 </div>
 
                 {/* Rows */}
-                {pageData.map((item) => (
+                {isLoading && (
+                    <div className="px-6 py-6 text-gray-500">กำลังโหลดข้อมูล...</div>
+                )}
+
+                {!isLoading && pageData.length === 0 && (
+                    <div className="px-6 py-6 text-gray-500">ยังไม่มีบัญชีผู้จัดกิจกรรม</div>
+                )}
+
+                {!isLoading && pageData.map((item) => (
                 <div
                     key={item.id}
                     className="grid grid-cols-[1.3fr_0.3fr] sm:grid-cols-[1.5fr_1fr_0.3fr] lg:grid-cols-[1.5fr_1fr_1fr] px-3 py-4 sm:px-6 sm:py-4 items-center border-b last:border-b-0 border-stroke"
@@ -143,8 +165,7 @@ export default function AdminListPage() {
                 onCancel={() => setOpenDelete(false)}
                 onConfirm={() => {
                     if (selectedId !== null) {
-                    console.log("delete id:", selectedId)
-                    // call API delete here
+                        deleteOrganizer.mutate({ id: selectedId })
                     }
                     setOpenDelete(false)
                 }}
