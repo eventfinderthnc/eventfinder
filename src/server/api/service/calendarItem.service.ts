@@ -10,10 +10,10 @@ import { organization } from "@/server/db/organization";
 
 export interface ICalendarItemService {
     create(req: CreateCalendarItemRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
-    getByMonth(filter?: SQL): Promise<[CalendarItem[], ErrorOrNull]>;
-    getByFilter(filter?: SQL): Promise<[CalendarItem[] | [], ErrorOrNull]>; // getAll
-    getOneByFilter(filter: SQL): Promise<[CalendarItem | null, ErrorOrNull]>;
-    update(filter: SQL, update: Partial<CalendarItem>, trx?: typeof db): Promise<ErrorOrNull>;
+    getByMonth(filter?: SQL): Promise<[any[], ErrorOrNull]>;
+    getAllByUserId(filter?: SQL): Promise<[any[], ErrorOrNull]>; // getAll
+    getOneByUserId(filter: SQL): Promise<[any | null, ErrorOrNull]>;
+    update(filter: SQL, update: Partial<CalendarItem>, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
     delete(filter: SQL): Promise<ErrorOrNull>;
 }
 
@@ -53,34 +53,72 @@ class CalendarItemService implements ICalendarItemService {
               ...t.organization,
               ...t.user,
               ...t.calendar_item,
+              userImage: t.user.image,
+              image: t.post.image,
             });
           });
         }
+        
         return [res, null];
     }
 
-    async getByFilter(filter?: SQL): Promise<[CalendarItem[], ErrorOrNull]> {
-        const res = await db.query.calendarItem.findMany({ where: filter }).catch((e) => {
-            console.log(e);
-            return new PostgreSQLError();
-        });
+    async getAllByUserId(filter?: SQL): Promise<[any[], ErrorOrNull]> {
+        const tmp = await db
+          .select()
+          .from(calendarItem)
+          .innerJoin(user, eq(calendarItem.userId, user.id))
+          .innerJoin(post, eq(calendarItem.postId, post.id))
+          .innerJoin(organization, eq(post.organizationId, organization.id))
+          .where(filter)
+          .orderBy(desc(post.date), asc(post.title));
 
-        if (res instanceof Error) return [[], res];
+        if (tmp instanceof Error) return [[], tmp];
+        const res: any[] = [];
+        if(tmp.length > 0) {
+          tmp.forEach((t: typeof tmp[0]) => {
+            res.push({
+              ...t.post,
+              ...t.organization,
+              ...t.user,
+              ...t.calendar_item,
+              userImage: t.user.image,
+              image: t.post.image,
+            });
+          });
+        }
+
         return [res, null];
     }
 
-    async getOneByFilter(filter: SQL): Promise<[CalendarItem | null, ErrorOrNull]> {
-        const res = await db.query.calendarItem.findFirst({ where: filter }).catch((e) => {
-            console.log(e);
-            return new PostgreSQLError();
-        });
+    async getOneByUserId(filter: SQL): Promise<[CalendarItem | null, ErrorOrNull]> {
+        const tmp = await db
+          .select()
+          .from(calendarItem)
+          .innerJoin(user, eq(calendarItem.userId, user.id))
+          .innerJoin(post, eq(calendarItem.postId, post.id))
+          .innerJoin(organization, eq(post.organizationId, organization.id))
+          .where(filter)
+          .orderBy(desc(post.date), asc(post.title));
 
-        if (res instanceof Error) return [null, res];
-        if (!res) return [null, new ErrorWithCategory("CalendarItem not found", ErrorCategory.ResourceNotFound)];
-        return [res, null];
+        if (tmp instanceof Error) return [null, tmp];
+        const res: any[] = [];
+        if(tmp.length > 0) {
+          tmp.forEach((t: typeof tmp[0]) => {
+            res.push({
+              ...t.post,
+              ...t.organization,
+              ...t.user,
+              ...t.calendar_item,
+              userImage: t.user.image,
+              image: t.post.image,
+            });
+          });
+        }
+        if (res.length == 0) return [null, new ErrorWithCategory("Calendar item not found", ErrorCategory.ResourceNotFound)];
+        return [res[0], null];
     }
 
-    async update(filter: SQL, update: Partial<CalendarItem>, trx?: typeof db): Promise<ErrorOrNull> {
+    async update(filter: SQL, update: Partial<CalendarItem>, trx?: typeof db): Promise<[string | null, ErrorOrNull]> {
         const database = trx ?? db;
 
         const res = await database
@@ -93,9 +131,9 @@ class CalendarItemService implements ICalendarItemService {
                 return new PostgreSQLError();
             });
 
-        if (res instanceof Error) return res;
-        if (res.length === 0) return new ErrorWithCategory("CalendarItem not found", ErrorCategory.ResourceNotFound);
-        return null;
+        if (res instanceof Error) return [null, res];
+        if (res.length === 0) return [null, new ErrorWithCategory("Calendar item not found", ErrorCategory.ResourceNotFound)];
+        return [res[0]?.updatedId ?? null, null];
     }
 
     async delete(filter: SQL): Promise<ErrorOrNull> {
