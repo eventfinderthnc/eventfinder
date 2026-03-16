@@ -6,6 +6,14 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasSession = request.cookies.has(SESSION_COOKIE);
 
+  // Calendar route: must have session (strict role check is in calendar/layout.tsx)
+  if (pathname.startsWith("/calendar")) {
+    if (!hasSession) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next();
+  }
+
   // Admin routes: must have session (strict role check is in admin/layout.tsx)
   if (pathname.startsWith("/admin")) {
     if (!hasSession) {
@@ -47,5 +55,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/create", "/auth/:path*"],
+  matcher: ["/calendar/:path*", "/admin/:path*", "/create", "/auth/:path*"],
 };
