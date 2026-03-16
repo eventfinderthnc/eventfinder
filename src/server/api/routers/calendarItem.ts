@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { calendarItemServiceImpl } from "@/server/api/service/calendarItem.service";
 import { CreateCalendarItemRequestSchema, UpdateCalendarItemRequestSchema } from "@/server/api/dto/calendarItem.dto";
 import { getTRPCError } from "@/utils/error";
@@ -24,30 +24,31 @@ export const calendarItemRouter = createTRPCRouter({
 			const [res, error] = await calendarItemServiceImpl.getByMonth(
 				and(eq(calendarItem.userId, input.userId), gte(post.date, startDate), lte(post.date, endDate)),
 			);
+
 			if (error) throw new TRPCError(getTRPCError(error));
 			return res;
 		}),
 
-	getOneByFilter: protectedProcedure
+	getOneByUserId: protectedProcedure
 		.input(
 			z.object({
 				userId: z.string().uuid(),
 			}),
 		)
 		.query(async ({ input }) => {
-			const [res, error] = await calendarItemServiceImpl.getOneByFilter(eq(calendarItem.userId, input.userId));
+			const [res, error] = await calendarItemServiceImpl.getOneByUserId(eq(calendarItem.userId, input.userId));
 			if (error) throw new TRPCError(getTRPCError(error));
 			return res;
 		}),
 
-	getAllByFilter: protectedProcedure
+	getAllByUserId: protectedProcedure
 		.input(
 			z.object({
 				userId: z.string().uuid(),
 			}),
 		)
 		.query(async ({ input }) => {
-			const [res, error] = await calendarItemServiceImpl.getByFilter(eq(calendarItem.userId, input.userId));
+			const [res, error] = await calendarItemServiceImpl.getAllByUserId(eq(calendarItem.userId, input.userId));
 			if (error) throw new TRPCError(getTRPCError(error));
 			return res;
 		}),
@@ -59,9 +60,9 @@ export const calendarItemRouter = createTRPCRouter({
 	}),
 
 	update: protectedProcedure.input(UpdateCalendarItemRequestSchema).mutation(async ({ input }) => {
-		const res = await calendarItemServiceImpl.update(eq(calendarItem.id, input.id), input);
-		if (res) return new TRPCError(getTRPCError(res));
-		return null;
+		const [res, error] = await calendarItemServiceImpl.update(eq(calendarItem.id, input.id), input);
+		if (error) return new TRPCError(getTRPCError(error));
+		return res;
 	}),
 
 	delete: protectedProcedure

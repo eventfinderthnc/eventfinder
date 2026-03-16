@@ -4,6 +4,7 @@ import "@/styles/calendar.css";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import thLocale from "@fullcalendar/core/locales/th";
+import type { RefObject } from "@fullcalendar/core/preact.js";
 
 export type eventType = {
   id: number;
@@ -19,15 +20,18 @@ export type eventType = {
 type CalendarProps = {
   locale?: string;
   data: eventType[];
+  handleDatesSet?: (dates: any) => void;
 };
 
 export default function Calendar({
   locale = "th",
   data,
+  handleDatesSet
 }: CalendarProps) {
   return (
     <div className="rounded-xl bg-white">
       <FullCalendar
+        datesSet={handleDatesSet}
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
         locale={locale}
