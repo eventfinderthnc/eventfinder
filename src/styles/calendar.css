@@ -25,13 +25,19 @@
 .fc-daygrid-day-frame {
     aspect-ratio: 1 / 1;
     overflow: hidden;
-    padding: 2px 2px;
+    padding: 0px 0px;
 }  
+
+.fc-daygrid-event-harness a {
+    padding: 0 !important;
+    margin: 0 !important;
+}
 
 .fc-daygrid-day-top {
     display: flex;
     justify-content: flex-start !important;
     align-items: flex-start;
+    padding: 2px 0px 0px 2px!important;
 }
 
 .fc-daygrid-day-number {
