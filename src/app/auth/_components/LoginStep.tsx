@@ -16,6 +16,7 @@ interface LoginStepProps {
 type LoginFormValues = {
     email: string;
     password: string;
+    confirmPassword: string;
 };
 
 export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
@@ -31,9 +32,10 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
     const {
         register,
         handleSubmit,
+        getValues,
         formState: { errors, isSubmitting },
     } = useForm<LoginFormValues>({
-        defaultValues: { email: "", password: "" },
+        defaultValues: { email: "", password: "", confirmPassword: "" },
     });
 
     const onSubmit = async (data: LoginFormValues) => {
@@ -143,6 +145,24 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
                                 <p className="text-red-500 text-sm">{errors.password.message}</p>
                             )}
                         </div>
+                        {!isLogin && (
+                            <div className="w-full flex flex-col gap-1">
+                                <Input
+                                    type="password"
+                                    placeholder="ยืนยันรหัสผ่าน"
+                                    className="w-full focus:border-primary"
+                                    aria-invalid={!!errors.confirmPassword}
+                                    {...register("confirmPassword", {
+                                        required: "กรุณายืนยันรหัสผ่าน",
+                                        validate: (value) =>
+                                            value === getValues("password") || "รหัสผ่านไม่ตรงกัน",
+                                    })}
+                                />
+                                {errors.confirmPassword && (
+                                    <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
+                                )}
+                            </div>
+                        )}
                         {submitError && (
                             <p className="text-red-500 text-sm w-full">{submitError}</p>
                         )}

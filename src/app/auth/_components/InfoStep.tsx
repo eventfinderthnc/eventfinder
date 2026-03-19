@@ -28,7 +28,11 @@ export default function InfoStep({
   const { data: me } = api.user.me.useQuery();
   const utils = api.useUtils();
 
-  useImageUpload(INPUT_ID, PREVIEW_DIV_ID);
+  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+  const { isUploading } = useImageUpload(INPUT_ID, PREVIEW_DIV_ID, {
+    upload: true,
+    onUploaded: (url) => setImageUrl(url),
+  });
 
   const [up, setUp] = useState(false);
   const [name, setName] = useState("");
@@ -59,6 +63,7 @@ export default function InfoStep({
       name,
       facultyId,
       isReceiveMail,
+      image: imageUrl,
     });
     onNext();
   };
@@ -164,8 +169,8 @@ export default function InfoStep({
       </div>
 
       <div className="flex w-full flex-col items-center gap-4">
-        <Button className="w-full hover:cursor-pointer" onClick={handleNext}>
-          ถัดไป
+        <Button className="w-full hover:cursor-pointer" onClick={handleNext} disabled={isUploading}>
+          {isUploading ? "กำลังอัปโหลด..." : "ถัดไป"}
         </Button>
 
         <div className="flex w-full items-center justify-center gap-1.5">

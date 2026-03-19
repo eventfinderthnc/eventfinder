@@ -19,6 +19,11 @@ const config = {
                 hostname: "avatars.githubusercontent.com",
                 pathname: "/**",
             },
+            {
+                protocol: "https",
+                hostname: "*.r2.dev",
+                pathname: "/**",
+            },
         ],
     },
 };
