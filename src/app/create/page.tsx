@@ -17,6 +17,7 @@ import { Upload } from "lucide-react"
 import { FileInput } from "@/components/ui/FileInput"
 
 import { CreatePostRequestSchema } from "@/server/api/dto/post.dto"
+import { interest } from "@/server/db/interest"
 
 const CreatePostWithInterestsSchema = CreatePostRequestSchema.and(
     z.object({
@@ -27,15 +28,11 @@ const CreatePostWithInterestsSchema = CreatePostRequestSchema.and(
 type CreatePostWithInterests = z.infer<typeof CreatePostWithInterestsSchema>
 
 const CreatePage = () => {
-    //need to link with actual uuid
-    const type: string[] = ["ONSITE","ONLINE","HYBRID"];
-    const category: string[] = ["Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
-    // const type: string[] = ["550e8400-e29b-41d4-a716-446655440000", "ONSITE","ONLINE","HYBRID"];
-    // const category: string[] = ["550e8400-e29b-41d4-a716-446655440000", "Coding", "Business", "Hackathon", "Healthcare", "Self-development"];
+    const { data: activityTypes } = api.activityType.getAll.useQuery();
+    const { data: interests } = api.interest.getAll.useQuery();
 
     const router = useRouter()
     const { data: session } = useSession()
-    // console.log("session user:", session?.user)
 
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null)
@@ -45,7 +42,6 @@ const CreatePage = () => {
         defaultValues: {
             title: "",
             organizationId: "",
-            // organizationId: "550e8400-e29b-41d4-a716-446655440000",
             activityTypeId: "",
             interestIds: [],
             description: "",
@@ -82,7 +78,6 @@ const CreatePage = () => {
     const uploadMutation = api.upload.uploadImage.useMutation()
     
     const onSubmit = async (data: CreatePostWithInterests) => {
-        // console.log("form data:", data)
         if (!session?.user?.id) {
             console.error("No user session found");
             return;
@@ -97,11 +92,9 @@ const CreatePage = () => {
             data: base64,
             contentType: imageFile.type as "image/jpeg" | "image/png" | "image/webp",
         })
-        // console.log("uploaded image URL: ", uploadRes.url)
         createPost.mutate({
             title: data.title,
             organizationId: session.user.id,
-            // organizationId: "550e8400-e29b-41d4-a716-446655440000",
             activityTypeId: data.activityTypeId,
             description: data.description,
             instaLink: data.instaLink,
@@ -129,9 +122,12 @@ const CreatePage = () => {
                                     label="รูปแบบกิจกรรม"
                                     icon="type"
                                     isDropdown={true}
-                                    typeList={type}
+                                    typeList={activityTypes?.map((t) => t.name) ?? []}
                                     className="w-full focus-visible:ring-0"
-                                    onDropdownChange={(value) => setValue("activityTypeId", value)}
+                                    onDropdownChange={(value) => {
+                                        const match = activityTypes?.find((t) => t.name === value)
+                                        if (match) setValue("activityTypeId", match.id)
+                                    }}
                                 />
                             </div>
                             <div className="basis-2/3 gap-2.5">
@@ -139,9 +135,14 @@ const CreatePage = () => {
                                     label="หมวดหมู่"
                                     icon="category"
                                     isMultiDropdown={true}
-                                    categoryList={category}
+                                    categoryList={interests?.map((t) => t.name) ?? []}
                                     className="w-full"
-                                    onMultiDropdownChange={(values) => setValue("interestIds", values)}
+                                    onMultiDropdownChange={(values) => {
+                                        const matches = values
+                                            .map((name) => interests?.find((i) => i.name === name)?.id)
+                                            .filter((id): id is string => id !== undefined)
+                                        setValue("interestIds", matches)
+                                    }}
                                 />
                             </div>
                         </div>

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { postServiceImpl } from "@/server/api/service/post.service";
 import { CreatePostRequestSchema, UpdatePostRequestSchema } from "@/server/api/dto/post.dto";
 import { getTRPCError } from "@/utils/error";
