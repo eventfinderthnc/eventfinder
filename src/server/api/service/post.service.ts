@@ -1,11 +1,15 @@
 import type { SQL } from "drizzle-orm";
 import { randomUUID } from "crypto";
-import { and, asc, desc, ilike, or } from "drizzle-orm";
+import { and, asc, desc, ilike, or, eq } from "drizzle-orm";
 import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
 import type { Post, CreatePostRequest } from "@/server/api/dto/post.dto";
 import { post } from "@/server/db/post";
 import { interestXPost } from "@/server/db/interestXPost";
+import { signToken } from "@/server/utils/signedTokens"
+import { user } from "@/server/db/auth-schema";
+import { userXOrganization } from "@/server/db/userXOrganization";
+import { sendMail } from "@/server/utils/mailer";
 
 export interface IPostService {
 	create(req: CreatePostRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
@@ -29,7 +33,6 @@ class PostService implements IPostService {
 	): Promise<[string | null, ErrorOrNull]> {
 		const database = trx ?? db;
 		const id = randomUUID();
-		console.log("in service: ", req)
 		const res = await database
 			.insert(post)
 			.values({ ...req, id })
@@ -58,9 +61,69 @@ class PostService implements IPostService {
 			if (interestRes instanceof Error) return [null, interestRes];
 		}
 
+		await this.sendPostNotification(postId, req.title, req.organizationId)
+			.catch((e)=>{
+				console.log("Mail send failed: ", e)
+			})
+
 		return [postId, null];
 	}
 
+	private async sendPostNotification(
+		postId: string,
+		postTitle: string,
+		organizationId: string,
+	): Promise<void> {
+		const subscribers = await db
+			.select({
+				email: user.email,
+				name: user.name
+			})
+			.from(userXOrganization)
+			.innerJoin(user, eq(userXOrganization.userId, user.id))
+			.where(
+				and(
+					eq(userXOrganization.organizationId, organizationId),
+					eq(user.isReceiveMail, true),
+				)
+			)
+		if (subscribers.length === 0) return
+		const appBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"
+		await Promise.all(
+			subscribers.map((subscriber) =>{
+				const token = signToken(postId)
+				const claimLink = `${appBase}/api/calendar/claim?token=${token}`
+
+				return sendMail({
+					to: subscriber.email,
+					subject:`กิจกรรมใหม่: ${postTitle}`,
+					text: `มีกิจกรรมใหม่ "${postTitle}" คลิกลิงก์เพื่อเพิ่มลงในปฏิทิน: ${claimLink}`,
+					// can add photo (use with useImageUpload)
+					// need design
+					html: `
+						<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+							<h2 style="color: #DE5C8E;">กิจกรรมใหม่!</h2>
+							<p>มีกิจกรรมใหม่ <strong>[ชิ่อกิจกรรม]</strong> ที่น่าสนใจสำหรับคุณ</p>
+							<a 
+								href="https://youtu.be/dQw4w9WgXcQ?si=07yHam1hbe1is-74"
+								style="
+									display: inline-block;
+									background-color: #DE5C8E;
+									color: white;
+									padding: 12px 24px;
+									border-radius: 8px;
+									text-decoration: none;
+									margin-top: 16px;
+								"
+							>
+								เพิ่มลงในปฏิทิน
+							</a>
+						</div>
+					`
+				})
+			})
+		)
+	}
 	async getAll(): Promise<[Post[], ErrorOrNull]> {
 		const res = await db.query.post
 			.findMany({

@@ -18,7 +18,6 @@ export const postRouter = createTRPCRouter({
 	create: protectedProcedure
 	.input(CreatePostWithInterestsSchema)
 	.mutation(async ({ input }) => {
-		console.log("in router:", input)
 		const { interestIds, ...postData } = input
 		const [res, error] = await postServiceImpl.create(postData, undefined, interestIds);
 		if (error) return new TRPCError(getTRPCError(error));

@@ -1,4 +1,4 @@
-import { pgTable, timestamp, text } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, text, uniqueIndex } from "drizzle-orm/pg-core";
 import { post } from "./post";
 import { user } from "./auth-schema";
 
@@ -15,4 +15,7 @@ export const calendarItem = pgTable("calendar_item", {
 		.defaultNow()
 		.$onUpdate(() => new Date())
 		.notNull(),
-});
+}, (table) => ({
+	userPostUnique: uniqueIndex("calendar_item_user_post_unique")
+		.on(table.userId, table.postId)
+}));
