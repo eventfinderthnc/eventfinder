@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { UpdateUserRequestSchema } from "../dto/user.dto";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, adminProcedure } from "../trpc";
 import { getTRPCError } from "@/utils/error";
 import { user } from "@/server/db/auth-schema";
 import z from "zod";
@@ -11,13 +11,13 @@ import { interestXUser } from "@/server/db/interestXUser";
 import { auth } from "@/utils/auth";
 
 export const userRouter = createTRPCRouter({
-  getOrganizerUser: protectedProcedure.query(async () => {
+  getOrganizerUser: adminProcedure.query(async () => {
     const [res, error] = await userServiceImpl.getByFilter(eq(user.role, "ORGANIZATION"));
     if (error) throw new TRPCError(getTRPCError(error));
     return res;
   }),
 
-  createOrganizerAccount: protectedProcedure
+  createOrganizerAccount: adminProcedure
     .input(
       z.object({
         email: z.string().email(),
