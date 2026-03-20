@@ -11,18 +11,10 @@ import { interestXUser } from "@/server/db/interestXUser";
 import { auth } from "@/utils/auth";
 
 export const userRouter = createTRPCRouter({
-  getAllOrganizers: protectedProcedure.query(async () => {
-    const organizers = await db.query.user.findMany({
-      where: eq(user.role, "ORGANIZATION"),
-      columns: {
-        id: true,
-        name: true,
-        email: true,
-        image: true,
-      },
-    });
-
-    return organizers;
+  getOrganizerUser: protectedProcedure.query(async () => {
+    const [res, error] = await userServiceImpl.getByFilter(eq(user.role, "ORGANIZATION"));
+    if (error) throw new TRPCError(getTRPCError(error));
+    return res;
   }),
 
   createOrganizerAccount: protectedProcedure
