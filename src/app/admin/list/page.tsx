@@ -14,7 +14,7 @@ export default function AdminListPage() {
     const [openDelete, setOpenDelete] = useState(false)
     const [selectedId, setSelectedId] = useState<string | null>(null)
 
-    const { data: organizers = [], isLoading, refetch } = api.user.getAllOrganizers.useQuery()
+    const { data: organizers = [], isLoading, refetch } = api.user.getOrganizerUser.useQuery()
     const deleteOrganizer = api.user.delete.useMutation({
         onSuccess: async () => {
             await refetch()
