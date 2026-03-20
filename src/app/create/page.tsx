@@ -17,7 +17,6 @@ import { Upload } from "lucide-react"
 import { FileInput } from "@/components/ui/FileInput"
 
 import { CreatePostRequestSchema } from "@/server/api/dto/post.dto"
-import { interest } from "@/server/db/interest"
 
 const CreatePostWithInterestsSchema = CreatePostRequestSchema.and(
     z.object({
@@ -64,7 +63,7 @@ const CreatePage = () => {
     const handleFileSelect = (file: File | null, previewUrl: string) => {
         if (imagePreview) URL.revokeObjectURL(imagePreview)
         if (file && previewUrl) {
-            console.log("Test: ", file)
+            // console.log("Test: ", file)
             setImagePreview(previewUrl)
             setImageFile(file)
             setValue("image", previewUrl)
@@ -188,8 +187,8 @@ const CreatePage = () => {
                         <Button
                             onClick={() => {
                                 handleSubmit(onSubmit)()
-                                console.log("current form values:", getValues())
-                                console.log("form errors:", errors)
+                                // console.log("current form values:", getValues())
+                                // console.log("form errors:", errors)
                             }}
                             disabled={createPost.isPending}
                             className="w-full text-white h-12 text-base hover:bg-primary/90"
