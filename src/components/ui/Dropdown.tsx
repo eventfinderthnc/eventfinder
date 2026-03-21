@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Button } from "@/components/ui/Button"
+import { cn } from "@/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,7 +46,7 @@ export function Dropdown({ children, ...props }: Arguments) {
           {props.icon}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className={props.menuContentClassName}>
+      <DropdownMenuContent className={cn("w-(--radix-dropdown-menu-trigger-width)", props.menuContentClassName)}>
         {props?.panelLabel && (
           <>
             <DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
