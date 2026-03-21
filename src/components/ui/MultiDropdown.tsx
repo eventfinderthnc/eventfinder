@@ -5,6 +5,7 @@ import { type DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-men
 import { z } from "zod";
 import { Button } from "@/components/ui/Button"
 import { ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils"
 
 import {
   DropdownMenu,
@@ -53,7 +54,7 @@ export function MultiDropdown({ children, ...props }: Arguments) {
           { props.icon }
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className={props.menuContentClassName}>
+      <DropdownMenuContent className={cn("w-(--radix-dropdown-menu-trigger-width)", props.menuContentClassName)}>
         { props.panelLabel && (<><DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
         <DropdownMenuSeparator /></>) }
         {
