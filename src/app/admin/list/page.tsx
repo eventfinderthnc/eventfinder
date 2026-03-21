@@ -10,11 +10,13 @@ import { api } from "@/trpc/react"
 export default function AdminListPage() {
     const [page, setPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(7)
+    const [searchQuery, setSearchQuery] = useState("")
 
     const [openDelete, setOpenDelete] = useState(false)
     const [selectedId, setSelectedId] = useState<string | null>(null)
 
     const { data: organizers = [], isLoading, refetch } = api.user.getOrganizerUser.useQuery()
+    
     const deleteOrganizer = api.user.delete.useMutation({
         onSuccess: async () => {
             await refetch()
@@ -58,9 +60,18 @@ export default function AdminListPage() {
         email: item.email,
     }))
 
-    const totalPages = Math.max(1, Math.ceil(data.length / itemsPerPage))
+    const filteredData = searchQuery.trim()
+        ? data.filter((item) => {
+              const q = searchQuery.toLowerCase()
+              const matchName = Boolean(item.name.toLowerCase().includes(q))
+              const matchEmail = Boolean(item.email.toLowerCase().includes(q))
+              return matchName || matchEmail
+          })
+        : data
+
+    const totalPages = Math.max(1, Math.ceil(filteredData.length / itemsPerPage))
     const startIndex = (page - 1) * itemsPerPage
-    const pageData = data.slice(startIndex, startIndex + itemsPerPage)
+    const pageData = filteredData.slice(startIndex, startIndex + itemsPerPage)
 
     useEffect(() => {
         if (page > totalPages) {
@@ -68,13 +79,22 @@ export default function AdminListPage() {
         }
     }, [page, totalPages])
 
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value)
+        setPage(1)
+    }
+
     return (
         <div className="text-sm sm:text-base relative w-full h-full flex flex-col gap-5 px-5 sm:px-10 lg:pr-25 py-5">
             {/* Header */}
             <div className="w-full flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                 <h1>จัดการบัญชีของชมรม</h1>
                 <div className="w-full lg:w-130">
-                    <SearchBar />
+                    <SearchBar
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        placeholder="ค้นหาชื่อหรืออีเมล"
+                    />
                 </div>
             </div>
 
@@ -93,7 +113,9 @@ export default function AdminListPage() {
                 )}
 
                 {!isLoading && pageData.length === 0 && (
-                    <div className="px-6 py-6 text-gray-500">ยังไม่มีบัญชีผู้จัดกิจกรรม</div>
+                    <div className="px-6 py-6 text-gray-500">
+                        {searchQuery.trim() ? `ไม่พบผลลัพธ์สำหรับ "${searchQuery}"` : "ยังไม่มีบัญชีผู้จัดกิจกรรม"}
+                    </div>
                 )}
 
                 {!isLoading && pageData.map((item) => (

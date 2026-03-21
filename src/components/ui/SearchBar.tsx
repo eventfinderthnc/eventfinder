@@ -5,22 +5,22 @@ import { cn } from "@/lib/utils"
 interface SearchBarProps extends React.InputHTMLAttributes<HTMLInputElement>{
   searchIconClassName ?: string,
   inputClassName ?: string,
+  containerClassName ?: string,
 }
 
-export function SearchBar({ className, searchIconClassName, inputClassName, ...props }: SearchBarProps) {
+export function SearchBar({ containerClassName, className, searchIconClassName, inputClassName, ...props }: SearchBarProps) {
   return (
-    <div 
-      className={cn("relative w-full", className)} 
-      {...props}
-    >
+    <div className={cn("relative w-full", containerClassName)}>
       <Search color="#757575" className={cn("absolute left-4 top-3 h-6 w-6", searchIconClassName)} />
       <Input
         type="search"
         placeholder="ค้นหา"
         className={cn(
           "h-12 pl-12.5 text-sm sm:text-base rounded-xl placeholder:text-[#757575] placeholder:text-sm sm:placeholder:text-base [&::-webkit-search-cancel-button]:hidden border-[#D6D6D6]",
+          className,
           inputClassName
         )}
+        {...props}
       />
     </div>
   );
