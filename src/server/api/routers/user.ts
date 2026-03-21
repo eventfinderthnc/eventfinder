@@ -85,7 +85,7 @@ export const userRouter = createTRPCRouter({
       z.object({
         name: z.string().min(1).optional(),
         image: z.string().optional(),
-        facultyId: z.number().optional(),
+        facultyId: z.string().optional(),
         isReceiveMail: z.boolean().optional(),
       }),
     )
@@ -100,7 +100,7 @@ export const userRouter = createTRPCRouter({
   updateInterests: protectedProcedure
     .input(
       z.object({
-        interests: z.array(z.number()).default([]),
+        interests: z.array(z.string()).default([]),
       }),
     )
     .mutation(async ({ ctx, input }) => {

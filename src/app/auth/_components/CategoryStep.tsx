@@ -26,7 +26,7 @@ export default function CategoryStep({
   type = "organizer",
 }: CategoryStepProps) {
 
-  const [selected, setSelected] = useState<number[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
   const router = useRouter();
 
   const canContinue = selected.length > 0;
@@ -43,7 +43,7 @@ export default function CategoryStep({
 
   const byId = useMemo(() => interests ?? [], [interests]);
 
-  const toggle = (id: number) => {
+  const toggle = (id: string) => {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );

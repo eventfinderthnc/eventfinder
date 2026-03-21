@@ -36,7 +36,7 @@ export default function InfoStep({
 
   const [up, setUp] = useState(false);
   const [name, setName] = useState("");
-  const [facultyId, setFacultyId] = useState<number | undefined>(undefined);
+  const [facultyId, setFacultyId] = useState<string | undefined>(undefined);
   const [isReceiveMail, setIsReceiveMail] = useState(false);
 
   const title = type === "attendee" ? "กรอกข้อมูลส่วนตัว" : "กรอกข้อมูลชมรม";

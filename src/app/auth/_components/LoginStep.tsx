@@ -6,6 +6,7 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 interface LoginStepProps {
     type: "attendee" | "organizer";
@@ -22,6 +23,7 @@ type LoginFormValues = {
 export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
     const [isLogin, setIsLogin] = useState(true);
     const [submitError, setSubmitError] = useState("");
+    const router = useRouter();
 
     const imageSrc =
         type === "attendee"
@@ -45,9 +47,11 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
                 const { error } = await authClient.signIn.email({
                     email: data.email,
                     password: data.password,
-                    callbackURL: "/",
                 });
                 if (error) throw new Error(error.message ?? "เกิดข้อผิดพลาด");
+                const { data: sessionData } = await authClient.getSession();
+                const role = sessionData?.user?.role;
+                router.push(role === "ADMIN" ? "/admin/list" : "/");
             } else {
                 const { error } = await authClient.signUp.email({
                     email: data.email,
