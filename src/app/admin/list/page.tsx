@@ -2,7 +2,7 @@
 
 import { ConfirmModal } from "@/components/modal/ConfirmModal"
 import { SearchBar } from "@/components/ui/SearchBar"
-import { Trash2, ChevronLeft, ChevronRight, SquareMousePointerIcon } from "lucide-react"
+import { Trash2, ChevronLeft, ChevronRight, SquareMousePointerIcon, UserRound } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { api } from "@/trpc/react"
@@ -58,6 +58,7 @@ export default function AdminListPage() {
         id: item.id,
         name: item.name?.trim() ? item.name : "Organizer",
         email: item.email,
+        image: item.image ?? null,
     }))
 
     const filteredData = searchQuery.trim()
@@ -125,8 +126,18 @@ export default function AdminListPage() {
                 >
                     {/* Name */}
                     <div className="flex items-center gap-4">
-                    <div className="hidden sm:flex sm:w-10 sm:h-10 rounded-full bg-gray-600 items-center justify-center shrink-0">
-                        <Image src="/lightbulb.svg" alt="logo" width={20} height={20} />
+                    <div className="hidden sm:flex sm:w-10 sm:h-10 rounded-full overflow-hidden bg-gray-100 border border-gray-200 items-center justify-center shrink-0">
+                        {item.image ? (
+                            <Image
+                                src={item.image}
+                                alt={item.name}
+                                width={40}
+                                height={40}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <UserRound size={20} className="text-gray-400" />
+                        )}
                     </div>
                     <span className="font-medium truncate">{item.name}</span>
                     </div>
