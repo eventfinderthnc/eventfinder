@@ -1,7 +1,8 @@
 "use client"
 
 import { api } from "@/trpc/react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
+import { useWatch } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { useSession } from "@/lib/auth-client"
 import { useForm } from "react-hook-form"
@@ -36,7 +37,7 @@ const CreatePage = () => {
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null)
     
-    const { handleSubmit, getValues, setValue, formState: { errors } } = useForm<CreatePostWithInterests>({
+    const { handleSubmit, getValues, setValue, control, formState: { errors } } = useForm<CreatePostWithInterests>({
         resolver: zodResolver(CreatePostWithInterestsSchema),
         defaultValues: {
             title: "",
@@ -49,6 +50,24 @@ const CreatePage = () => {
             date: new Date(),
         }
     })
+
+    const watchedActivityTypeId = useWatch({ control, name: "activityTypeId" })
+    const watchedInterestIds = useWatch({ control, name: "interestIds" })
+
+    const activityTypeDropdownLabel = useMemo(
+        () => activityTypes?.find((t) => t.id === watchedActivityTypeId)?.name,
+        [activityTypes, watchedActivityTypeId],
+    )
+
+    const interestMultiLabels = useMemo(
+        () =>
+            watchedInterestIds?.length
+                ? (watchedInterestIds
+                    .map((id) => interests?.find((i) => i.id === id)?.name)
+                    .filter((n): n is string => Boolean(n)) ?? [])
+                : [],
+        [interests, watchedInterestIds],
+    )
 
     const createPost = api.post.create.useMutation({
         onSuccess: (res) => {
@@ -122,6 +141,7 @@ const CreatePage = () => {
                                     icon="type"
                                     isDropdown={true}
                                     typeList={activityTypes?.map((t) => t.name) ?? []}
+                                    dropdownValue={activityTypeDropdownLabel}
                                     className="w-full focus-visible:ring-0"
                                     onDropdownChange={(value) => {
                                         const match = activityTypes?.find((t) => t.name === value)
@@ -135,6 +155,7 @@ const CreatePage = () => {
                                     icon="category"
                                     isMultiDropdown={true}
                                     categoryList={interests?.map((t) => t.name) ?? []}
+                                    multiValue={interestMultiLabels}
                                     className="w-full"
                                     onMultiDropdownChange={(values) => {
                                         const matches = values

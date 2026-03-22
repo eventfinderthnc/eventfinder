@@ -33,6 +33,8 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement>{
     onTextChange?: (value: string) => void,
     onDropdownChange?: (value: string) => void,
     onMultiDropdownChange?: (value: string[]) => void,
+    dropdownValue?: string,
+    multiValue?: string[],
     onDateChange?: (date: Date) => void,
     onTimeChange?: (time: Date) => void, 
 }
@@ -53,6 +55,8 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
         onTextChange,
         onDropdownChange,
         onMultiDropdownChange,
+        dropdownValue,
+        multiValue,
         onDateChange,
         onTimeChange,
         ...props}, ref) => {
@@ -66,7 +70,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                 </label>
             )}
             <div className="relative w-full">
-                {IconComponent && (
+                {IconComponent && !isMultiDropdown && (
                     <div className={cn("absolute top-3 right-4 w-5 h-5 sm:w-6 sm:h-6 pointer-events-none",(label == null) && "sm:mt-8.5")}>
                         <IconComponent color="#949494" className="w-5 h-5 sm:w-6 sm:h-6"/>
                     </div>
@@ -86,6 +90,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                 {isDropdown && (
                     <Dropdown 
                     content={typeList} 
+                    value={dropdownValue}
                     onValueChange={(value) => onDropdownChange?.(value)}
                     className={cn(
                         "h-12 rounded-md border-[#D6D6D6] hover:bg-transparent hover:border-primary/70 focus:ring-0",
@@ -97,6 +102,8 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                     <MultiDropdown
                     content={categoryList}
                     panelLabel="เลือกหมวดหมู่"
+                    value={multiValue}
+                    icon={IconComponent ? <IconComponent color="#949494" className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" /> : undefined}
                     onMultiChange={(value) => onMultiDropdownChange?.(value)}
                     className={cn(
                         "h-12 rounded-md border-[#D6D6D6] hover:bg-transparent hover:border-primary/70",
