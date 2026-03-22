@@ -1,23 +1,27 @@
 "use client"
 
-import { ConfirmModal } from "@/components/popup/ConfirmModal"
+import { ConfirmModal } from "@/components/modal/ConfirmModal"
 import { SearchBar } from "@/components/ui/SearchBar"
-import { Trash2, ChevronLeft, ChevronRight, SquareMousePointerIcon } from "lucide-react"
+import { Trash2, ChevronLeft, ChevronRight, SquareMousePointerIcon, UserRound } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-
-const data = Array.from({ length: 18 }).map((_, i) => ({
-    id: i,
-    name: "Thailand Incubator Club",
-    email: "thicclub@gmail.com",
-}))
+import { api } from "@/trpc/react"
 
 export default function AdminListPage() {
     const [page, setPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(7)
+    const [searchQuery, setSearchQuery] = useState("")
 
     const [openDelete, setOpenDelete] = useState(false)
-    const [selectedId, setSelectedId] = useState<number | null>(null)       
+    const [selectedId, setSelectedId] = useState<string | null>(null)
+
+    const { data: organizers = [], isLoading, refetch } = api.user.getOrganizerUser.useQuery()
+    
+    const deleteOrganizer = api.user.delete.useMutation({
+        onSuccess: async () => {
+            await refetch()
+        },
+    })
 
     useEffect(() => {
         const calculateItemsPerPage = () => {
@@ -50,9 +54,36 @@ export default function AdminListPage() {
         return () => window.removeEventListener("resize", calculateItemsPerPage)
     }, [])
 
-    const totalPages = Math.ceil(data.length / itemsPerPage)
+    const data = organizers.map((item) => ({
+        id: item.id,
+        name: item.name?.trim() ? item.name : "Organizer",
+        email: item.email,
+        image: item.image ?? null,
+    }))
+
+    const filteredData = searchQuery.trim()
+        ? data.filter((item) => {
+              const q = searchQuery.toLowerCase()
+              const matchName = Boolean(item.name.toLowerCase().includes(q))
+              const matchEmail = Boolean(item.email.toLowerCase().includes(q))
+              return matchName || matchEmail
+          })
+        : data
+
+    const totalPages = Math.max(1, Math.ceil(filteredData.length / itemsPerPage))
     const startIndex = (page - 1) * itemsPerPage
-    const pageData = data.slice(startIndex, startIndex + itemsPerPage)
+    const pageData = filteredData.slice(startIndex, startIndex + itemsPerPage)
+
+    useEffect(() => {
+        if (page > totalPages) {
+            setPage(totalPages)
+        }
+    }, [page, totalPages])
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value)
+        setPage(1)
+    }
 
     return (
         <div className="text-sm sm:text-base relative w-full h-full flex flex-col gap-5 px-5 sm:px-10 lg:pr-25 py-5">
@@ -60,7 +91,11 @@ export default function AdminListPage() {
             <div className="w-full flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                 <h1>จัดการบัญชีของชมรม</h1>
                 <div className="w-full lg:w-130">
-                    <SearchBar />
+                    <SearchBar
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        placeholder="ค้นหาชื่อหรืออีเมล"
+                    />
                 </div>
             </div>
 
@@ -74,15 +109,35 @@ export default function AdminListPage() {
                 </div>
 
                 {/* Rows */}
-                {pageData.map((item) => (
+                {isLoading && (
+                    <div className="px-6 py-6 text-gray-500">กำลังโหลดข้อมูล...</div>
+                )}
+
+                {!isLoading && pageData.length === 0 && (
+                    <div className="px-6 py-6 text-gray-500">
+                        {searchQuery.trim() ? `ไม่พบผลลัพธ์สำหรับ "${searchQuery}"` : "ยังไม่มีบัญชีผู้จัดกิจกรรม"}
+                    </div>
+                )}
+
+                {!isLoading && pageData.map((item) => (
                 <div
                     key={item.id}
                     className="grid grid-cols-[1.3fr_0.3fr] sm:grid-cols-[1.5fr_1fr_0.3fr] lg:grid-cols-[1.5fr_1fr_1fr] px-3 py-4 sm:px-6 sm:py-4 items-center border-b last:border-b-0 border-stroke"
                 >
                     {/* Name */}
                     <div className="flex items-center gap-4">
-                    <div className="hidden sm:flex sm:w-10 sm:h-10 rounded-full bg-gray-600 items-center justify-center shrink-0">
-                        <Image src="/lightbulb.svg" alt="logo" width={20} height={20} />
+                    <div className="hidden sm:flex sm:w-10 sm:h-10 rounded-full overflow-hidden bg-gray-100 border border-gray-200 items-center justify-center shrink-0">
+                        {item.image ? (
+                            <Image
+                                src={item.image}
+                                alt={item.name}
+                                width={40}
+                                height={40}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <UserRound size={20} className="text-gray-400" />
+                        )}
                     </div>
                     <span className="font-medium truncate">{item.name}</span>
                     </div>
@@ -143,8 +198,7 @@ export default function AdminListPage() {
                 onCancel={() => setOpenDelete(false)}
                 onConfirm={() => {
                     if (selectedId !== null) {
-                    console.log("delete id:", selectedId)
-                    // call API delete here
+                        deleteOrganizer.mutate({ id: selectedId })
                     }
                     setOpenDelete(false)
                 }}

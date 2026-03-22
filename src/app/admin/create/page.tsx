@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { FormInput } from "@/components/ui/FormInput"
+import { api } from "@/trpc/react"
 
 export default function AdminCreate() {
   const router = useRouter()
@@ -14,6 +15,8 @@ export default function AdminCreate() {
 
   const [error, setError] = useState("")
 
+  const createOrganizer = api.user.createOrganizerAccount.useMutation()
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
@@ -21,7 +24,7 @@ export default function AdminCreate() {
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!form.email || !form.password) {
@@ -30,10 +33,17 @@ export default function AdminCreate() {
 
     setError("")
 
-    // call API create account
-    console.log("Create account:", form)
+    try {
+      await createOrganizer.mutateAsync({
+        email: form.email,
+        password: form.password,
+      })
 
-    router.push("/admin/list")
+      router.push("/admin/list")
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "ไม่สามารถสร้างบัญชีได้"
+      setError(message)
+    }
   }
 
   return (
@@ -73,9 +83,10 @@ export default function AdminCreate() {
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="submit"
+              disabled={createOrganizer.isPending}
               className="px-5 py-2 rounded-lg bg-primary text-white hover:bg-primary/90"
             >
-              สร้างบัญชี
+              {createOrganizer.isPending ? "กำลังสร้าง..." : "สร้างบัญชี"}
             </button>
           </div>
         </form>

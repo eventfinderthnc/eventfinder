@@ -6,6 +6,7 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 interface LoginStepProps {
     type: "attendee" | "organizer";
@@ -16,11 +17,13 @@ interface LoginStepProps {
 type LoginFormValues = {
     email: string;
     password: string;
+    confirmPassword: string;
 };
 
 export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
     const [isLogin, setIsLogin] = useState(true);
     const [submitError, setSubmitError] = useState("");
+    const router = useRouter();
 
     const imageSrc =
         type === "attendee"
@@ -31,9 +34,10 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
     const {
         register,
         handleSubmit,
+        getValues,
         formState: { errors, isSubmitting },
     } = useForm<LoginFormValues>({
-        defaultValues: { email: "", password: "" },
+        defaultValues: { email: "", password: "", confirmPassword: "" },
     });
 
     const onSubmit = async (data: LoginFormValues) => {
@@ -43,9 +47,11 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
                 const { error } = await authClient.signIn.email({
                     email: data.email,
                     password: data.password,
-                    callbackURL: "/",
                 });
                 if (error) throw new Error(error.message ?? "เกิดข้อผิดพลาด");
+                const { data: sessionData } = await authClient.getSession();
+                const role = sessionData?.user?.role;
+                router.push(role === "ADMIN" ? "/admin/list" : "/");
             } else {
                 const { error } = await authClient.signUp.email({
                     email: data.email,
@@ -143,6 +149,24 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
                                 <p className="text-red-500 text-sm">{errors.password.message}</p>
                             )}
                         </div>
+                        {!isLogin && (
+                            <div className="w-full flex flex-col gap-1">
+                                <Input
+                                    type="password"
+                                    placeholder="ยืนยันรหัสผ่าน"
+                                    className="w-full focus:border-primary"
+                                    aria-invalid={!!errors.confirmPassword}
+                                    {...register("confirmPassword", {
+                                        required: "กรุณายืนยันรหัสผ่าน",
+                                        validate: (value) =>
+                                            value === getValues("password") || "รหัสผ่านไม่ตรงกัน",
+                                    })}
+                                />
+                                {errors.confirmPassword && (
+                                    <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
+                                )}
+                            </div>
+                        )}
                         {submitError && (
                             <p className="text-red-500 text-sm w-full">{submitError}</p>
                         )}
