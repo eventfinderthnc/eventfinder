@@ -8,6 +8,12 @@ export const auth = betterAuth({
     provider: "pg",
     schema,
   }),
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+  },
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -21,6 +27,12 @@ export const auth = betterAuth({
     additionalFields: {
       role: {
         type: "string",
+      },
+      organizerOnboardingComplete: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
       },
     },
   },

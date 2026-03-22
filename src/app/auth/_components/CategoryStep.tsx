@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, BriefcaseBusiness, Cpu, GraduationCap, HandHeart, HeartPulse, Monitor, Music, Palette, Volleyball } from "lucide-react";
 import { api } from "@/trpc/react";
+import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
 const iconMap = {
@@ -35,7 +36,9 @@ export default function CategoryStep({
   const { data: interests } = api.interest.getAll.useQuery();
   const { data: me } = api.user.me.useQuery();
   const utils = api.useUtils();
+  const { refetch: refetchSession } = useSession();
   const updateInterests = api.user.updateInterests.useMutation();
+  const completeOrganizerOnboarding = api.user.completeOrganizerOnboarding.useMutation();
 
   useEffect(() => {
     if (me?.interests) setSelected(me.interests);
@@ -51,6 +54,10 @@ export default function CategoryStep({
 
   const handleSubmit = async () => {
     await updateInterests.mutateAsync({ interests: selected });
+    if (type === "organizer") {
+      await completeOrganizerOnboarding.mutateAsync();
+      await refetchSession({ query: { disableCookieCache: true } });
+    }
     await utils.user.me.invalidate();
     router.push("/");
   };

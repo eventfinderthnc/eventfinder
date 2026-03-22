@@ -124,6 +124,22 @@ export const userRouter = createTRPCRouter({
       return null;
   }),
 
+  /** Marks organizer onboarding done; call after interests saved, then refetch session with disableCookieCache. */
+  completeOrganizerOnboarding: protectedProcedure.mutation(async ({ ctx }) => {
+    if (ctx.session.user.role !== "ORGANIZATION") {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Not an organizer" });
+    }
+    const userId = ctx.session.user.id;
+    const res = await userServiceImpl.update(eq(user.id, userId), {
+      organizerOnboardingComplete: true,
+    });
+    if (res) {
+      const e = getTRPCError(res);
+      throw new TRPCError({ code: e.code, message: e.message });
+    }
+    return null;
+  }),
+
   update: protectedProcedure.input(UpdateUserRequestSchema).mutation(async ({ input }) => {
     const res = await userServiceImpl.update(eq(user.id, input.id), input);
     if (res) return new TRPCError(getTRPCError(res));

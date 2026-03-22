@@ -8,6 +8,13 @@
       "when": 1774179513136,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774180000000,
+      "tag": "0001_organizer_onboarding_complete",
+      "breakpoints": true
     }
   ]
 }
