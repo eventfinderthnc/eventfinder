@@ -45,8 +45,8 @@ export const Navbar = () => {
 	}, [mobileMenuOpen]);
 
 	return (
-		<div className="w-full sticky">
-			<nav className="shadow sticky top-0 z-50 w-full">
+		<div className="w-full sticky z-9999">
+			<nav className="shadow sticky top-0 z-9999 w-full">
 				<div className="py-2.5 sm:py-4 lg:px-25 sm:px-10 px-5 items-center flex justify-between">
 					<div className="flex items-center gap-7.5">
 						<Image
@@ -114,10 +114,10 @@ export const Navbar = () => {
 							</div>
 						) : (
 							<div className="flex items-center gap-6">
-							<Link href="/auth" className="text-[#757575] text-base">
+							<Link href="/auth/attendee/login" className="text-[#757575] text-base">
 								เข้าสู่ระบบ
 							</Link>
-							<Link href="/auth/attendee/register">
+							<Link href="/auth">
 								<Button className="bg-[#DE5C8E] text-white px-6 py-2.5 rounded-full text-base">
 									ลงทะเบียน
 								</Button>
@@ -146,7 +146,7 @@ export const Navbar = () => {
 						aria-modal="true"
 						aria-label="เมนูนำทาง"
 						className={cn(
-							"fixed top-0 right-0 z-50 flex h-full w-full max-w-sm flex-col bg-white shadow-xl transition-transform duration-300 ease-out lg:hidden",
+							"fixed top-0 right-0 z-9999 flex h-full w-full max-w-sm flex-col bg-white shadow-xl transition-transform duration-300 ease-out lg:hidden",
 							mobileMenuOpen
 								? "translate-x-0 pointer-events-auto"
 								: "translate-x-full pointer-events-none",
