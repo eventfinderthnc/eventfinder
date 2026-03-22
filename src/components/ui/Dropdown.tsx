@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Button } from "@/components/ui/Button"
+import { cn } from "@/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,12 +41,21 @@ export function Dropdown({ children, ...props }: Arguments) {
   return (
     <DropdownMenu onOpenChange={props.onOpenChange}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" id={props.id} className={"hover:text-white " + props.className}>
-          {displayValue ? <span className="truncate">{displayValue}</span> : children}
+        <Button
+          variant="outline"
+          id={props.id}
+          className={cn(
+            "w-full min-w-0 justify-between gap-2 font-normal text-left hover:bg-background",
+            props.className,
+          )}
+        >
+          <span className="min-w-0 flex-1 truncate text-left">
+            {displayValue ? displayValue : children}
+          </span>
           {props.icon}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className={props.menuContentClassName}>
+      <DropdownMenuContent className={cn("p-1", props.menuContentClassName)}>
         {props?.panelLabel && (
           <>
             <DropdownMenuLabel>{props.panelLabel}</DropdownMenuLabel>
@@ -59,7 +69,7 @@ export function Dropdown({ children, ...props }: Arguments) {
               key={idx}
               className={props.itemClassName}
             >
-              <div className="flex w-full items-center py-1 pl-4">{state}</div>
+              {state}
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>
