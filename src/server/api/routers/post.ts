@@ -8,9 +8,18 @@ import { TRPCError } from "@trpc/server";
 import { post } from "@/server/db/post";
 import { eq } from "drizzle-orm";
 
+const CreatePostWithInterestsSchema = CreatePostRequestSchema.and(
+    z.object({
+        interestIds: z.array(z.string().uuid()).min(1),
+    })
+)
+
 export const postRouter = createTRPCRouter({
-	create: protectedProcedure.input(CreatePostRequestSchema).mutation(async ({ input }) => {
-		const [res, error] = await postServiceImpl.create(input);
+	create: protectedProcedure
+	.input(CreatePostWithInterestsSchema)
+	.mutation(async ({ input }) => {
+		const { interestIds, ...postData } = input
+		const [res, error] = await postServiceImpl.create(postData, undefined, interestIds);
 		if (error) return new TRPCError(getTRPCError(error));
 		return res;
 	}),

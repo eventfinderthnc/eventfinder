@@ -30,6 +30,11 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement>{
     isMultiDropdown ?: boolean,
     typeList ?: string[],
     categoryList ?: string[],
+    onTextChange?: (value: string) => void,
+    onDropdownChange?: (value: string) => void,
+    onMultiDropdownChange?: (value: string[]) => void,
+    onDateChange?: (date: Date) => void,
+    onTimeChange?: (time: Date) => void, 
 }
 
 const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
@@ -44,7 +49,12 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
         categoryList = [], 
         label, 
         placeholder, 
-        type, 
+        type,
+        onTextChange,
+        onDropdownChange,
+        onMultiDropdownChange,
+        onDateChange,
+        onTimeChange,
         ...props}, ref) => {
     const IconComponent = icon ? iconVariants[icon] : null;
     const inputType: HTMLInputTypeAttribute | undefined = icon == "date" ? "date" : (icon == "time" ? "time" : type);
@@ -64,6 +74,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                 {isTextArea && (
                     <Textarea 
                     placeholder={placeholder}
+                    onChange={(e) => onTextChange?.(e.target.value)}
                     className={cn(
                         "relative h-12 text-black border-[#D6D6D6] hover:border-primary/70 focus-visible:ring-0 resize-none",
                         "pt-3 pb-3 px-3 text-left align-top",
@@ -75,6 +86,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                 {isDropdown && (
                     <Dropdown 
                     content={typeList} 
+                    onValueChange={(value) => onDropdownChange?.(value)}
                     className={cn(
                         "h-12 rounded-md border-[#D6D6D6] hover:bg-transparent hover:border-primary/70 focus:ring-0",
                         className,
@@ -85,22 +97,28 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                     <MultiDropdown
                     content={categoryList}
                     panelLabel="เลือกหมวดหมู่"
+                    onMultiChange={(value) => onMultiDropdownChange?.(value)}
                     className={cn(
                         "h-12 rounded-md border-[#D6D6D6] hover:bg-transparent hover:border-primary/70",
                         className,
                     )}/>
                 )}
                 {isDate && (
-                    <DatePicker />
+                    <DatePicker 
+                    onChange={(date) => onDateChange?.(date)}
+                    />
                 )}
                 { isTime && (
-                    <TimePicker />
+                    <TimePicker 
+                    onChange={(time) => onTimeChange?.(time)}
+                    />
                 )}
                 {!isTextArea && !isDropdown && !isMultiDropdown && !isDate && !isTime && (
                     <Input 
                     ref={ref}
                     placeholder={placeholder}
                     type={inputType}
+                    onChange={(e) => onTextChange?.(e.target.value)}
                     className={cn(
                         "relative h-12 text-black border-[#D6D6D6] hover:border-primary/70",
                         "placeholder:text-left placeholder:align-text-top",

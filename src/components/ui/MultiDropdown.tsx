@@ -26,6 +26,7 @@ type Arguments = {
   children?: React.ReactNode;
   icon?: React.ReactNode;
   onOpenChange?: (open: boolean) => void;
+  onMultiChange?: (selectedValues: string[]) => void;
 }
 
 type Checked = DropdownMenuCheckboxItemProps["checked"]
@@ -40,11 +41,17 @@ export function MultiDropdown({ children, ...props }: Arguments) {
   const [checkedStates, setCheckedStates] = React.useState<Record<string, Checked>>({});
 
   const handleCheckedChange = (item: string, isChecked: Checked) => {
-    setCheckedStates((prev) => ({
-      ...prev,
-      [item]: isChecked,
-    }));
-  };
+    setCheckedStates((prev) => {
+        const updated = { ...prev, [item]: isChecked }
+        
+        const selectedValues = Object.entries(updated)
+            .filter(([_, checked]) => checked)
+            .map(([key]) => key)
+        
+        props.onMultiChange?.(selectedValues)
+        return updated
+    })
+}
 
   return (
     <DropdownMenu modal={false}>

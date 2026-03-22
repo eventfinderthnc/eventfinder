@@ -15,6 +15,13 @@
       "when": 1741300000000,
       "tag": "0001_add_interest_icon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774173018636,
+      "tag": "0002_crazy_carmella_unuscione",
+      "breakpoints": true
     }
   ]
 }
