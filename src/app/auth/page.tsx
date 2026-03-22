@@ -38,34 +38,34 @@ export default function Page() {
   }
 
   return (
-    <div className="auth-section auth-bg">
-      <div className="relative overflow-hidden flex flex-col p-10 w-[320px] h-[510px] sm:w-[550px] sm:h-[660px] rounded-4xl bg-white shadow-[0_6px_16px_0_rgba(0,0,0,0.25)]">
-        <AnimatePresence custom={direction} mode="wait">
-            {step === "role"&& (
-              <motion.div
-                key="contact"
-                custom={direction}
-                variants={slideVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.35, ease: "easeOut" }}
-                className="h-full"
-              >
-                <ChooseRoleStep
-                  onBack={() => router.push("/")} 
-                  onNext={(role) => {
-                    if (role === "organizer") {
-                      router.push("/auth/organizer/login")
-                    } else {
-                      router.push("/auth/attendee/login")
-                    }
-                  }} 
-                />
-              </motion.div>
-            )}
-        </AnimatePresence>
-      </div>
-    </div>
-  )
+		<div className="auth-section auth-bg">
+			<div className="relative overflow-hidden flex flex-col py-10 px-6 sm:px-10 w-[320px] h-[510px] sm:w-[550px] sm:h-[660px] rounded-4xl bg-white shadow-[0_6px_16px_0_rgba(0,0,0,0.25)]">
+				<AnimatePresence custom={direction} mode="wait">
+					{step === "role" && (
+						<motion.div
+							key="contact"
+							custom={direction}
+							variants={slideVariants}
+							initial="initial"
+							animate="animate"
+							exit="exit"
+							transition={{ duration: 0.35, ease: "easeOut" }}
+							className="h-full"
+						>
+							<ChooseRoleStep
+								onBack={() => router.push("/")}
+								onNext={(role) => {
+									if (role === "organizer") {
+										router.push("/auth/organizer/login");
+									} else {
+										router.push("/auth/attendee/login");
+									}
+								}}
+							/>
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</div>
+		</div>
+  );
 }

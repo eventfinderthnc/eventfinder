@@ -39,7 +39,7 @@ export default function Page() {
 
     return (
         <div className="auth-section auth-bg">
-            <div className="relative overflow-hidden flex flex-col p-10 w-[320px] h-[510px] sm:w-[550px] sm:h-[660px] rounded-4xl bg-white shadow-[0_6px_16px_0_rgba(0,0,0,0.25)]">
+            <div className="relative overflow-hidden flex flex-col p-6 sm:p-10 w-[320px] h-[510px] sm:w-[550px] sm:h-[660px] rounded-4xl bg-white shadow-[0_6px_16px_0_rgba(0,0,0,0.25)]">
 
                 <AnimatePresence custom={direction} mode="wait">
                     {step === "role" && (

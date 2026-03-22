@@ -84,7 +84,8 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
     };
 
     return (
-        <div className="flex flex-col h-full justify-between gap-6">
+        <div className="flex flex-col h-full justify-between">
+            {/* Header */}
             <div className="flex justify-between items-center">
                 <ArrowLeft
                     onClick={onBack}
@@ -92,93 +93,94 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
                 />
                 <ArrowLeft className="text-white" />
             </div>
-            <div className="flex flex-col justify-between items-center gap-6 w-full">
+
+            {/* Content */}
+            <div className="flex flex-col items-center gap-4 w-full">
                 <Image
                     src={imageSrc}
                     alt={type}
                     width={170}
                     height={170}
-                    className="w-[152px] h-auto"
+                    className="w-[100px] sm:w-[140px] h-auto"
                 />
-                <div className="flex flex-col justify-between items-center gap-6 w-full">
-                    <h1 className="text-[26px] font-semibold">
-                        {type === "attendee"
-                            ? isLogin
-                                ? "เข้าสู่ระบบผู้เข้าร่วม"
-                                : "ลงทะเบียนผู้เข้าร่วม"
-                            : "เข้าสู่ระบบผู้จัดกิจกรรม"}
-                    </h1>
-                    <form
-                        id="login-form"
-                        onSubmit={handleSubmit(onSubmit)}
-                        className="flex flex-col gap-2.5 items-center justify-between w-full"
-                    >
-                        <div className="w-full flex flex-col gap-1">
-                            <Input
-                                placeholder="อีเมล"
-                                type="email"
-                                className="w-full focus:border-primary"
-                                aria-invalid={!!errors.email}
-                                {...register("email", {
-                                    required: "กรุณากรอกอีเมล",
-                                    pattern: {
-                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                        message: "รูปแบบอีเมลไม่ถูกต้อง",
-                                    },
-                                })}
-                            />
-                            {errors.email && (
-                                <p className="text-red-500 text-sm">{errors.email.message}</p>
-                            )}
-                        </div>
+                <h1 className="w-full text-xl sm:text-[26px] font-semibold text-center">
+                    {type === "attendee"
+                        ? isLogin
+                            ? "เข้าสู่ระบบผู้เข้าร่วม"
+                            : "ลงทะเบียนผู้เข้าร่วม"
+                        : "เข้าสู่ระบบผู้จัดกิจกรรม"}
+                </h1>
+                <form
+                    id="login-form"
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="flex flex-col gap-2.5 w-full"
+                >
+                    <div className="w-full flex flex-col gap-1">
+                        <Input
+                            placeholder="อีเมล"
+                            type="email"
+                            className="w-full focus:border-primary"
+                            aria-invalid={!!errors.email}
+                            {...register("email", {
+                                required: "กรุณากรอกอีเมล",
+                                pattern: {
+                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    message: "รูปแบบอีเมลไม่ถูกต้อง",
+                                },
+                            })}
+                        />
+                        {errors.email && (
+                            <p className="text-red-500 text-xs">{errors.email.message}</p>
+                        )}
+                    </div>
+                    <div className="w-full flex flex-col gap-1">
+                        <Input
+                            type="password"
+                            placeholder="รหัสผ่าน"
+                            className="w-full focus:border-primary"
+                            aria-invalid={!!errors.password}
+                            {...register("password", {
+                                required: "กรุณากรอกรหัสผ่าน",
+                                minLength: {
+                                    value: 6,
+                                    message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
+                                },
+                            })}
+                        />
+                        {errors.password && (
+                            <p className="text-red-500 text-xs">{errors.password.message}</p>
+                        )}
+                    </div>
+                    {!isLogin && (
                         <div className="w-full flex flex-col gap-1">
                             <Input
                                 type="password"
-                                placeholder="รหัสผ่าน"
+                                placeholder="ยืนยันรหัสผ่าน"
                                 className="w-full focus:border-primary"
-                                aria-invalid={!!errors.password}
-                                {...register("password", {
-                                    required: "กรุณากรอกรหัสผ่าน",
-                                    minLength: {
-                                        value: 6,
-                                        message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
-                                    },
+                                aria-invalid={!!errors.confirmPassword}
+                                {...register("confirmPassword", {
+                                    required: "กรุณายืนยันรหัสผ่าน",
+                                    validate: (value) =>
+                                        value === getValues("password") || "รหัสผ่านไม่ตรงกัน",
                                 })}
                             />
-                            {errors.password && (
-                                <p className="text-red-500 text-sm">{errors.password.message}</p>
+                            {errors.confirmPassword && (
+                                <p className="text-red-500 text-xs">{errors.confirmPassword.message}</p>
                             )}
                         </div>
-                        {!isLogin && (
-                            <div className="w-full flex flex-col gap-1">
-                                <Input
-                                    type="password"
-                                    placeholder="ยืนยันรหัสผ่าน"
-                                    className="w-full focus:border-primary"
-                                    aria-invalid={!!errors.confirmPassword}
-                                    {...register("confirmPassword", {
-                                        required: "กรุณายืนยันรหัสผ่าน",
-                                        validate: (value) =>
-                                            value === getValues("password") || "รหัสผ่านไม่ตรงกัน",
-                                    })}
-                                />
-                                {errors.confirmPassword && (
-                                    <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
-                                )}
-                            </div>
-                        )}
-                        {submitError && (
-                            <p className="text-red-500 text-sm w-full">{submitError}</p>
-                        )}
-                    </form>
-                </div>
+                    )}
+                    {submitError && (
+                        <p className="text-red-500 text-xs w-full">{submitError}</p>
+                    )}
+                </form>
             </div>
 
+            {/* Actions */}
             <div className="flex flex-col gap-2">
                 <Button
                     type="submit"
                     form="login-form"
-                    className="h-10.5 text-base"
+                    className="h-9 sm:h-10.5 text-sm sm:text-base"
                     disabled={isSubmitting}
                 >
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -189,7 +191,7 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
                     <Button
                         type="button"
                         variant="outline"
-                        className="border-stroke h-10.5 text-base w-full flex items-center justify-center gap-2 bg-white hover:bg-white text-black/54 hover:text-black/54"
+                        className="border-stroke h-9 sm:h-10.5 text-sm sm:text-base w-full flex items-center justify-center gap-2 bg-white hover:bg-white text-black/54 hover:text-black/54"
                         disabled={isSubmitting}
                         onClick={googleLogin}
                     >
@@ -204,50 +206,37 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
                 )}
 
                 {type === "organizer" && (
-                    <div className="text-center text-sm text-text-gray mt-2">
-                        หากต้องการสร้างแอคเค้าให้ติดต่อแอดมินผ่านไอจี <span className="font-semibold text-primary">@cuatclub</span>
-                    </div>
+                    <p className="text-center text-xs sm:text-sm text-text-gray mt-1">
+                        หากต้องการสร้างแอคเค้าให้ติดต่อแอดมินผ่านไอจี{" "}
+                        <span className="font-semibold text-primary">@cuatclub</span>
+                    </p>
                 )}
             </div>
 
-            <div className="flex justify-between flex-row">
-                <div className="flex flex-col items-start">
-                    {/* Forgot Password Link - Common for both? */}
-                    {/* Attendee Toggle */}
-                    {type === "attendee" && (
-                        <>
-                            <Link href="" className={`${isLogin ? "flex" : "hidden"}`}>
-                                <span className="font-regular text-sm text-text-gray underline">
-                                    ลืมรหัสผ่าน
-                                </span>
-                            </Link>
-                            <button onClick={() => setIsLogin(!isLogin)}>
-                                <span className="font-regular text-sm text-text-gray underline">
-                                    {isLogin ? "ยังไม่มีบัญชี? ลงทะเบียน" : "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ"}
-                                </span>
-                            </button>
-                            {/* Spacer to keep layout consistent if needed, or remove */}
-                            <Link href="" className={`opacity-0 ${isLogin ? "hidden" : "flex"}`}>
-                                <span className="font-regular text-sm text-text-gray underline">
-                                    Nothing just free space
-                                </span>
-                            </Link>
-                        </>
-                    )}
-                    {/* Organizer specific links? Organizer just has login */}
-                    {type === "organizer" && (
+            {/* Footer links */}
+            <div className="flex justify-between">
+                <div className="flex flex-col gap-0.5">
+                    {type === "attendee" && isLogin && (
                         <Link href="">
-                            <span className="font-regular text-sm text-text-gray underline">
-                                ลืมรหัสผ่าน
-                            </span>
+                            <span className="text-xs sm:text-sm text-text-gray underline">ลืมรหัสผ่าน</span>
                         </Link>
                     )}
-
+                    {type === "attendee" && (
+                        <button onClick={() => setIsLogin(!isLogin)}>
+                            <span className="text-xs sm:text-sm text-text-gray underline">
+                                {isLogin ? "ยังไม่มีบัญชี? ลงทะเบียน" : "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ"}
+                            </span>
+                        </button>
+                    )}
+                    {type === "organizer" && (
+                        <Link href="">
+                            <span className="text-xs sm:text-sm text-text-gray underline">ลืมรหัสผ่าน</span>
+                        </Link>
+                    )}
                 </div>
 
-                {/* Switch Role Link */}
                 <Link href={type === "attendee" ? "/auth/organizer/login" : "/auth/attendee/login"}>
-                    <span className="font-regular text-sm text-text-gray underline">
+                    <span className="text-xs sm:text-sm text-text-gray underline text-right">
                         {type === "attendee" ? "ลงชื่อในฐานะผู้จัดกิจกรรม" : "ลงชื่อในฐานะผู้เข้าร่วมกิจกรรม"}
                     </span>
                 </Link>
