@@ -75,7 +75,7 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
         try {
             const { error } = await authClient.signIn.social({
                 provider: "google",
-                callbackURL: "/auth/attendee/google-redirect",
+                callbackURL: "/",
             });
             if (error) throw new Error(error.message ?? "เข้าสู่ระบบด้วย Google ไม่สำเร็จ");
         } catch (e: unknown) {
