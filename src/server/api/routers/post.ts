@@ -6,7 +6,7 @@ import { CreatePostRequestSchema, UpdatePostRequestSchema } from "@/server/api/d
 import { getTRPCError } from "@/utils/error";
 import { TRPCError } from "@trpc/server";
 import { post } from "@/server/db/post";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 const CreatePostWithInterestsSchema = CreatePostRequestSchema.and(
     z.object({
@@ -55,6 +55,29 @@ export const postRouter = createTRPCRouter({
 			const [res, error] = await postServiceImpl.getBySearch(input);
 			if (error) throw new TRPCError(getTRPCError(error));
 			return res;
+		}),
+
+	getByFilter: protectedProcedure
+		.input(
+			z.object({
+				id: z.string().uuid().optional(),
+				userId: z.string().uuid().optional(), // can add more filter
+			})
+		)
+		.query(async ({ input }) => {
+			if (input.id && input.userId) {
+				const [res, error] = await postServiceImpl.getByFilter(and(eq(post.id, input.id), eq(post.organizationId, input.userId)));
+				if (error) throw new TRPCError(getTRPCError(error));
+				return res;
+			} else if (input.id) {
+				const [res, error] = await postServiceImpl.getByFilter(eq(post.id, input.id));
+				if (error) throw new TRPCError(getTRPCError(error));
+				return res;
+			} else if (input.userId) {
+				const [res, error] = await postServiceImpl.getByFilter(eq(post.organizationId, input.userId));
+				if (error) throw new TRPCError(getTRPCError(error));
+				return res;
+			}
 		}),
 
 	delete: protectedProcedure

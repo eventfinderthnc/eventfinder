@@ -5,19 +5,23 @@ import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
 import type { Post, CreatePostRequest } from "@/server/api/dto/post.dto";
 import { post } from "@/server/db/post";
+import { user } from "@/server/db/auth-schema";
+import { organization } from "@/server/db/organization";
 import { interestXPost } from "@/server/db/interestXPost";
 import { interestXUser } from "@/server/db/interestXUser";
 import { signToken } from "@/server/utils/signedTokens";
-import { user } from "@/server/db/auth-schema";
 import { bulkSendMail } from "@/server/utils/mailer";
 import { ActivityCardMail } from "@/components/ui/ActivityCardMail";
 
 export interface IPostService {
 	create(req: CreatePostRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
-	getAll(): Promise<[Post[], ErrorOrNull]>;
-	getOne(id: string): Promise<[Post | null, ErrorOrNull]>;
-	getBySearch(input: { searchQuery?: string; createdByAsc: boolean }): Promise<[Post[], ErrorOrNull]>;
-	getByFilter(filter?: SQL): Promise<[Post[] | [], ErrorOrNull]>;
+	getAll(): Promise<[any[], ErrorOrNull]>;
+	getOne(id: string): Promise<[any | null, ErrorOrNull]>;
+	getBySearch(input: {
+		searchQuery?: string;
+		createdByAsc: boolean;
+	}): Promise<[Post[], ErrorOrNull]>;
+	getByFilter(filter?: SQL): Promise<[any[] | [], ErrorOrNull]>;
 	getOneByFilter(filter: SQL): Promise<[Post | null, ErrorOrNull]>;
 	update(filter: SQL, update: Partial<Post>, trx?: typeof db): Promise<ErrorOrNull>;
 	delete(filter: SQL): Promise<ErrorOrNull>;
@@ -137,22 +141,36 @@ class PostService implements IPostService {
 		return [res, null];
 	}
 
-	async getOne(id: string): Promise<[Post | null, ErrorOrNull]> {
-		const res = await db.query.post
-			.findFirst({
-				where: (post, { eq }) => eq(post.id, id),
-			})
-			.catch((e) => {
-				console.log(e);
-				return new PostgreSQLError();
-			});
+	async getOne(id: string): Promise<[any | null, ErrorOrNull]> {
+		const tmp = await db
+			.select()
+			.from(post)
+			.innerJoin(user, eq(post.organizationId, user.id))
+			.innerJoin(organization, eq(post.organizationId, organization.id))
+			.where(eq(post.id, id))
+			.orderBy(desc(post.date), asc(post.title));
 
-		if (res instanceof Error) return [null, res];
-		if (!res) return [null, new ErrorWithCategory("Post not found", ErrorCategory.ResourceNotFound)];
-		return [res, null];
+		if (tmp instanceof Error) return [null, tmp];
+		const res: any[] = [];
+		if (tmp.length > 0) {
+			tmp.forEach((t: any) => {
+				res.push({
+					...t.organization,
+					...t.user,
+					...t.post,
+					userImage: t.user.image,
+					image: t.post.image,
+				});
+			});
+		}
+		if (res.length == 0) return [null, new ErrorWithCategory("Calendar item not found", ErrorCategory.ResourceNotFound)];
+		return [res[0], null];
 	}
 
-	async getBySearch(input: { searchQuery?: string; createdByAsc: boolean }): Promise<[Post[], ErrorOrNull]> {
+	async getBySearch(input: {
+		searchQuery?: string;
+		createdByAsc: boolean;
+	}): Promise<[Post[], ErrorOrNull]> {
 		try {
 			const conditions = [];
 
@@ -174,13 +192,29 @@ class PostService implements IPostService {
 		}
 	}
 
-	async getByFilter(filter?: SQL): Promise<[Post[], ErrorOrNull]> {
-		const res = await db.query.post.findMany({ where: filter }).catch((e) => {
-			console.log(e);
-			return new PostgreSQLError();
-		});
+	async getByFilter(filter?: SQL): Promise<[any[], ErrorOrNull]> {
+		const tmp = await db
+			.select()
+			.from(post)
+			.innerJoin(user, eq(post.organizationId, user.id))
+			.innerJoin(organization, eq(post.organizationId, organization.id))
+			.where(filter)
+			.orderBy(desc(post.date), asc(post.title));
 
-		if (res instanceof Error) return [[], res];
+		if (tmp instanceof Error) return [[], tmp];
+		const res: any[] = [];
+		if (tmp.length > 0) {
+			tmp.forEach((t: any) => {
+				res.push({
+					...t.organization,
+					...t.user,
+					...t.post,
+					userImage: t.user.image,
+					image: t.post.image,
+					id: t.post.id
+				});
+			});
+		}
 		return [res, null];
 	}
 
