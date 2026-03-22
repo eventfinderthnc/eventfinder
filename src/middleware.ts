@@ -1,59 +1,97 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { getCookieCache } from "better-auth/cookies";
 
+const ATTENDEE_ONBOARDING_PATH = "/auth/attendee/onboarding";
+const ORGANIZER_ONBOARDING_PATH = "/auth/organizer/onboarding";
 const SESSION_COOKIE = "better-auth.session_token";
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const hasSession = request.cookies.has(SESSION_COOKIE);
+type SessionUser = {
+	role?: string;
+	onboardingComplete?: boolean;
+};
 
-  // Calendar route: must have session (strict role check is in calendar/layout.tsx)
-  if (pathname.startsWith("/calendar")) {
-    if (!hasSession) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-    return NextResponse.next();
-  }
+async function getSessionUser(request: NextRequest): Promise<SessionUser | null> {
+	const cookieHeader = request.headers.get("cookie");
+	if (!cookieHeader) return null;
 
-  // Admin routes: must have session (strict role check is in admin/layout.tsx)
-  if (pathname.startsWith("/admin")) {
-    if (!hasSession) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-    return NextResponse.next();
-  }
+	const cached = await getCookieCache(request);
+	if (cached?.user) {
+		return cached.user as SessionUser;
+	}
 
-  // Create route: must have session (strict role check is in create/layout.tsx)
-  if (pathname.startsWith("/create")) {
-    if (!hasSession) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-    return NextResponse.next();
-  }
+	const res = await fetch(new URL("/api/auth/get-session", request.url), {
+		headers: { cookie: cookieHeader },
+		cache: "no-store",
+	});
+	if (!res.ok) return null;
+	const data = (await res.json()) as { user?: SessionUser } | null;
+	return data?.user ?? null;
+}
 
-  // Onboarding pages: must have session (strict role check is in each onboarding layout.tsx)
-  if (
-    pathname.startsWith("/auth/attendee/onboarding") ||
-    pathname.startsWith("/auth/organizer/onboarding")
-  ) {
-    if (!hasSession) {
-      return NextResponse.redirect(new URL("/auth", request.url));
-    }
-    return NextResponse.next();
-  }
+/** Where this user must be if onboarding is not finished; null = no redirect. */
+function pendingOnboardingPath(user: SessionUser | null): string | null {
+	if (!user?.role) return null;
+	if (user.role !== "ORGANIZATION" && user.role !== "ATTENDEE") return null;
+	if (user.onboardingComplete === true) return null;
+	return user.role === "ORGANIZATION" ? ORGANIZER_ONBOARDING_PATH : ATTENDEE_ONBOARDING_PATH;
+}
 
-  // Auth/login pages: redirect away if already logged in
-  const isLoginPage =
-    pathname === "/auth" ||
-    pathname.startsWith("/auth/attendee/login") ||
-    pathname.startsWith("/auth/organizer/login");
+export async function middleware(request: NextRequest) {
+	const { pathname } = request.nextUrl;
+	const hasSession = request.cookies.has(SESSION_COOKIE);
 
-  if (isLoginPage && hasSession) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
+	if (pathname.startsWith("/calendar")) {
+		if (!hasSession) {
+			return NextResponse.redirect(new URL("/", request.url));
+		}
+	}
 
-  return NextResponse.next();
+	if (pathname.startsWith("/admin")) {
+		if (!hasSession) {
+			return NextResponse.redirect(new URL("/", request.url));
+		}
+	}
+
+	if (pathname.startsWith("/create")) {
+		if (!hasSession) {
+			return NextResponse.redirect(new URL("/", request.url));
+		}
+	}
+
+	if (
+		pathname.startsWith("/auth/attendee/onboarding") ||
+		pathname.startsWith("/auth/organizer/onboarding")
+	) {
+		if (!hasSession) {
+			return NextResponse.redirect(new URL("/auth", request.url));
+		}
+		return NextResponse.next();
+	}
+
+	const user = hasSession ? await getSessionUser(request) : null;
+	const onboardingTarget = pendingOnboardingPath(user);
+
+	const isLoginPage =
+		pathname === "/auth" ||
+		pathname.startsWith("/auth/attendee/login") ||
+		pathname.startsWith("/auth/organizer/login");
+
+	if (isLoginPage && hasSession) {
+		if (onboardingTarget) {
+			return NextResponse.redirect(new URL(onboardingTarget, request.url));
+		}
+		return NextResponse.redirect(new URL("/", request.url));
+	}
+
+	if (hasSession && onboardingTarget && !pathname.startsWith(onboardingTarget)) {
+		return NextResponse.redirect(new URL(onboardingTarget, request.url));
+	}
+
+	return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/calendar/:path*", "/admin/:path*", "/create", "/auth/:path*"],
+	matcher: [
+		"/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)",
+	],
 };

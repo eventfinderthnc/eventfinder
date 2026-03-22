@@ -77,14 +77,14 @@ export const Navbar = () => {
 							</div>
 						) : (
 							<div className="flex items-center gap-6">
-								<Link href="/auth/attendee/login" className="text-[#757575] text-base">
-									เข้าสู่ระบบ
-								</Link>
-								<Link href="/auth/attendee/login">
-									<Button className="bg-[#DE5C8E] text-white px-6 py-2.5 rounded-full text-base">
-										ลงทะเบียน
-									</Button>
-								</Link>
+							<Link href="/auth" className="text-[#757575] text-base">
+								เข้าสู่ระบบ
+							</Link>
+							<Link href="/auth/attendee/register">
+								<Button className="bg-[#DE5C8E] text-white px-6 py-2.5 rounded-full text-base">
+									ลงทะเบียน
+								</Button>
+							</Link>
 							</div>
 						)}
 					</div>

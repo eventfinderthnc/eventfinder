@@ -1,5 +1,5 @@
 {
-  "id": "bb18470e-bed9-4fb2-b512-fb03134e965f",
+  "id": "ab530074-82a7-4cd4-ad80-538a05768313",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,7 +10,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
@@ -247,7 +247,8 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "''"
         },
         "email": {
           "name": "email",
@@ -259,7 +260,7 @@
           "name": "email_verified",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": false
         },
         "image": {
@@ -277,9 +278,9 @@
         },
         "faculty_id": {
           "name": "faculty_id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "is_receive_mail": {
           "name": "is_receive_mail",
@@ -293,7 +294,15 @@
           "type": "role",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'ATTENDEE'"
+        },
+        "onboarding_complete": {
+          "name": "onboarding_complete",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -390,13 +399,13 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
         "post_id": {
           "name": "post_id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -462,7 +471,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
@@ -501,12 +510,18 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
         "name": {
           "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon": {
+          "name": "icon",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -548,13 +563,13 @@
       "columns": {
         "interest_id": {
           "name": "interest_id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "organization_id": {
           "name": "organization_id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         }
@@ -608,13 +623,13 @@
       "columns": {
         "interest_id": {
           "name": "interest_id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "post_id": {
           "name": "post_id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         }
@@ -668,7 +683,7 @@
       "columns": {
         "interest_id": {
           "name": "interest_id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -728,9 +743,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "faculty_id": {
+          "name": "faculty_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "category": {
           "name": "category",
@@ -793,6 +820,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "organization_faculty_id_faculty_id_fk": {
+          "name": "organization_faculty_id_faculty_id_fk",
+          "tableFrom": "organization",
+          "tableTo": "faculty",
+          "columnsFrom": [
+            "faculty_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "organization_user_id_user_id_fk": {
           "name": "organization_user_id_user_id_fk",
           "tableFrom": "organization",
@@ -819,19 +859,19 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
         "organization_id": {
           "name": "organization_id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "activity_type_id": {
           "name": "activity_type_id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -927,7 +967,7 @@
         },
         "organization_id": {
           "name": "organization_id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         }

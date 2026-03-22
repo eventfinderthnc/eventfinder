@@ -6,7 +6,7 @@ import { MultiDropdown } from "@/components/ui/MultiDropdown"
 import { DatePicker } from "@/components/ui/DatePicker"
 import { TimePicker } from "@/components/ui/TimePicker"
 import { ChevronDown, SquarePlus, Link, CalendarDaysIcon, Clock} from "lucide-react"
-import type { HTMLInputTypeAttribute } from "react"
+import type { ComponentProps, HTMLInputTypeAttribute } from "react"
 import { forwardRef } from "react"
 
 const iconVariants = {
@@ -76,15 +76,15 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                     </div>
                 )}
                 {isTextArea && (
-                    <Textarea 
-                    placeholder={placeholder}
-                    onChange={(e) => onTextChange?.(e.target.value)}
-                    className={cn(
-                        "relative h-12 text-black border-[#D6D6D6] hover:border-primary/70 focus-visible:ring-0 resize-none",
-                        "pt-3 pb-3 px-3 text-left align-top",
-                        "placeholder:text-left placeholder:align-text-top",
-                        className,
-                    )}
+                    <Textarea
+                        placeholder={placeholder}
+                        className={cn(
+                            "relative h-12 text-black border-[#D6D6D6] hover:border-primary/70 focus-visible:ring-0 resize-none",
+                            "pt-3 pb-3 px-3 text-left align-top",
+                            "placeholder:text-left placeholder:align-text-top",
+                            className,
+                        )}
+                        {...(props as ComponentProps<typeof Textarea>)}
                     />
                 )}
                 {isDropdown && (

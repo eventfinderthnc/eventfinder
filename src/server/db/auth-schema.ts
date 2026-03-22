@@ -13,6 +13,8 @@ export const user = pgTable("user", {
 	facultyId: text("faculty_id").references(() => faculty.id),
 	isReceiveMail: boolean("is_receive_mail").default(false).notNull(),
 	role: roleEnum("role").default("ATTENDEE").notNull(),
+	/** Role-specific onboarding wizard finished; middleware uses role to pick redirect path. */
+	onboardingComplete: boolean("onboarding_complete").default(false).notNull(),
 	updatedAt: timestamp("updated_at")
 		.defaultNow()
 		.$onUpdate(() => /* @__PURE__ */ new Date())

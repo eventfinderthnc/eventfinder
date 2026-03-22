@@ -30,13 +30,13 @@ export default function ChooseRoleStep({
       </div>
 
       {/* Role selection */}
-      <div className="w-full flex flex-col sm:flex-row justify-center gap-6">
+      <div className="w-full flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">
         {/* Attendee */}
         <button
           type="button"
           onClick={() => setSelectedRole("attendee")}
           className={clsx(
-            "shadow-[0_0_10px_0_rgba(0,0,0,0.2)] px-12 py-12 rounded-4xl flex flex-col justify-center items-center gap-8 transition",
+            "shadow-[0_0_10px_0_rgba(0,0,0,0.2)] w-full sm:w-auto px-6 sm:px-12 py-6 sm:py-12 rounded-4xl flex flex-row sm:flex-col justify-center items-center gap-4 sm:gap-8 transition",
             selectedRole === "attendee"
               ? "text-black ring-2 ring-primary/80 scale-[1.02]"
               : "hover:scale-[1.02] text-text-gray"
@@ -47,8 +47,9 @@ export default function ChooseRoleStep({
             alt="attendee"
             width={120}
             height={120}
+            className="w-[64px] h-[64px] sm:w-[120px] sm:h-[120px]"
           />
-          <span className="text-[18px] font-medium">
+          <span className="text-base sm:text-[18px] font-medium">
             ผู้เข้าร่วมกิจกรรม
           </span>
         </button>
@@ -58,7 +59,7 @@ export default function ChooseRoleStep({
           type="button"
           onClick={() => setSelectedRole("organizer")}
           className={clsx(
-            "shadow-[0_0_10px_0_rgba(0,0,0,0.2)] px-12 py-16 rounded-4xl flex flex-col justify-center items-center gap-8 transition",
+            "shadow-[0_0_10px_0_rgba(0,0,0,0.2)] w-full sm:w-auto px-6 sm:px-12 py-6 sm:py-12 rounded-4xl flex flex-row sm:flex-col justify-center items-center gap-4 sm:gap-8 transition",
             selectedRole === "organizer"
               ? "text-black ring-2 ring-primary/80 scale-[1.02]"
               : "hover:scale-[1.02] text-text-gray"
@@ -69,8 +70,9 @@ export default function ChooseRoleStep({
             alt="organizer"
             width={120}
             height={120}
+            className="w-[64px] h-[64px] sm:w-[120px] sm:h-[120px]"
           />
-          <span className="text-[18px] font-medium">
+          <span className="text-base sm:text-[18px] font-medium">
             ผู้จัดกิจกรรม
           </span>
         </button>
