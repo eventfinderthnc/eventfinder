@@ -5,9 +5,7 @@ import { MultiDropdown } from "@/components/ui/MultiDropdown";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
-import { SearchBar } from "@/components/ui/SearchBar";
-import { FormInput } from "@/components/ui/FormInput";
-import { ChevronDown, SquarePlus } from "lucide-react";
+import { SquarePlus } from "lucide-react";
 
 export default async function Home() {
   const content: string[] = [];
