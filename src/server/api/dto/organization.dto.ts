@@ -26,13 +26,16 @@ const SocialsSchema = z.object({
 });
 
 export const CreateOrganizationRequestSchema: ZodSchema<CreateOrganizationRequest> = z.object({
+    name: z.string().min(1),
     category: z.enum(categoryEnum.enumValues),
     averageHoursPerWeek: SmallIntSchema.optional(),
     bio: z.string(),
     recruitmentPeriod: RecruitmentPeriodSchema,
+    facultyId: z.string().nullable().optional(),
     userId: z.string().uuid(),
     isBanned: z.boolean(),
     socials: SocialsSchema,
+    image: z.string().nullable().optional(),
 });
 
 export const UpdateOrganizationRequestSchema = z.object({
@@ -44,4 +47,41 @@ export const UpdateOrganizationRequestSchema = z.object({
     userId: z.string().uuid().optional(),
     isBanned: z.boolean().optional(),
     socials: SocialsSchema.optional(),
+    name: z.string().optional(),
+    facultyId: z.string().nullable().optional(),
+    image: z.string().nullable().optional(),
 });
+
+/** Current user's org snapshot for onboarding / profile. */
+export type OrganizationMineDTO = {
+    id: string;
+    name: string;
+    facultyId: string | null;
+    bio: string | null;
+    image: string | null;
+    socials: Organization["socials"];
+    interests: string[];
+};
+
+export const UpdateMineInfoStepSchema = z.object({
+    name: z.string().min(1),
+    facultyId: z.string().min(1),
+    bio: z.string().min(1),
+    image: z.string().min(1).optional(),
+});
+
+/** ขั้น Contact — socials */
+export const UpdateMineSocialsStepSchema = z.object({
+    instagram: z.string().min(1),
+    discord: z.string().min(1),
+    signUpForm: z.string().optional(),
+});
+
+/** ขั้น Category — interest_x_organization */
+export const SetMineInterestsStepSchema = z.object({
+    interestIds: z.array(z.string()),
+});
+
+export type UpdateMineInfoStepInput = z.infer<typeof UpdateMineInfoStepSchema>;
+export type UpdateMineSocialsStepInput = z.infer<typeof UpdateMineSocialsStepSchema>;
+export type SetMineInterestsStepInput = z.infer<typeof SetMineInterestsStepSchema>;

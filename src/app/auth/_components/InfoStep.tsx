@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react";
 import { FormInput } from "@/components/ui/FormInput";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { Input } from "@/components/ui/Input";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "@/trpc/react";
 import useImageUpload from "@/lib/hooks/useImageUpload";
 
@@ -19,13 +19,20 @@ interface InfoStepProps {
 const INPUT_ID = "profile-picture-input";
 const PREVIEW_DIV_ID = "profile-picture-div";
 
+const PREVIEW_IMG_STYLE =
+  "height:100%; width:100%; border-radius: 9999px; object-fit:cover; border: 1px solid #d6d6d6";
+
 export default function InfoStep({
   onBack,
   onNext,
   type = "organizer",
 }: InfoStepProps) {
+  const isOrganizer = type === "organizer";
   const { data: faculties } = api.faculty.getAll.useQuery();
-  const { data: me } = api.user.me.useQuery();
+  const { data: me } = api.user.me.useQuery(undefined, { enabled: !isOrganizer });
+  const { data: mine, isLoading: mineLoading } = api.organization.getMine.useQuery(undefined, {
+    enabled: isOrganizer,
+  });
   const utils = api.useUtils();
 
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
@@ -38,33 +45,94 @@ export default function InfoStep({
   const [name, setName] = useState("");
   const [facultyId, setFacultyId] = useState<string | undefined>(undefined);
   const [isReceiveMail, setIsReceiveMail] = useState(false);
+  const [bio, setBio] = useState("");
+
+  const ensureMine = api.organization.ensureMine.useMutation({
+    onSuccess: () => utils.organization.getMine.invalidate(),
+  });
+  const ensuredAttempt = useRef(false);
 
   const title = type === "attendee" ? "กรอกข้อมูลส่วนตัว" : "กรอกข้อมูลชมรม";
-	const nameLabel = type === "attendee" ? "ชื่อ" : "ชื่อชมรม";
-	const descLabel = type === "attendee" ? "คำอธิบายตัวตน" : "คำอธิบาย";
-	const selectedFacultyName = faculties?.find((f) => f.id === facultyId)?.name ?? "เลือก";
+  const nameLabel = type === "attendee" ? "ชื่อ" : "ชื่อชมรม";
+  const descLabel = type === "attendee" ? "คำอธิบายตัวตน" : "คำอธิบาย";
+  const selectedFacultyName = faculties?.find((f) => f.id === facultyId)?.name ?? "เลือก";
 
-   const updateInfo = api.user.updateOnboardingInfo.useMutation({
-		onSuccess: async () => {
-			await utils.user.me.invalidate();
-		},
-   });
+  const updateInfo = api.user.updateOnboardingInfo.useMutation({
+    onSuccess: async () => {
+      await utils.user.me.invalidate();
+    },
+  });
+
+  const updateMineInfo = api.organization.updateMineInfo.useMutation({
+    onSuccess: async () => {
+      await utils.organization.getMine.invalidate();
+    },
+  });
 
   useEffect(() => {
-    if (me) {
+    if (!isOrganizer || mineLoading || mine !== null || ensuredAttempt.current) return;
+    ensuredAttempt.current = true;
+    ensureMine.mutate(undefined, {
+      onError: () => {
+        ensuredAttempt.current = false;
+      },
+    });
+  }, [isOrganizer, mineLoading, mine, ensureMine]);
+
+  useEffect(() => {
+    if (isOrganizer && mine) {
+      setName(mine.name ?? "");
+      setFacultyId(mine.facultyId ?? undefined);
+      setBio(mine.bio ?? "");
+      setImageUrl(mine.image ?? undefined);
+      return;
+    }
+    if (!isOrganizer && me) {
       setName(me.name ?? "");
       setFacultyId(me.facultyId ?? undefined);
       setIsReceiveMail(me.isReceiveMail ?? false);
     }
-  }, [me]);
+  }, [isOrganizer, mine, me]);
 
-  const handleNext = () => {
-    updateInfo.mutate({
-      name,
-      facultyId,
-      isReceiveMail,
-      image: imageUrl,
-    });
+  useEffect(() => {
+    if (!isOrganizer || !imageUrl) return;
+    const div = document.getElementById(PREVIEW_DIV_ID);
+    if (!div) return;
+    div.style.border = "none";
+    div.innerHTML = `<img id="profile-picture-image" style="${PREVIEW_IMG_STYLE}" src="${imageUrl}" alt="Profile"/>`;
+  }, [isOrganizer, imageUrl]);
+
+  /** ชื่อ / คณะ / คำอธิบาย — รูปโปรไฟล์ไม่บังคับ (ส่งเมื่ออัปโหลดแล้วเท่านั้น) */
+  const canContinueOrganizer =
+    Boolean(name.trim()) &&
+    Boolean(facultyId) &&
+    Boolean(bio.trim()) &&
+    Boolean(imageUrl) &&
+    !isUploading &&
+    !mineLoading &&
+    !ensureMine.isPending;
+
+  /** Attendee flow unchanged: allow next unless an upload is in progress. */
+  const canContinueAttendee = !isUploading;
+
+  const canContinue = isOrganizer ? canContinueOrganizer : canContinueAttendee;
+
+  const handleNext = async () => {
+    if (isOrganizer) {
+      await updateMineInfo.mutateAsync({
+        name: name.trim(),
+        facultyId: facultyId!,
+        bio: bio.trim(),
+        image: imageUrl,
+      });
+    } else {
+      await updateInfo.mutateAsync({
+        name,
+        facultyId,
+        isReceiveMail,
+        image: imageUrl,
+      });
+    }
     onNext();
   };
 
@@ -160,6 +228,8 @@ export default function InfoStep({
             ) : (
               <FormInput
                 label={descLabel}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
                 className="w-full py-1 text-[12px] text-text-gray sm:h-30 sm:py-2 sm:text-[14px]"
                 isTextArea
               />
@@ -169,8 +239,16 @@ export default function InfoStep({
       </div>
 
       <div className="flex w-full flex-col items-center gap-4">
-        <Button className="w-full hover:cursor-pointer" onClick={handleNext} disabled={isUploading}>
-          {isUploading ? "กำลังอัปโหลด..." : "ถัดไป"}
+        <Button
+          className="w-full hover:cursor-pointer"
+          onClick={() => void handleNext()}
+          disabled={!canContinue || updateInfo.isPending || updateMineInfo.isPending}
+        >
+          {isUploading
+            ? "กำลังอัปโหลด..."
+            : updateInfo.isPending || updateMineInfo.isPending
+              ? "กำลังบันทึก..."
+              : "ถัดไป"}
         </Button>
 
         <div className="flex w-full items-center justify-center gap-1.5">

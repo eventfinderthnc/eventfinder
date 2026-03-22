@@ -32,17 +32,29 @@ export default function CategoryStep({
 
   const canContinue = selected.length > 0;
   const title = type === "attendee" ? "สิ่งที่สนใจ" : "เลือกหมวดหมู่";
-  
+
   const { data: interests } = api.interest.getAll.useQuery();
-  const { data: me } = api.user.me.useQuery();
+  const { data: me } = api.user.me.useQuery(undefined, { enabled: type === "attendee" });
+  const { data: mine } = api.organization.getMine.useQuery(undefined, {
+    enabled: type === "organizer",
+  });
   const utils = api.useUtils();
   const { refetch: refetchSession } = useSession();
   const updateInterests = api.user.updateInterests.useMutation();
+  const setMineInterests = api.organization.setMineInterests.useMutation({
+    onSuccess: async () => {
+      await utils.organization.getMine.invalidate();
+    },
+  });
   const completeOnboarding = api.user.completeOnboarding.useMutation();
 
   useEffect(() => {
-    if (me?.interests) setSelected(me.interests);
-  }, [me]);
+    if (type === "attendee" && me?.interests) setSelected(me.interests);
+  }, [type, me]);
+
+  useEffect(() => {
+    if (type === "organizer" && mine?.interests) setSelected(mine.interests);
+  }, [type, mine]);
 
   const byId = useMemo(() => interests ?? [], [interests]);
 
@@ -53,10 +65,15 @@ export default function CategoryStep({
   };
 
   const handleSubmit = async () => {
-    await updateInterests.mutateAsync({ interests: selected });
+    if (type === "organizer") {
+      await setMineInterests.mutateAsync({ interestIds: selected });
+    } else {
+      await updateInterests.mutateAsync({ interests: selected });
+    }
     await completeOnboarding.mutateAsync();
     await refetchSession({ query: { disableCookieCache: true } });
     await utils.user.me.invalidate();
+    await utils.organization.getMine.invalidate();
     router.push("/");
   };
   
@@ -100,8 +117,11 @@ export default function CategoryStep({
       </div>
 
       <div className="flex flex-col gap-4">
-        <Button disabled={!canContinue} onClick={handleSubmit}>
-          เสร็จสิ้น
+        <Button
+          disabled={!canContinue || setMineInterests.isPending || updateInterests.isPending}
+          onClick={() => void handleSubmit()}
+        >
+          {setMineInterests.isPending || updateInterests.isPending ? "กำลังบันทึก..." : "เสร็จสิ้น"}
         </Button>
 
         <div className="flex w-full items-center justify-center gap-1.5">

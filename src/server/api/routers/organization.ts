@@ -2,7 +2,13 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { organizationServiceImpl } from "@/server/api/service/organization.service";
-import { CreateOrganizationRequestSchema, UpdateOrganizationRequestSchema } from "@/server/api/dto/organization.dto";
+import {
+	CreateOrganizationRequestSchema,
+	SetMineInterestsStepSchema,
+	UpdateMineInfoStepSchema,
+	UpdateMineSocialsStepSchema,
+	UpdateOrganizationRequestSchema,
+} from "@/server/api/dto/organization.dto";
 import { getTRPCError } from "@/utils/error";
 import { TRPCError } from "@trpc/server";
 import { organization } from "@/server/db/organization";
@@ -16,7 +22,8 @@ export const organizationRouter = createTRPCRouter({
 	}),
 
 	update: protectedProcedure.input(UpdateOrganizationRequestSchema).mutation(async ({ input }) => {
-		const res = await organizationServiceImpl.update(eq(organization.id, input.id), input);
+		const { id, ...rest } = input;
+		const res = await organizationServiceImpl.update(eq(organization.id, id), rest);
 		if (res) return new TRPCError(getTRPCError(res));
 		return null;
 	}),
@@ -47,4 +54,34 @@ export const organizationRouter = createTRPCRouter({
 			if (error) return new TRPCError(getTRPCError(error));
 			return res;
 		}),
+
+	getMine: protectedProcedure.query(async ({ ctx }) => {
+		const [data, error] = await organizationServiceImpl.getMineByUserId(ctx.session.user.id);
+		if (error) throw new TRPCError(getTRPCError(error));
+		return data;
+	}),
+
+	ensureMine: protectedProcedure.mutation(async ({ ctx }) => {
+		const [data, error] = await organizationServiceImpl.ensureMineForUser(ctx.session.user.id);
+		if (error) throw new TRPCError(getTRPCError(error));
+		return data!;
+	}),
+
+	updateMineInfo: protectedProcedure.input(UpdateMineInfoStepSchema).mutation(async ({ ctx, input }) => {
+		const err = await organizationServiceImpl.updateMineInfo(ctx.session.user.id, input);
+		if (err) throw new TRPCError(getTRPCError(err));
+		return null;
+	}),
+
+	updateMineSocials: protectedProcedure.input(UpdateMineSocialsStepSchema).mutation(async ({ ctx, input }) => {
+		const err = await organizationServiceImpl.updateMineSocials(ctx.session.user.id, input);
+		if (err) throw new TRPCError(getTRPCError(err));
+		return null;
+	}),
+
+	setMineInterests: protectedProcedure.input(SetMineInterestsStepSchema).mutation(async ({ ctx, input }) => {
+		const err = await organizationServiceImpl.setMineInterests(ctx.session.user.id, input.interestIds);
+		if (err) throw new TRPCError(getTRPCError(err));
+		return null;
+	}),
 });

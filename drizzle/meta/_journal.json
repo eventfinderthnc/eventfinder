@@ -8,6 +8,13 @@
       "when": 1774183426831,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774183426832,
+      "tag": "0001_organization_image",
+      "breakpoints": true
     }
   ]
 }

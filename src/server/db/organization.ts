@@ -20,6 +20,7 @@ export const organization = pgTable("organization", {
 		.references(() => user.id)
 		.notNull(),
 	isBanned: boolean("is_banned").default(false).notNull(),
+	image: text("image"),
 	socials: jsonb("socials").$type<{
 		signUpForm?: string;
 		discord: string;
