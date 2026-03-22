@@ -12,7 +12,11 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
-export function TimePicker() {
+type TimePickerProps = {
+    onChange?: (date: Date) => void
+}
+
+export function TimePicker({ onChange }: TimePickerProps) {
     const [date, setDate] = React.useState<Date>();
     const [open, setOpen] = React.useState(false);
     const hoursArray = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -48,6 +52,7 @@ export function TimePicker() {
         }
 
         setDate(newDate);
+        onChange?.(newDate)
     };
 
     return (

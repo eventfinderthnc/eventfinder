@@ -15,6 +15,13 @@
       "when": 1774183426832,
       "tag": "0001_organization_image",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774173018636,
+      "tag": "0002_crazy_carmella_unuscione",
+      "breakpoints": true
     }
   ]
 }
