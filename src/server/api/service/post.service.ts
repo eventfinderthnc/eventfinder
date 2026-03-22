@@ -1,16 +1,15 @@
 import type { SQL } from "drizzle-orm";
 import { randomUUID } from "crypto";
-import { and, asc, desc, ilike, or, eq } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray, or } from "drizzle-orm";
 import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
 import type { Post, CreatePostRequest } from "@/server/api/dto/post.dto";
 import { post } from "@/server/db/post";
 import { interestXPost } from "@/server/db/interestXPost";
+import { interestXUser } from "@/server/db/interestXUser";
 import { signToken } from "@/server/utils/signedTokens";
 import { user } from "@/server/db/auth-schema";
-import { userXOrganization } from "@/server/db/userXOrganization";
-import { organization } from "@/server/db/organization";
-import { sendMail } from "@/server/utils/mailer";
+import { bulkSendMail } from "@/server/utils/mailer";
 import { ActivityCardMail } from "@/components/ui/ActivityCardMail";
 
 export interface IPostService {
@@ -78,14 +77,25 @@ class PostService implements IPostService {
 		postDescription: string | null | undefined,
 		organizationId: string,
 	): Promise<void> {
-		const subscribers = await db
+		const postInterestRows = await db
+			.select({ interestId: interestXPost.interestId })
+			.from(interestXPost)
+			.where(eq(interestXPost.postId, postId));
+
+		if (postInterestRows.length === 0) return;
+
+		const postInterestIds = postInterestRows.map((r) => r.interestId);
+
+		const recipientRows = await db
 			.select({
 				email: user.email,
 				name: user.name,
 			})
-			.from(userXOrganization)
-			.innerJoin(user, eq(userXOrganization.userId, user.id))
-			.where(and(eq(userXOrganization.organizationId, organizationId), eq(user.isReceiveMail, true)));
+			.from(interestXUser)
+			.innerJoin(user, eq(interestXUser.userId, user.id))
+			.where(and(inArray(interestXUser.interestId, postInterestIds), eq(user.isReceiveMail, true)));
+
+		const subscribers = [...new Map(recipientRows.map((r) => [r.email, r])).values()];
 
 		const orgUser = await db.query.organization.findFirst({
 			where: (organization, { eq }) => eq(organization.id, organizationId),
@@ -99,19 +109,19 @@ class PostService implements IPostService {
 
 		if (subscribers.length === 0) return;
 		const appBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
-		await Promise.all(
-			subscribers.map((subscriber) => {
-				const token = signToken(postId);
-				const claimLink = `${appBase}/api/calendar/claim?token=${token}`;
-				//temporary design
-				return sendMail({
-					to: subscriber.email,
-					subject: `กิจกรรมใหม่: ${postTitle}`,
-					text: `มีกิจกรรมใหม่ "${postTitle}" คลิกลิงก์เพื่อเพิ่มลงในปฏิทิน: ${claimLink}`,
-					html: ActivityCardMail({ postTitle, postImage, claimLink, postDescription, organizationName }),
-				});
-			}),
-		);
+
+		const messages = subscribers.map((subscriber) => {
+			const token = signToken(postId);
+			const claimLink = `${appBase}/api/calendar/claim?token=${token}`;
+			return {
+				to: subscriber.email,
+				subject: `กิจกรรมใหม่: ${postTitle}`,
+				text: `มีกิจกรรมใหม่ "${postTitle}" คลิกลิงก์เพื่อเพิ่มลงในปฏิทิน: ${claimLink}`,
+				html: ActivityCardMail({ postTitle, postImage, claimLink, postDescription, organizationName }),
+			};
+		});
+
+		await bulkSendMail(messages);
 	}
 	async getAll(): Promise<[Post[], ErrorOrNull]> {
 		const res = await db.query.post
