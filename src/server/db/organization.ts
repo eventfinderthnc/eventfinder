@@ -1,10 +1,13 @@
-import { pgTable, serial, text, boolean, timestamp, pgEnum, jsonb, smallint } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, timestamp, pgEnum, jsonb, smallint } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
+import { faculty } from "./faculty";
 
 export const categoryEnum = pgEnum("category", ["CLUB", "EVENT"]);
 
 export const organization = pgTable("organization", {
 	id: text("id").primaryKey(),
+	name: text("name").notNull(),
+	facultyId: text("faculty_id").references(() => faculty.id),
 	category: categoryEnum("category").notNull(),
 	averageHoursPerWeek: smallint("average_hours_per_week"),
 	bio: text("bio"),
