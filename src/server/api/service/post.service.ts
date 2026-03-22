@@ -6,7 +6,7 @@ import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } f
 import type { Post, CreatePostRequest } from "@/server/api/dto/post.dto";
 import { post } from "@/server/db/post";
 import { interestXPost } from "@/server/db/interestXPost";
-import { signToken } from "@/server/utils/signedTokens"
+import { signToken } from "@/server/utils/signedTokens";
 import { user } from "@/server/db/auth-schema";
 import { userXOrganization } from "@/server/db/userXOrganization";
 import { sendMail } from "@/server/utils/mailer";
@@ -15,10 +15,7 @@ export interface IPostService {
 	create(req: CreatePostRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
 	getAll(): Promise<[Post[], ErrorOrNull]>;
 	getOne(id: string): Promise<[Post | null, ErrorOrNull]>;
-	getBySearch(input: {
-		searchQuery?: string;
-		createdByAsc: boolean;
-	}): Promise<[Post[], ErrorOrNull]>;
+	getBySearch(input: { searchQuery?: string; createdByAsc: boolean }): Promise<[Post[], ErrorOrNull]>;
 	getByFilter(filter?: SQL): Promise<[Post[] | [], ErrorOrNull]>;
 	getOneByFilter(filter: SQL): Promise<[Post | null, ErrorOrNull]>;
 	update(filter: SQL, update: Partial<Post>, trx?: typeof db): Promise<ErrorOrNull>;
@@ -28,8 +25,8 @@ export interface IPostService {
 class PostService implements IPostService {
 	async create(
 		req: CreatePostRequest,
-		trx?: typeof db, 
-		interestIds?: string[]
+		trx?: typeof db,
+		interestIds?: string[],
 	): Promise<[string | null, ErrorOrNull]> {
 		const database = trx ?? db;
 		const id = randomUUID();
@@ -49,10 +46,12 @@ class PostService implements IPostService {
 		if (interestIds && interestIds.length > 0) {
 			const interestRes = await database
 				.insert(interestXPost)
-				.values(interestIds.map((interestId) => ({
-					interestId,
-					postId,
-				})))
+				.values(
+					interestIds.map((interestId) => ({
+						interestId,
+						postId,
+					})),
+				)
 				.catch((e) => {
 					console.log(e);
 					return new PostgreSQLError();
@@ -61,42 +60,32 @@ class PostService implements IPostService {
 			if (interestRes instanceof Error) return [null, interestRes];
 		}
 
-		await this.sendPostNotification(postId, req.title, req.organizationId)
-			.catch((e)=>{
-				console.log("Mail send failed: ", e)
-			})
+		await this.sendPostNotification(postId, req.title, req.organizationId).catch((e) => {
+			console.log("Mail send failed: ", e);
+		});
 
 		return [postId, null];
 	}
 
-	private async sendPostNotification(
-		postId: string,
-		postTitle: string,
-		organizationId: string,
-	): Promise<void> {
+	private async sendPostNotification(postId: string, postTitle: string, organizationId: string): Promise<void> {
 		const subscribers = await db
 			.select({
 				email: user.email,
-				name: user.name
+				name: user.name,
 			})
 			.from(userXOrganization)
 			.innerJoin(user, eq(userXOrganization.userId, user.id))
-			.where(
-				and(
-					eq(userXOrganization.organizationId, organizationId),
-					eq(user.isReceiveMail, true),
-				)
-			)
-		if (subscribers.length === 0) return
-		const appBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"
+			.where(and(eq(userXOrganization.organizationId, organizationId), eq(user.isReceiveMail, true)));
+		if (subscribers.length === 0) return;
+		const appBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
 		await Promise.all(
-			subscribers.map((subscriber) =>{
-				const token = signToken(postId)
-				const claimLink = `${appBase}/api/calendar/claim?token=${token}`
+			subscribers.map((subscriber) => {
+				const token = signToken(postId);
+				const claimLink = `${appBase}/api/calendar/claim?token=${token}`;
 
 				return sendMail({
 					to: subscriber.email,
-					subject:`กิจกรรมใหม่: ${postTitle}`,
+					subject: `กิจกรรมใหม่: ${postTitle}`,
 					text: `มีกิจกรรมใหม่ "${postTitle}" คลิกลิงก์เพื่อเพิ่มลงในปฏิทิน: ${claimLink}`,
 					// can add photo (use with useImageUpload)
 					// need design
@@ -119,10 +108,10 @@ class PostService implements IPostService {
 								เพิ่มลงในปฏิทิน
 							</a>
 						</div>
-					`
-				})
-			})
-		)
+					`,
+				});
+			}),
+		);
 	}
 	async getAll(): Promise<[Post[], ErrorOrNull]> {
 		const res = await db.query.post
@@ -152,22 +141,14 @@ class PostService implements IPostService {
 		if (!res) return [null, new ErrorWithCategory("Post not found", ErrorCategory.ResourceNotFound)];
 		return [res, null];
 	}
-	
-	async getBySearch(input: {
-		searchQuery?: string;
-		createdByAsc: boolean;
-	}): Promise<[Post[], ErrorOrNull]> {
+
+	async getBySearch(input: { searchQuery?: string; createdByAsc: boolean }): Promise<[Post[], ErrorOrNull]> {
 		try {
 			const conditions = [];
 
 			if (input.searchQuery && input.searchQuery.trim().length > 0) {
 				const searchTerm = `%${input.searchQuery.trim()}%`;
-				conditions.push(
-					or(
-						ilike(post.title, searchTerm),
-						ilike(post.description, searchTerm)
-					)
-				);
+				conditions.push(or(ilike(post.title, searchTerm), ilike(post.description, searchTerm)));
 			}
 			const orderBy = input.createdByAsc ? asc(post.createdAt) : desc(post.createdAt);
 
