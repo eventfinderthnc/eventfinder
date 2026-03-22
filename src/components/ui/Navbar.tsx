@@ -9,12 +9,23 @@ import { useAuth } from "@/components/ui/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { signOut } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { api } from "@/trpc/react";
+import { UserRound } from "lucide-react";
 
 export const Navbar = () => {
 	const pathname = usePathname();
 	const { isLoggedIn, isOrg, user } = useAuth();
+	const { data: mine } = api.organization.getMine.useQuery(undefined, {
+		enabled: isLoggedIn && isOrg,
+	});
 	const navItems = isOrg ? NavItemsOrg : NavItemsAtten;
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+	const orgImage = mine?.image?.trim();
+	const orgImageUsable =
+		orgImage && (orgImage.startsWith("http") || orgImage.startsWith("/")) ? orgImage : null;
+	const userHttpImage = user?.image?.startsWith("http") ? user.image : null;
+	const avatarSrc = isOrg ? orgImageUsable : userHttpImage;
 
 	useEffect(() => {
 		setMobileMenuOpen(false);
@@ -66,24 +77,26 @@ export const Navbar = () => {
 								</button>
 								<Link
 									href="/"
-									className="relative block h-7 w-7 sm:h-10 sm:w-10 overflow-hidden rounded-full bg-[#fff2f6] border border-[#ffb7d3]"
+									className={cn(
+										"relative block h-7 w-7 sm:h-10 sm:w-10 overflow-hidden rounded-full shrink-0",
+										avatarSrc
+											? "bg-[#fff2f6] border border-[#ffb7d3]"
+											: "border border-gray-200 bg-gray-100 flex items-center justify-center",
+									)}
 								>
-									{user?.image?.startsWith("http") ? (
+									{avatarSrc ? (
 										<Image
-											src={user.image}
-											alt={user.name ?? "Profile"}
+											src={avatarSrc}
+											alt={isOrg ? (mine?.name ?? "Organization") : (user?.name ?? "Profile")}
 											width={40}
 											height={40}
 											className="h-full w-full object-cover"
 										/>
 									) : (
-										<Image
-											src="/images/Profile.svg"
-											alt="profile"
-											width={40}
-											height={40}
-											className="h-7 sm:h-10 w-auto"
-										/>
+										<>
+											<UserRound size={18} className="text-gray-400 sm:hidden" />
+											<UserRound size={22} className="text-gray-400 hidden sm:block" />
+										</>
 									)}
 								</Link>
 								<button
