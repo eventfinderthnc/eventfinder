@@ -38,7 +38,7 @@ export default function CategoryStep({
   const utils = api.useUtils();
   const { refetch: refetchSession } = useSession();
   const updateInterests = api.user.updateInterests.useMutation();
-  const completeOrganizerOnboarding = api.user.completeOrganizerOnboarding.useMutation();
+  const completeOnboarding = api.user.completeOnboarding.useMutation();
 
   useEffect(() => {
     if (me?.interests) setSelected(me.interests);
@@ -54,10 +54,8 @@ export default function CategoryStep({
 
   const handleSubmit = async () => {
     await updateInterests.mutateAsync({ interests: selected });
-    if (type === "organizer") {
-      await completeOrganizerOnboarding.mutateAsync();
-      await refetchSession({ query: { disableCookieCache: true } });
-    }
+    await completeOnboarding.mutateAsync();
+    await refetchSession({ query: { disableCookieCache: true } });
     await utils.user.me.invalidate();
     router.push("/");
   };

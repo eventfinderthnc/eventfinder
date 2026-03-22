@@ -59,7 +59,7 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
                     name: "username",
                     role: type === "attendee" ? "ATTENDEE" : "ORGANIZATION",
                     callbackURL: "/auth/attendee/onboarding",
-                    organizerOnboardingComplete: false,
+                    onboardingComplete: false,
                 });
                 if (error) throw new Error(error.message ?? "เกิดข้อผิดพลาด");
                 onNext();

@@ -45,6 +45,7 @@ CREATE TABLE "user" (
 	"faculty_id" text,
 	"is_receive_mail" boolean DEFAULT false NOT NULL,
 	"role" "role" DEFAULT 'ATTENDEE' NOT NULL,
+	"onboarding_complete" boolean DEFAULT false NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "user_email_unique" UNIQUE("email")
 );

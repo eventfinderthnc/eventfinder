@@ -7,7 +7,7 @@ export const authClient = createAuthClient({
     inferAdditionalFields({
       user: {
         role: { type: "string" },
-        organizerOnboardingComplete: { type: "boolean" },
+        onboardingComplete: { type: "boolean" },
       },
     }),
   ],

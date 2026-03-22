@@ -1,5 +1,5 @@
 {
-  "id": "adaec698-4825-4ac0-8474-dcd11637bf9e",
+  "id": "ab530074-82a7-4cd4-ad80-538a05768313",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -296,6 +296,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'ATTENDEE'"
+        },
+        "onboarding_complete": {
+          "name": "onboarding_complete",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "updated_at": {
           "name": "updated_at",

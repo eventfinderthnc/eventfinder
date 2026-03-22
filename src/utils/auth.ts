@@ -28,7 +28,7 @@ export const auth = betterAuth({
       role: {
         type: "string",
       },
-      organizerOnboardingComplete: {
+      onboardingComplete: {
         type: "boolean",
         required: false,
         defaultValue: false,

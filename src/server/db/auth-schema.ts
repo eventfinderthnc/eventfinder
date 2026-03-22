@@ -13,8 +13,8 @@ export const user = pgTable("user", {
 	facultyId: text("faculty_id").references(() => faculty.id),
 	isReceiveMail: boolean("is_receive_mail").default(false).notNull(),
 	role: roleEnum("role").default("ATTENDEE").notNull(),
-	/** Set true when organizer finishes onboarding wizard; drives session + middleware redirect. */
-	organizerOnboardingComplete: boolean("organizer_onboarding_complete").default(false).notNull(),
+	/** Role-specific onboarding wizard finished; middleware uses role to pick redirect path. */
+	onboardingComplete: boolean("onboarding_complete").default(false).notNull(),
 	updatedAt: timestamp("updated_at")
 		.defaultNow()
 		.$onUpdate(() => /* @__PURE__ */ new Date())
