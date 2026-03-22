@@ -102,7 +102,7 @@ export default function InfoStep({
     div.innerHTML = `<img id="profile-picture-image" style="${PREVIEW_IMG_STYLE}" src="${imageUrl}" alt="Profile"/>`;
   }, [isOrganizer, imageUrl]);
 
-  /** ชื่อ / คณะ / คำอธิบาย — รูปโปรไฟล์ไม่บังคับ (ส่งเมื่ออัปโหลดแล้วเท่านั้น) */
+  const canContinueAttendee = !isUploading && Boolean(facultyId);
   const canContinueOrganizer =
     Boolean(name.trim()) &&
     Boolean(facultyId) &&
@@ -111,9 +111,6 @@ export default function InfoStep({
     !isUploading &&
     !mineLoading &&
     !ensureMine.isPending;
-
-  /** Attendee flow unchanged: allow next unless an upload is in progress. */
-  const canContinueAttendee = !isUploading;
 
   const canContinue = isOrganizer ? canContinueOrganizer : canContinueAttendee;
 
@@ -126,6 +123,7 @@ export default function InfoStep({
         image: imageUrl,
       });
     } else {
+      if (!facultyId) return;
       await updateInfo.mutateAsync({
         name,
         facultyId,
