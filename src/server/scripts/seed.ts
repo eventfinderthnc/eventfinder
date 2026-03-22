@@ -5,43 +5,42 @@ import { activityType } from "@/server/db/activityType";
 import { faculty } from "@/server/db/faculty";
 import { interest } from "@/server/db/interest";
 import { sql } from "drizzle-orm";
-import { randomUUID } from "crypto";
 
 const faculties = [
-	"Allied Health Sciences",
-	"Architecture",
-	"Arts",
-	"Commerce and Accountancy",
-	"Communication Arts",
-	"Dentistry",
-	"Economics",
-	"Education",
-	"Engineering",
-	"Fine and Applied Arts",
-	"Laws",
-	"Medicine",
-	"Nursing",
-	"Pharmaceutical Sciences",
-	"Political Science",
-	"Psychology",
-	"Science",
-	"Sports Science",
-	"Veterinary Science",
-	"School of Integrated Innovation",
-	"Agricultural Resources",
-	"Graduate School",
+  "Allied Health Sciences",
+  "Architecture",
+  "Arts",
+  "Commerce and Accountancy",
+  "Communication Arts",
+  "Dentistry",
+  "Economics",
+  "Education",
+  "Engineering",
+  "Fine and Applied Arts",
+  "Laws",
+  "Medicine",
+  "Nursing",
+  "Pharmaceutical Sciences",
+  "Political Science",
+  "Psychology",
+  "Science",
+  "Sports Science",
+  "Veterinary Science",
+  "School of Integrated Innovation",
+  "Agricultural Resources",
+  "Graduate School",
 ] as const;
 
 const interests = [
-	{ name: "ธุรกิจ", icon: "BriefcaseBusiness" },
-	{ name: "เทคโนโลยี", icon: "Cpu" },
-	{ name: "แพทย์", icon: "HeartPulse" },
-	{ name: "กีฬา", icon: "Volleyball" },
-	{ name: "พัฒนาชุมชน", icon: "HandHeart" },
-	{ name: "สารสนเทศ", icon: "Monitor" },
-	{ name: "ศิลปะ", icon: "Palette" },
-	{ name: "ดนตรี", icon: "Music" },
-	{ name: "การศึกษา", icon: "GraduationCap" },
+  { name: "ธุรกิจ", icon: "BriefcaseBusiness" },
+  { name: "เทคโนโลยี", icon: "Cpu" },
+  { name: "แพทย์", icon: "HeartPulse" },
+  { name: "กีฬา", icon: "Volleyball" },
+  { name: "พัฒนาชุมชน", icon: "HandHeart" },
+  { name: "สารสนเทศ", icon: "Monitor" },
+  { name: "ศิลปะ", icon: "Palette" },
+  { name: "ดนตรี", icon: "Music" },
+  { name: "การศึกษา", icon: "GraduationCap" },
 ] as const;
 
 const activityTypes = [
@@ -99,7 +98,7 @@ async function main() {
     }
   });
 
-	console.log("Seeding completed.");
+  console.log("Seeding completed.");
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

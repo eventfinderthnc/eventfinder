@@ -11,6 +11,7 @@
         "id": {
           "name": "id",
           "type": "text",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
@@ -248,6 +249,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
+          "default": "''""notNull": true,
           "default": "''"
         },
         "email": {
@@ -260,6 +262,7 @@
           "name": "email_verified",
           "type": "boolean",
           "primaryKey": false,
+          "notNull": false,
           "notNull": false,
           "default": false
         },
@@ -279,7 +282,9 @@
         "faculty_id": {
           "name": "faculty_id",
           "type": "text",
+          "type": "text",
           "primaryKey": false,
+          "notNull": false
           "notNull": false
         },
         "is_receive_mail": {
@@ -400,11 +405,13 @@
         "id": {
           "name": "id",
           "type": "text",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
         "post_id": {
           "name": "post_id",
+          "type": "text",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -472,6 +479,7 @@
         "id": {
           "name": "id",
           "type": "text",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
@@ -510,6 +518,7 @@
       "columns": {
         "id": {
           "name": "id",
+          "type": "text",
           "type": "text",
           "primaryKey": true,
           "notNull": true
@@ -564,11 +573,13 @@
         "interest_id": {
           "name": "interest_id",
           "type": "text",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "organization_id": {
           "name": "organization_id",
+          "type": "text",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -624,11 +635,13 @@
         "interest_id": {
           "name": "interest_id",
           "type": "text",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "post_id": {
           "name": "post_id",
+          "type": "text",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -683,6 +696,7 @@
       "columns": {
         "interest_id": {
           "name": "interest_id",
+          "type": "text",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -743,6 +757,7 @@
       "columns": {
         "id": {
           "name": "id",
+          "type": "text",
           "type": "text",
           "primaryKey": true,
           "notNull": true
@@ -860,17 +875,20 @@
         "id": {
           "name": "id",
           "type": "text",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
         "organization_id": {
           "name": "organization_id",
           "type": "text",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "activity_type_id": {
           "name": "activity_type_id",
+          "type": "text",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -967,6 +985,7 @@
         },
         "organization_id": {
           "name": "organization_id",
+          "type": "text",
           "type": "text",
           "primaryKey": false,
           "notNull": true
