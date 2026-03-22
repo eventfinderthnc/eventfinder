@@ -9,7 +9,9 @@ import { interestXPost } from "@/server/db/interestXPost";
 import { signToken } from "@/server/utils/signedTokens";
 import { user } from "@/server/db/auth-schema";
 import { userXOrganization } from "@/server/db/userXOrganization";
+import { organization } from "@/server/db/organization";
 import { sendMail } from "@/server/utils/mailer";
+import { ActivityCardMail } from "@/components/ui/ActivityCardMail";
 
 export interface IPostService {
 	create(req: CreatePostRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
@@ -60,14 +62,22 @@ class PostService implements IPostService {
 			if (interestRes instanceof Error) return [null, interestRes];
 		}
 
-		await this.sendPostNotification(postId, req.title, req.organizationId).catch((e) => {
-			console.log("Mail send failed: ", e);
-		});
+		await this.sendPostNotification(postId, req.title, req.image, req.description, req.organizationId).catch(
+			(e) => {
+				console.log("Mail send failed: ", e);
+			},
+		);
 
 		return [postId, null];
 	}
 
-	private async sendPostNotification(postId: string, postTitle: string, organizationId: string): Promise<void> {
+	private async sendPostNotification(
+		postId: string,
+		postTitle: string,
+		postImage: string,
+		postDescription: string | null | undefined,
+		organizationId: string,
+	): Promise<void> {
 		const subscribers = await db
 			.select({
 				email: user.email,
@@ -76,39 +86,29 @@ class PostService implements IPostService {
 			.from(userXOrganization)
 			.innerJoin(user, eq(userXOrganization.userId, user.id))
 			.where(and(eq(userXOrganization.organizationId, organizationId), eq(user.isReceiveMail, true)));
+
+		const orgUser = await db.query.organization.findFirst({
+			where: (organization, { eq }) => eq(organization.id, organizationId),
+			with: {
+				user: {
+					columns: { name: true },
+				},
+			},
+		});
+		const organizationName = orgUser?.user?.name ?? "";
+
 		if (subscribers.length === 0) return;
 		const appBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
 		await Promise.all(
 			subscribers.map((subscriber) => {
 				const token = signToken(postId);
 				const claimLink = `${appBase}/api/calendar/claim?token=${token}`;
-
+				//temporary design
 				return sendMail({
 					to: subscriber.email,
 					subject: `กิจกรรมใหม่: ${postTitle}`,
 					text: `มีกิจกรรมใหม่ "${postTitle}" คลิกลิงก์เพื่อเพิ่มลงในปฏิทิน: ${claimLink}`,
-					// can add photo (use with useImageUpload)
-					// need design
-					html: `
-						<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-							<h2 style="color: #DE5C8E;">กิจกรรมใหม่!</h2>
-							<p>มีกิจกรรมใหม่ <strong>[ชิ่อกิจกรรม]</strong> ที่น่าสนใจสำหรับคุณ</p>
-							<a 
-								href="https://youtu.be/dQw4w9WgXcQ?si=07yHam1hbe1is-74"
-								style="
-									display: inline-block;
-									background-color: #DE5C8E;
-									color: white;
-									padding: 12px 24px;
-									border-radius: 8px;
-									text-decoration: none;
-									margin-top: 16px;
-								"
-							>
-								เพิ่มลงในปฏิทิน
-							</a>
-						</div>
-					`,
+					html: ActivityCardMail({ postTitle, postImage, claimLink, postDescription, organizationName }),
 				});
 			}),
 		);
