@@ -117,7 +117,7 @@ export const Navbar = () => {
 							<Link href="/auth/attendee/login" className="text-[#757575] text-base">
 								เข้าสู่ระบบ
 							</Link>
-							<Link href="/auth">
+							<Link href="/auth/attendee/login">
 								<Button className="bg-[#DE5C8E] text-white px-6 py-2.5 rounded-full text-base">
 									ลงทะเบียน
 								</Button>

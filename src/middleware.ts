@@ -1,22 +1,25 @@
+/**
+ * Edge auth: session cookie, login/home entry, and onboarding completion.
+ * Role checks for app areas live in route-group layouts via `requireRole` (see `src/lib/require-role.ts`).
+ */
 import { type NextRequest, NextResponse } from "next/server";
 import { getCookieCache } from "better-auth/cookies";
+import {
+	ATTENDEE_LOGIN_PATH,
+	defaultHomePathForRole,
+	pendingOnboardingPath,
+	type SessionUserLike,
+} from "@/lib/auth-paths";
 
-const ATTENDEE_ONBOARDING_PATH = "/auth/attendee/onboarding";
-const ORGANIZER_ONBOARDING_PATH = "/auth/organizer/onboarding";
 const SESSION_COOKIE = "better-auth.session_token";
 
-type SessionUser = {
-	role?: string;
-	onboardingComplete?: boolean;
-};
-
-async function getSessionUser(request: NextRequest): Promise<SessionUser | null> {
+async function getSessionUser(request: NextRequest): Promise<SessionUserLike | null> {
 	const cookieHeader = request.headers.get("cookie");
 	if (!cookieHeader) return null;
 
 	const cached = await getCookieCache(request);
 	if (cached?.user) {
-		return cached.user as SessionUser;
+		return cached.user as SessionUserLike;
 	}
 
 	const res = await fetch(new URL("/api/auth/get-session", request.url), {
@@ -24,38 +27,17 @@ async function getSessionUser(request: NextRequest): Promise<SessionUser | null>
 		cache: "no-store",
 	});
 	if (!res.ok) return null;
-	const data = (await res.json()) as { user?: SessionUser } | null;
+	const data = (await res.json()) as { user?: SessionUserLike } | null;
 	return data?.user ?? null;
-}
-
-/** Where this user must be if onboarding is not finished; null = no redirect. */
-function pendingOnboardingPath(user: SessionUser | null): string | null {
-	if (!user?.role) return null;
-	if (user.role !== "ORGANIZATION" && user.role !== "ATTENDEE") return null;
-	if (user.onboardingComplete === true) return null;
-	return user.role === "ORGANIZATION" ? ORGANIZER_ONBOARDING_PATH : ATTENDEE_ONBOARDING_PATH;
 }
 
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const hasSession = request.cookies.has(SESSION_COOKIE);
+	const loginUrl = new URL(ATTENDEE_LOGIN_PATH, request.url);
 
-	if (pathname.startsWith("/calendar")) {
-		if (!hasSession) {
-			return NextResponse.redirect(new URL("/", request.url));
-		}
-	}
-
-	if (pathname.startsWith("/admin")) {
-		if (!hasSession) {
-			return NextResponse.redirect(new URL("/", request.url));
-		}
-	}
-
-	if (pathname.startsWith("/create")) {
-		if (!hasSession) {
-			return NextResponse.redirect(new URL("/", request.url));
-		}
+	if (pathname === "/auth" && !hasSession) {
+		return NextResponse.redirect(loginUrl);
 	}
 
 	if (
@@ -63,13 +45,34 @@ export async function middleware(request: NextRequest) {
 		pathname.startsWith("/auth/organizer/onboarding")
 	) {
 		if (!hasSession) {
-			return NextResponse.redirect(new URL("/auth", request.url));
+			return NextResponse.redirect(loginUrl);
 		}
 		return NextResponse.next();
 	}
 
+	if (
+		pathname.startsWith("/calendar") ||
+		pathname.startsWith("/admin") ||
+		pathname.startsWith("/create") ||
+		pathname.startsWith("/posts")
+	) {
+		if (!hasSession) {
+			return NextResponse.redirect(loginUrl);
+		}
+	}
+
 	const user = hasSession ? await getSessionUser(request) : null;
 	const onboardingTarget = pendingOnboardingPath(user);
+
+	if (pathname === "/") {
+		if (!hasSession) {
+			return NextResponse.redirect(loginUrl);
+		}
+		if (onboardingTarget) {
+			return NextResponse.redirect(new URL(onboardingTarget, request.url));
+		}
+		return NextResponse.redirect(new URL(defaultHomePathForRole(user?.role), request.url));
+	}
 
 	const isLoginPage =
 		pathname === "/auth" ||
@@ -80,7 +83,7 @@ export async function middleware(request: NextRequest) {
 		if (onboardingTarget) {
 			return NextResponse.redirect(new URL(onboardingTarget, request.url));
 		}
-		return NextResponse.redirect(new URL("/", request.url));
+		return NextResponse.redirect(new URL(defaultHomePathForRole(user?.role), request.url));
 	}
 
 	if (hasSession && onboardingTarget && !pathname.startsWith(onboardingTarget)) {
