@@ -55,7 +55,7 @@ export default function Page() {
             >
               <LoginStep
                 type="organizer"
-                onBack={() => router.push("/auth")}
+                onBack={() => router.push("/auth/attendee/login")}
                 onNext={() => router.push("/dashboard")}
               />
             </motion.div>

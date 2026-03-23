@@ -74,7 +74,7 @@ const CreatePage = () => {
     const createPost = api.post.create.useMutation({
         onSuccess: (res) => {
             console.log("post created: ", res)
-            router.push("/")
+            router.push("/posts")
         },
         onError: (error) => {
             console.error("Failed to create post:", error)

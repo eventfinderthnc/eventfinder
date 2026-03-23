@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
+import { defaultHomePathForRole, pendingOnboardingPath } from "@/lib/auth-paths";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -50,8 +51,11 @@ export default function LoginStep({ type, onBack, onNext }: LoginStepProps) {
                 });
                 if (error) throw new Error(error.message ?? "เกิดข้อผิดพลาด");
                 const { data: sessionData } = await authClient.getSession();
-                const role = sessionData?.user?.role;
-                router.push(role === "ADMIN" ? "/admin/list" : "/");
+                const user = sessionData?.user;
+                const pending = pendingOnboardingPath(user ?? null);
+                router.push(
+                    pending ?? defaultHomePathForRole(user?.role),
+                );
             } else {
                 const { error } = await authClient.signUp.email({
                     email: data.email,
