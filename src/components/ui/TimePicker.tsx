@@ -13,11 +13,15 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
 type TimePickerProps = {
+    value?: Date
     onChange?: (date: Date) => void
 }
 
-export function TimePicker({ onChange }: TimePickerProps) {
-    const [date, setDate] = React.useState<Date>();
+export function TimePicker({ value: controlled, onChange }: TimePickerProps) {
+    const [date, setDate] = React.useState<Date | undefined>(controlled);
+    React.useEffect(() => {
+        if (controlled !== undefined) setDate(controlled)
+    }, [controlled])
     const [open, setOpen] = React.useState(false);
     const hoursArray = Array.from({ length: 12 }, (_, i) => i + 1);
     const minutesArray = ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60"]

@@ -2,26 +2,33 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { postServiceImpl } from "@/server/api/service/post.service";
-import { CreatePostRequestSchema, UpdatePostRequestSchema } from "@/server/api/dto/post.dto";
+import { organizationServiceImpl } from "@/server/api/service/organization.service";
+import { CreatePostWithInterestsInputSchema, UpdatePostRequestSchema, type CreatePostRequest } from "@/server/api/dto/post.dto";
 import { getTRPCError } from "@/utils/error";
 import { TRPCError } from "@trpc/server";
 import { post } from "@/server/db/post";
 import { and, eq } from "drizzle-orm";
 
-const CreatePostWithInterestsSchema = CreatePostRequestSchema.and(
-    z.object({
-        interestIds: z.array(z.string().uuid()).min(1),
-    })
-)
-
 export const postRouter = createTRPCRouter({
 	create: protectedProcedure
-	.input(CreatePostWithInterestsSchema)
-	.mutation(async ({ input }) => {
+	.input(CreatePostWithInterestsInputSchema)
+	.mutation(async ({ ctx, input }) => {
 		const { interestIds, ...postData } = input
-		const [res, error] = await postServiceImpl.create(postData, undefined, interestIds);
-		if (error) return new TRPCError(getTRPCError(error));
-		return res;
+		const [org, orgErr] = await organizationServiceImpl.getMineByUserId(ctx.session.user.id)
+		if (orgErr) throw new TRPCError(getTRPCError(orgErr))
+		if (!org) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "No organization for this account. Finish organization setup before creating a post.",
+			})
+		}
+		const toCreate: CreatePostRequest = {
+			...postData,
+			organizationId: org.id,
+		}
+		const [res, error] = await postServiceImpl.create(toCreate, undefined, interestIds)
+		if (error) throw new TRPCError(getTRPCError(error))
+		return res
 	}),
 
 	update: protectedProcedure.input(UpdatePostRequestSchema).mutation(async ({ input }) => {

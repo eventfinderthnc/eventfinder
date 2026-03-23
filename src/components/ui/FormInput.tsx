@@ -35,8 +35,10 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement>{
     onMultiDropdownChange?: (value: string[]) => void,
     dropdownValue?: string,
     multiValue?: string[],
+    /** Sync with react-hook-form `watch("date")` */
+    dateValue?: Date,
     onDateChange?: (date: Date) => void,
-    onTimeChange?: (time: Date) => void, 
+    onTimeChange?: (time: Date) => void,
 }
 
 const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
@@ -57,6 +59,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
         onMultiDropdownChange,
         dropdownValue,
         multiValue,
+        dateValue,
         onDateChange,
         onTimeChange,
         ...props}, ref) => {
@@ -85,6 +88,10 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                             className,
                         )}
                         {...(props as ComponentProps<typeof Textarea>)}
+                        onChange={(e) => {
+                            ;(props as ComponentProps<typeof Textarea>).onChange?.(e)
+                            onTextChange?.(e.target.value)
+                        }}
                     />
                 )}
                 {isDropdown && (
@@ -111,27 +118,32 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((
                     )}/>
                 )}
                 {isDate && (
-                    <DatePicker 
+                    <DatePicker
+                    value={dateValue}
                     onChange={(date) => onDateChange?.(date)}
                     />
                 )}
                 { isTime && (
-                    <TimePicker 
+                    <TimePicker
+                    value={dateValue}
                     onChange={(time) => onTimeChange?.(time)}
                     />
                 )}
                 {!isTextArea && !isDropdown && !isMultiDropdown && !isDate && !isTime && (
-                    <Input 
+                    <Input
                     ref={ref}
                     placeholder={placeholder}
                     type={inputType}
-                    onChange={(e) => onTextChange?.(e.target.value)}
                     className={cn(
                         "relative h-12 text-black border-[#D6D6D6] hover:border-primary/70",
                         "placeholder:text-left placeholder:align-text-top",
                         className,
                     )}
                     {...props}
+                    onChange={(e) => {
+                        props.onChange?.(e)
+                        onTextChange?.(e.target.value)
+                    }}
                 />)}
             </div>
         </div>

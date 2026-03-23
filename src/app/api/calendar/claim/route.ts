@@ -3,7 +3,7 @@ import { verifyToken } from "@/server/utils/signedTokens"
 import { auth } from "@/utils/auth"
 import { calendarItemServiceImpl } from "@/server/api/service/calendarItem.service"
 import { calendarItem } from "@/server/db/calendarItem"
-import { and, eq } from "drizzle-orm"
+import { and, eq, type SQL } from "drizzle-orm"
 
 const appBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000" 
 
@@ -27,15 +27,16 @@ export async function GET(req: NextRequest) {
     if(!payload){
         return NextResponse.redirect(`${appBase}/calendar?error=invalid_token`)
     }
-    //4. idempotency
-    const [existing] = await calendarItemServiceImpl.getOneByFilter(
-        and(
-            eq(calendarItem.userId, session.user.id),
-            eq(calendarItem.postId, payload.postId)
-        )!
-    )
-    //5. calendar not exist
-    if(!existing) {
+    //4. idempotency — skip create if this user already claimed this post
+    const filter = and(
+        eq(calendarItem.userId, session.user.id),
+        eq(calendarItem.postId, payload.postId),
+    ) as SQL
+    const [existing, existingErr] = await calendarItemServiceImpl.getOneByFilter(filter)
+    if (existingErr) {
+        return NextResponse.redirect(`${appBase}/calendar?error=lookup_failed`)
+    }
+    if (!existing) {
         const [, error] = await calendarItemServiceImpl.create({
             userId: session.user.id,
             postId: payload.postId,

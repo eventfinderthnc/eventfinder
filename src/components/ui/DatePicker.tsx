@@ -12,12 +12,16 @@ import {
 import { cn } from "@/lib/utils"
 
 type DatePickerProps = {
+    value?: Date
     onChange?: (date: Date) => void
 }
 
-export function DatePicker({ onChange }: DatePickerProps) {
+export function DatePicker({ value: controlled, onChange }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
-  const [date, setDate] = React.useState<Date | undefined>(undefined)
+  const [date, setDate] = React.useState<Date | undefined>(controlled)
+  React.useEffect(() => {
+    if (controlled !== undefined) setDate(controlled)
+  }, [controlled])
   const formatDate = (date: Date) => {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');

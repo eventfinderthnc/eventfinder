@@ -1,24 +1,29 @@
 interface ActivityMailProps {
-    postTitle: string,
-    postImage: string,
-    claimLink: string,
-    postDescription?: string | null,
-    organizationName?: string
+	postTitle: string;
+	postImage: string;
+	claimLink: string;
+	postDescription?: string | null;
+	organizationName?: string;
 }
 
-export function ActivityCardMail({ postTitle, postImage, claimLink, postDescription, organizationName }: ActivityMailProps): string {
-    return `
+export function ActivityCardMail({
+	postTitle,
+	postImage,
+	claimLink,
+	postDescription,
+	organizationName,
+}: ActivityMailProps): string {
+	return `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; gap: 16px; padding-left: 24px; padding-right: 24px;">
-            <h2 style="color: #DE5C8E; margin-top: 16px; font-weight: 700; font-size: 20px;">
-                โพสต์ใหม่: <strong>${postTitle}</strong> จาก <strong>${organizationName}</strong>
-            </h2>
+            <h1 style="color: #DE5C8E; margin-top: 16px; font-weight: 700; font-size: 20px;">
+                <strong>${postTitle}</strong>
+            </h1>
             <img
                 src="${postImage}"
                 alt="${postTitle}"
                 style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 8px;"
             />
-            <h2><strong>รายละเอียด:</strong></h2>
-            <p>${postDescription}</p>
+            <h2>${postDescription}</h2>
             <div style="text-align: center; margin-top: 32px; margin-bottom: 24px;">
                 <a
                     href="${claimLink}"
@@ -40,5 +45,5 @@ export function ActivityCardMail({ postTitle, postImage, claimLink, postDescript
                 </a>
             </div>
         </div>
-    `
+    `;
 }
