@@ -14,6 +14,9 @@ export const env = createEnv({
 		R2_BUCKET: z.string(),
 		R2_PUBLIC_BASE_URL: z.string().url(),
 		NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+		CALENDAR_CLAIM_SECRET: z.string(),
+		RESEND_API_KEY: z.string().min(1),
+		EMAIL_FROM: z.string().email(),
 	},
 
 	/**
@@ -37,6 +40,9 @@ export const env = createEnv({
 		R2_BUCKET: process.env.R2_BUCKET,
 		R2_PUBLIC_BASE_URL: process.env.R2_PUBLIC_BASE_URL,
 		NODE_ENV: process.env.NODE_ENV,
+		CALENDAR_CLAIM_SECRET: process.env.CALENDAR_CLAIM_SECRET,
+		RESEND_API_KEY: process.env.RESEND_API_KEY,
+		EMAIL_FROM: process.env.EMAIL_FROM,
 		// NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 	},
 	/**

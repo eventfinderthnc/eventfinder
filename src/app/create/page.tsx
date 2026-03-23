@@ -17,13 +17,16 @@ import { Button } from "@/components/ui/Button"
 import { Upload } from "lucide-react"
 import { FileInput } from "@/components/ui/FileInput"
 
-import { CreatePostRequestSchema } from "@/server/api/dto/post.dto"
-
-const CreatePostWithInterestsSchema = CreatePostRequestSchema.and(
-    z.object({
-        interestIds: z.array(z.string().uuid()).min(1),
-    })
-)
+/** Same as create-post API body except org + final image URL (filled on submit / after upload). */
+const CreatePostWithInterestsSchema = z.object({
+    title: z.string().min(1),
+    activityTypeId: z.string().uuid(),
+    description: z.string().min(1),
+    instaLink: z.string().optional(),
+    image: z.string(),
+    date: z.date(),
+    interestIds: z.array(z.string().uuid()).min(1),
+})
 
 type CreatePostWithInterests = z.infer<typeof CreatePostWithInterestsSchema>
 
@@ -37,11 +40,10 @@ const CreatePage = () => {
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null)
     
-    const { handleSubmit, getValues, setValue, control, formState: { errors } } = useForm<CreatePostWithInterests>({
+    const { handleSubmit, getValues, setValue, control, watch, formState: { errors } } = useForm<CreatePostWithInterests>({
         resolver: zodResolver(CreatePostWithInterestsSchema),
         defaultValues: {
             title: "",
-            organizationId: "",
             activityTypeId: "",
             interestIds: [],
             description: "",
@@ -52,7 +54,7 @@ const CreatePage = () => {
     })
 
     const watchedActivityTypeId = useWatch({ control, name: "activityTypeId" })
-    const watchedInterestIds = useWatch({ control, name: "interestIds" })
+    const watchedInterestIds = useWatch({ control, name: "interestIds" }) as string[] | undefined
 
     const activityTypeDropdownLabel = useMemo(
         () => activityTypes?.find((t) => t.id === watchedActivityTypeId)?.name,
@@ -63,8 +65,8 @@ const CreatePage = () => {
         () =>
             watchedInterestIds?.length
                 ? (watchedInterestIds
-                    .map((id) => interests?.find((i) => i.id === id)?.name)
-                    .filter((n): n is string => Boolean(n)) ?? [])
+                    .map((id: string) => interests?.find((i) => i.id === id)?.name)
+                    .filter((n: string | undefined): n is string => Boolean(n)) ?? [])
                 : [],
         [interests, watchedInterestIds],
     )
@@ -78,6 +80,8 @@ const CreatePage = () => {
             console.error("Failed to create post:", error)
         },
     })
+
+    const uploadMutation = api.upload.uploadImage.useMutation()
 
     const handleFileSelect = (file: File | null, previewUrl: string) => {
         if (imagePreview) URL.revokeObjectURL(imagePreview)
@@ -93,7 +97,21 @@ const CreatePage = () => {
         }
     }
 
-    const uploadMutation = api.upload.uploadImage.useMutation()
+    const formValues = watch()
+    const canSubmit = useMemo(() => {
+        const uuidOk = z.string().uuid().safeParse(formValues.activityTypeId).success
+        const descOk = (formValues.description ?? "").trim().length > 0
+        return (
+            Boolean(session?.user?.id) &&
+            formValues.title.trim().length > 0 &&
+            uuidOk &&
+            descOk &&
+            formValues.interestIds.length >= 1 &&
+            imageFile !== null &&
+            !createPost.isPending &&
+            !uploadMutation.isPending
+        )
+    }, [session?.user?.id, formValues, imageFile, createPost.isPending, uploadMutation.isPending])
     
     const onSubmit = async (data: CreatePostWithInterests) => {
         if (!session?.user?.id) {
@@ -112,7 +130,6 @@ const CreatePage = () => {
         })
         createPost.mutate({
             title: data.title,
-            organizationId: session.user.id,
             activityTypeId: data.activityTypeId,
             description: data.description,
             instaLink: data.instaLink,
@@ -132,6 +149,7 @@ const CreatePage = () => {
                         <FormInput 
                             label="ชื่อหัวข้อ"
                             className="w-full"
+                            value={watch("title")}
                             onTextChange={(value) => setValue("title", value)}
                         />
                         <div className="flex lg:flex-row flex-col lg:gap-4 gap-5 justify-between">
@@ -171,12 +189,14 @@ const CreatePage = () => {
                             placeholder="เขียนอะไรสักอย่าง..."
                             isTextArea= {true}
                             className="w-full h-25 sm:h-75 sm:resize-none selection:bg-primary selection:text-primary-foreground placeholder:text-sm sm:placeholder:text-base"
+                            value={watch("description") ?? ""}
                             onTextChange={(value) => setValue("description", value)}
                         />
                         <FormInput
                             icon="link"
                             label="ฟอร์มรับสมัคร"
                             className="w-full"
+                            value={watch("instaLink") ?? ""}
                             onTextChange={(value) => setValue("instaLink", value)}
                         />
                         <div className="flex sm:flex-row flex-col items-stretch gap-2.5 w-full">
@@ -187,6 +207,7 @@ const CreatePage = () => {
                                     placeholder="วัน/เดือน/ปี"
                                     isDate={true}
                                     className=""
+                                    dateValue={watch("date")}
                                     onDateChange={(value) => setValue("date",value)}
                                 />
                             </div>
@@ -196,6 +217,7 @@ const CreatePage = () => {
                                     placeholder="เวลา"
                                     isTime={true}
                                     className=""
+                                    dateValue={watch("date")}
                                     onTimeChange={(time) => {
                                         const current = new Date(getValues("date"))
                                         current.setHours(time.getHours())
@@ -211,7 +233,7 @@ const CreatePage = () => {
                                 // console.log("current form values:", getValues())
                                 // console.log("form errors:", errors)
                             }}
-                            disabled={createPost.isPending}
+                            disabled={!canSubmit}
                             className="w-full text-white h-12 text-base hover:bg-primary/90"
                         >
                             {createPost.isPending ? "กำลังสร้างโพสต์..." : "อัพโหลด"}

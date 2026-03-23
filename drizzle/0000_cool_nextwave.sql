@@ -111,6 +111,7 @@ CREATE TABLE "organization" (
 	"recruitment_period" jsonb,
 	"user_id" text NOT NULL,
 	"is_banned" boolean DEFAULT false NOT NULL,
+	"image" text,
 	"socials" jsonb,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
@@ -151,4 +152,5 @@ ALTER TABLE "organization" ADD CONSTRAINT "organization_user_id_user_id_fk" FORE
 ALTER TABLE "post" ADD CONSTRAINT "post_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "post" ADD CONSTRAINT "post_activity_type_id_activity_type_id_fk" FOREIGN KEY ("activity_type_id") REFERENCES "public"."activity_type"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_x_organization" ADD CONSTRAINT "user_x_organization_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "user_x_organization" ADD CONSTRAINT "user_x_organization_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "user_x_organization" ADD CONSTRAINT "user_x_organization_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+CREATE UNIQUE INDEX "calendar_item_user_post_unique" ON "calendar_item" USING btree ("user_id","post_id");

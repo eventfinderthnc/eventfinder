@@ -13,6 +13,8 @@ export interface ICalendarItemService {
 	getByMonth(filter?: SQL): Promise<[any[], ErrorOrNull]>;
 	getAllByUserId(filter?: SQL): Promise<[any[], ErrorOrNull]>; // getAll
 	getOneByUserId(filter: SQL): Promise<[any | null, ErrorOrNull]>;
+	/** Plain `calendar_item` row; `null` if none — not an error. */
+	getOneByFilter(filter: SQL): Promise<[CalendarItem | null, ErrorOrNull]>;
 	update(filter: SQL, update: Partial<CalendarItem>, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
 	delete(filter: SQL): Promise<ErrorOrNull>;
 }
@@ -88,6 +90,21 @@ class CalendarItemService implements ICalendarItemService {
 		}
 
 		return [res, null];
+	}
+
+	async getOneByFilter(filter: SQL): Promise<[CalendarItem | null, ErrorOrNull]> {
+		const res = await db
+			.select()
+			.from(calendarItem)
+			.where(filter)
+			.limit(1)
+			.catch((e) => {
+				console.log(e);
+				return new PostgreSQLError();
+			});
+
+		if (res instanceof Error) return [null, res];
+		return [res[0] ?? null, null];
 	}
 
 	async getOneByUserId(filter: SQL): Promise<[CalendarItem | null, ErrorOrNull]> {

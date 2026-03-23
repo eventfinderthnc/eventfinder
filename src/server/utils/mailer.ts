@@ -1,7 +1,7 @@
 import { Resend } from "resend";
+import { env } from "@/env";
 
-// Initialize once at import time
-const resend = new Resend(process.env.RESEND_API_KEY!);
+const resend = new Resend(env.RESEND_API_KEY);
 
 export interface SendMailParams {
 	to: string | string[];
@@ -31,13 +31,11 @@ export type BulkSendMailItem = Omit<SendMailParams, "to"> & { to: string };
  * Requires at least `text` or `html`.
  */
 export async function sendMail(params: SendMailParams) {
-	// ── BUILD MESSAGE ───────────────────────────────
 	const payload: Parameters<typeof resend.emails.send>[0] = {
-		from: `CUATClub <${process.env.EMAIL_FROM!}>`,
+		from: `CUATClub <${env.EMAIL_FROM}>`,
 		...params,
 	};
 
-	// ── SEND & ERROR HANDLING ────────────────────────
 	try {
 		const res = await resend.emails.send(payload);
 		if (res.error) throw new Error(res.error.message);
@@ -69,7 +67,7 @@ function hasAttachments(item: BulkSendMailItem): boolean {
 export async function bulkSendMail(items: BulkSendMailItem[]): Promise<void> {
 	if (items.length === 0) return;
 
-	const from = `CUATClub <${process.env.EMAIL_FROM!}>`;
+	const from = `CUATClub <${env.EMAIL_FROM}>`;
 
 	const withAttachments = items.filter(hasAttachments);
 	const batchable = items.filter((i) => !hasAttachments(i));

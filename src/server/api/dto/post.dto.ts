@@ -15,6 +15,17 @@ export const CreatePostRequestSchema: ZodSchema<CreatePostRequest> = z.object({
 	date: z.date(),
 });
 
+/** Client → `post.create`: `organizationId` is set server-side from the user’s org row. */
+export const CreatePostWithInterestsInputSchema = z.object({
+	title: z.string().min(1),
+	activityTypeId: z.string().uuid(),
+	description: z.string().optional(),
+	instaLink: z.string().optional(),
+	image: z.string().url(),
+	date: z.date(),
+	interestIds: z.array(z.string().uuid()).min(1),
+});
+
 export const UpdatePostRequestSchema = z.object({
 	id: z.string().uuid(),
 	title: z.string().optional(),

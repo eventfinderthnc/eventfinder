@@ -1,5 +1,5 @@
 {
-  "id": "ab530074-82a7-4cd4-ad80-538a05768313",
+  "id": "f8365584-c1e5-426e-885b-ff197972c4ad",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -430,7 +430,29 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "calendar_item_user_post_unique": {
+          "name": "calendar_item_user_post_unique",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "post_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "calendar_item_post_id_post_id_fk": {
           "name": "calendar_item_post_id_post_id_fk",
@@ -796,6 +818,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "socials": {
           "name": "socials",

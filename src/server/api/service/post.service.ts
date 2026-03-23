@@ -88,6 +88,7 @@ class PostService implements IPostService {
 
 		const recipientRows = await db
 			.select({
+				userId: user.id,
 				email: user.email,
 				name: user.name,
 			})
@@ -95,7 +96,8 @@ class PostService implements IPostService {
 			.innerJoin(user, eq(interestXUser.userId, user.id))
 			.where(and(inArray(interestXUser.interestId, postInterestIds), eq(user.isReceiveMail, true)));
 
-		const subscribers = [...new Map(recipientRows.map((r) => [r.email, r])).values()];
+		// One email per user (same user may match multiple post interests).
+		const subscribers = [...new Map(recipientRows.map((r) => [r.userId, r])).values()];
 
 		const orgUser = await db.query.organization.findFirst({
 			where: (organization, { eq }) => eq(organization.id, organizationId),
@@ -115,7 +117,7 @@ class PostService implements IPostService {
 			const claimLink = `${appBase}/api/calendar/claim?token=${token}`;
 			return {
 				to: subscriber.email,
-				subject: `กิจกรรมใหม่: ${postTitle}`,
+				subject: `กิจกรรมใหม่จาก  ${organizationName} - ${postTitle}`,
 				text: `มีกิจกรรมใหม่ "${postTitle}" คลิกลิงก์เพื่อเพิ่มลงในปฏิทิน: ${claimLink}`,
 				html: ActivityCardMail({ postTitle, postImage, claimLink, postDescription, organizationName }),
 			};

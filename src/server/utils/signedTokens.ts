@@ -46,7 +46,7 @@ export function signToken(postId: string): string {
     }
 
     const payloadB64 = base64urlEncode(JSON.stringify(payload))
-    const sigB64 = computeHmac(payloadB64, secret)
+    const sigB64 = computeHmac(secret, payloadB64)
     
     return `${payloadB64}.${sigB64}`
 }
