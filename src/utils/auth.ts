@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { db } from "@/server/db";
 import * as schema from "@/server/db/schema";
 import { betterAuth } from "better-auth";
@@ -40,7 +41,7 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 	},
-	trustedOrigins: ["http://localhost:3000", "http://127.0.0.1:3000", process.env.BETTER_AUTH_URL!],
+	trustedOrigins: [new URL(env.BETTER_AUTH_URL).origin],
 	databaseHooks: {
 		user: {
 			create: {

@@ -19,5 +19,6 @@ export function defaultHomePathForRole(role: string | undefined): string {
 	if (role === "ATTENDEE") return "/calendar";
 	if (role === "ORGANIZATION") return "/posts";
 	if (role === "ADMIN") return "/admin/list";
-	return "/calendar";
+	// Unknown/missing role: do not send to /calendar (requireRole would bounce to login again).
+	return ATTENDEE_LOGIN_PATH;
 }

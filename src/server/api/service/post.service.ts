@@ -1,6 +1,7 @@
 import type { SQL } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { and, asc, desc, eq, ilike, inArray, or } from "drizzle-orm";
+import { env } from "@/env";
 import { db } from "@/server/db";
 import { ErrorCategory, ErrorWithCategory, type ErrorOrNull, PostgreSQLError } from "@/utils/error";
 import type { Post, CreatePostRequest } from "@/server/api/dto/post.dto";
@@ -115,7 +116,7 @@ class PostService implements IPostService {
 		const organizationName = orgUser?.user?.name ?? "";
 
 		if (subscribers.length === 0) return;
-		const appBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
+		const appBase = env.BETTER_AUTH_URL.replace(/\/$/, "");
 
 		const messages = subscribers.map((subscriber) => {
 			const token = signToken(postId);
