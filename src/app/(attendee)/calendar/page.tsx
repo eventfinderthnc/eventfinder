@@ -12,7 +12,7 @@ import { ConfirmModal } from '@/components/modal/ConfirmModal';
 import type { Post } from '@/server/api/dto/post.dto';
 import { ItemIndicator } from '@radix-ui/react-dropdown-menu';
 import { useRouter } from 'next/navigation';
-import { themeColor } from '../posts/_components/PostCard';
+import { themeColor } from '@/app/(organization)/posts/_components/PostCard';
 
 type CalendarItem = {
   id: string;
