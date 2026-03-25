@@ -89,7 +89,6 @@ const CalendarPage = () => {
     setData(
       fetchedData.map((item, index) => {
         const itemDate = new Date(item.date);
-        const adjustedTime = itemDate.getTime() + new Date().getTimezoneOffset() * 60 * 1000;
 
         return {
           id: item.id,
@@ -99,7 +98,7 @@ const CalendarPage = () => {
           title: item.title,
           description: item.description,
           themeColor: themeColor[index % themeColor.length]!,
-          closeDate: new Date(adjustedTime), // This is important! See getRemainingTime function for more details.
+          closeDate: itemDate,
         };
       })
     );

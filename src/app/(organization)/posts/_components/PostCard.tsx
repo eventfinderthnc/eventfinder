@@ -16,13 +16,12 @@ export const PostCard = ({ event }: { event: any }) => {
     const router = useRouter();
 
     const date = new Date(event.date);
-    const adjustedTime = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
     const formatter = Intl.DateTimeFormat("th-TH", {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
     });
-    const closeDate = formatter.format(new Date(adjustedTime));
+    const closeDate = formatter.format(date);
 
     const { data: tags } = api.interestXPost.getAllByPostId.useQuery({ postId: event.id }, {
         enabled: !!session?.user.id || true

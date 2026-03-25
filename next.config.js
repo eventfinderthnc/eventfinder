@@ -7,6 +7,7 @@ import "./src/env.js";
 /** @type {import("next").NextConfig} */
 const config = {
 	output: "standalone",
+	// temp fix: should use proper typing
 	eslint: {
 		ignoreDuringBuilds: true,
 	},
