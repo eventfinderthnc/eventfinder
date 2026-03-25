@@ -40,7 +40,7 @@ export const PostCard = ({ event }: { event: any }) => {
             <div className="h-[191px] w-full sm:h-[190px] lg:h-[226px] sm:w-42.5 rounded-[12px] bg-primary shrink-0">
                 <Image className="h-full w-full object-cover rounded-[12px]" src={event.image} alt={event.title} width={42.5} height={42.5} />
             </div>
-            <div className="h-[150px] sm:h-[193px] lg:h-[226px] flex-1 flex flex-col justify-between">
+            <div className="min-w-0 h-[150px] sm:h-[193px] lg:h-[226px] flex-1 flex flex-col justify-between">
                 <div className="flex flex-col gap-y-[5px]">
                     <div>
                         <div className="flex items-center gap-x-2 sm:gap-x-0 sm:justify-between">
@@ -48,10 +48,10 @@ export const PostCard = ({ event }: { event: any }) => {
                                 <div className="font-semibold lg:text-xl sm:text-lg text-xs text-base line-clamp-1 sm:line-clamp-2">{event.title}</div>
                                 <div className="items-center text-primary gap-x-2 flex">
                                     <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
-                                    <div className="font-semibold text-xs sm:text-sm lg:text-base">Recruitment</div>
+                                    <div className="font-semibold text-xs sm:text-sm lg:text-base">{event.activityTypeName}</div>
                                 </div>
                             </div>
-                            <div className="text-text-gray flex gap-x-3">
+                            <div className="hidden text-text-gray flex gap-x-3">
                                 <SquarePen className="hidden sm:block hover:cursor-pointer lg:w-6 lg:h-6 sm:w-5 sm:h-5" />
                                 <Trash2 className="hidden sm:block hover:cursor-pointer hover:text-red-600 hover:opacity-80 lg:w-6 lg:h-6 sm:w-5 sm:h-5" />
                             </div>
@@ -62,9 +62,12 @@ export const PostCard = ({ event }: { event: any }) => {
                             <div key={idx} className="text-[8px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-[6px] shrink-0" style={{ backgroundColor: themeColor[idx % themeColor.length] }}>{tag.name}</div>
                         ))}
                     </div>
-                    <div className="hidden mt-1 text-text-gray line-clamp-3 sm:line-clamp-3 lg:line-clamp-5 text-[10px] sm:text-sm lg:text-base font-light tracking-tight">
+                    <div className="break-words hidden w-full mt-1 text-text-gray line-clamp-3 sm:line-clamp-3 lg:line-clamp-5 text-[10px] sm:text-sm lg:text-base font-light tracking-tight">
                         {event.description}
                     </div>
+                    {/* <div className="text-wrap w-full mt-1 text-text-gray line-clamp-3 sm:line-clamp-3 lg:line-clamp-5 text-[10px] sm:text-sm lg:text-base font-light tracking-tight border-1 border-red-500">
+                        {event.description}
+                    </div> */}
                 </div>
                 <div className="flex-col lg:flex-row flex justify-between lg:text-base sm:text-[13px] text-[8px]">
                     <div className="hidden sm:flex justify-between">
