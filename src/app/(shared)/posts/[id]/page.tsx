@@ -9,7 +9,7 @@ import { getRemainingTime } from "@/app/(attendee)/calendar/page";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
 import Image from "next/image";
-import { themeColor } from "../_components/PostCard";
+import { themeColor } from "../../../(organization)/posts/_components/PostCard";
 
 const PostInfo = ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = use(params);
