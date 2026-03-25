@@ -39,8 +39,8 @@ class CalendarItemService implements ICalendarItemService {
       .select()
       .from(calendarItem)
       .innerJoin(post, eq(calendarItem.postId, post.id))
-      .innerJoin(user, eq(post.organizationId, user.id))
       .innerJoin(organization, eq(post.organizationId, organization.id))
+      .innerJoin(user, eq(organization.userId, user.id))
       .where(filter)
       .orderBy(desc(post.date), asc(post.title));
 
@@ -68,8 +68,8 @@ class CalendarItemService implements ICalendarItemService {
       .select()
       .from(calendarItem)
       .innerJoin(post, eq(calendarItem.postId, post.id))
-      .innerJoin(user, eq(post.organizationId, user.id))
       .innerJoin(organization, eq(post.organizationId, organization.id))
+      .innerJoin(user, eq(organization.userId, user.id))
       .where(filter)
       .orderBy(desc(post.date), asc(post.title));
 
@@ -96,8 +96,8 @@ class CalendarItemService implements ICalendarItemService {
       .select()
       .from(calendarItem)
       .innerJoin(post, eq(calendarItem.postId, post.id))
-      .innerJoin(user, eq(post.organizationId, user.id))
       .innerJoin(organization, eq(post.organizationId, organization.id))
+      .innerJoin(user, eq(organization.userId, user.id))
       .where(filter)
       .orderBy(desc(post.date), asc(post.title));
 

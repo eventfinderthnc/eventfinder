@@ -7,29 +7,30 @@ import { CreatePostWithInterestsInputSchema, UpdatePostRequestSchema, type Creat
 import { getTRPCError } from "@/utils/error";
 import { TRPCError } from "@trpc/server";
 import { post } from "@/server/db/post";
+import { user } from "@/server/db/auth-schema";
 import { and, eq } from "drizzle-orm";
 
 export const postRouter = createTRPCRouter({
 	create: protectedProcedure
-	.input(CreatePostWithInterestsInputSchema)
-	.mutation(async ({ ctx, input }) => {
-		const { interestIds, ...postData } = input
-		const [org, orgErr] = await organizationServiceImpl.getMineByUserId(ctx.session.user.id)
-		if (orgErr) throw new TRPCError(getTRPCError(orgErr))
-		if (!org) {
-			throw new TRPCError({
-				code: "FORBIDDEN",
-				message: "No organization for this account. Finish organization setup before creating a post.",
-			})
-		}
-		const toCreate: CreatePostRequest = {
-			...postData,
-			organizationId: org.id,
-		}
-		const [res, error] = await postServiceImpl.create(toCreate, undefined, interestIds)
-		if (error) throw new TRPCError(getTRPCError(error))
-		return res
-	}),
+		.input(CreatePostWithInterestsInputSchema)
+		.mutation(async ({ ctx, input }) => {
+			const { interestIds, ...postData } = input
+			const [org, orgErr] = await organizationServiceImpl.getMineByUserId(ctx.session.user.id)
+			if (orgErr) throw new TRPCError(getTRPCError(orgErr))
+			if (!org) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "No organization for this account. Finish organization setup before creating a post.",
+				})
+			}
+			const toCreate: CreatePostRequest = {
+				...postData,
+				organizationId: org.id,
+			}
+			const [res, error] = await postServiceImpl.create(toCreate, undefined, interestIds)
+			if (error) throw new TRPCError(getTRPCError(error))
+			return res
+		}),
 
 	update: protectedProcedure.input(UpdatePostRequestSchema).mutation(async ({ input }) => {
 		const res = await postServiceImpl.update(eq(post.id, input.id), input);
@@ -73,7 +74,7 @@ export const postRouter = createTRPCRouter({
 		)
 		.query(async ({ input }) => {
 			if (input.id && input.userId) {
-				const [res, error] = await postServiceImpl.getByFilter(and(eq(post.id, input.id), eq(post.organizationId, input.userId)));
+				const [res, error] = await postServiceImpl.getByFilter(and(eq(post.id, input.id), eq(user.id, input.userId)));
 				if (error) throw new TRPCError(getTRPCError(error));
 				return res;
 			} else if (input.id) {
@@ -81,7 +82,7 @@ export const postRouter = createTRPCRouter({
 				if (error) throw new TRPCError(getTRPCError(error));
 				return res;
 			} else if (input.userId) {
-				const [res, error] = await postServiceImpl.getByFilter(eq(post.organizationId, input.userId));
+				const [res, error] = await postServiceImpl.getByFilter(eq(user.id, input.userId));
 				if (error) throw new TRPCError(getTRPCError(error));
 				return res;
 			}

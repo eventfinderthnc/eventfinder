@@ -12,6 +12,7 @@ import { interestXUser } from "@/server/db/interestXUser";
 import { signToken } from "@/server/utils/signedTokens";
 import { bulkSendMail } from "@/server/utils/mailer";
 import { ActivityCardMail } from "@/components/ui/ActivityCardMail";
+import { activityType } from "@/server/db/activityType";
 
 export interface IPostService {
 	create(req: CreatePostRequest, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
@@ -147,8 +148,9 @@ class PostService implements IPostService {
 		const tmp = await db
 			.select()
 			.from(post)
-			.innerJoin(user, eq(post.organizationId, user.id))
 			.innerJoin(organization, eq(post.organizationId, organization.id))
+			.innerJoin(user, eq(organization.userId, user.id))
+      .innerJoin(activityType, eq(post.activityTypeId, activityType.id))
 			.where(eq(post.id, id))
 			.orderBy(desc(post.date), asc(post.title));
 
@@ -162,6 +164,7 @@ class PostService implements IPostService {
 					...t.post,
 					userImage: t.user.image,
 					image: t.post.image,
+          activityTypeName: t.activity_type.name
 				});
 			});
 		}
@@ -198,11 +201,11 @@ class PostService implements IPostService {
 		const tmp = await db
 			.select()
 			.from(post)
-			.innerJoin(user, eq(post.organizationId, user.id))
 			.innerJoin(organization, eq(post.organizationId, organization.id))
+			.innerJoin(user, eq(organization.userId, user.id))
+      .innerJoin(activityType, eq(post.activityTypeId, activityType.id))
 			.where(filter)
 			.orderBy(desc(post.date), asc(post.title));
-
 		if (tmp instanceof Error) return [[], tmp];
 		const res: any[] = [];
 		if (tmp.length > 0) {
@@ -213,7 +216,8 @@ class PostService implements IPostService {
 					...t.post,
 					userImage: t.user.image,
 					image: t.post.image,
-					id: t.post.id
+					id: t.post.id,
+          activityTypeName: t.activity_type.name
 				});
 			});
 		}

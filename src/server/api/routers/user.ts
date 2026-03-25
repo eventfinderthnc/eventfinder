@@ -122,7 +122,7 @@ export const userRouter = createTRPCRouter({
       });
 
       return null;
-  }),
+    }),
 
   /** Marks onboarding wizard done for ATTENDEE or ORGANIZATION; refetch session with disableCookieCache after. */
   completeOnboarding: protectedProcedure.mutation(async ({ ctx }) => {
