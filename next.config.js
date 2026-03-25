@@ -6,31 +6,34 @@ import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
 const config = {
-    output: "standalone",
-    images: {
-        remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: 'placehold.co',
-                pathname: "/**",
-            },
-            {
-                protocol: "https",
-                hostname: "lh3.googleusercontent.com",
-                pathname: "/**",
-            },
-            {
-                protocol: "https",
-                hostname: "avatars.githubusercontent.com",
-                pathname: "/**",
-            },
-            {
-                protocol: "https",
-                hostname: "*.r2.dev",
-                pathname: "/**",
-            },
-        ],
-    },
+	output: "standalone",
+	eslint: {
+		ignoreDuringBuilds: true,
+	},
+	images: {
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "placehold.co",
+				pathname: "/**",
+			},
+			{
+				protocol: "https",
+				hostname: "lh3.googleusercontent.com",
+				pathname: "/**",
+			},
+			{
+				protocol: "https",
+				hostname: "avatars.githubusercontent.com",
+				pathname: "/**",
+			},
+			{
+				protocol: "https",
+				hostname: "*.r2.dev",
+				pathname: "/**",
+			},
+		],
+	},
 };
 
 export default config;

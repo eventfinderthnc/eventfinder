@@ -38,7 +38,7 @@ const TypedCalendar = Calendar as unknown as React.ComponentType<{
 // This is important!
 // When we query the date from the database, it looks like the  ime is 7 hours behind the actual time.
 // So we plus the timezone offset to the date to make it correct.
-export function getRemainingTime(closeDate: Date) {
+function getRemainingTime(closeDate: Date) {
   const diff = closeDate.getTime() - Date.now();
   if (diff <= 0) return "ปิดรับสมัครแล้ว";
 

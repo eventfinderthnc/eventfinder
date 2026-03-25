@@ -13,6 +13,7 @@ export interface ICalendarItemService {
   getByMonth(filter?: SQL): Promise<[any[], ErrorOrNull]>;
   getAllByUserId(filter?: SQL): Promise<[any[], ErrorOrNull]>; // getAll
   getOneByUserId(filter: SQL): Promise<[any | null, ErrorOrNull]>;
+  getOneByFilter(filter: SQL): Promise<[any | null, ErrorOrNull]>;
   update(filter: SQL, update: Partial<CalendarItem>, trx?: typeof db): Promise<[string | null, ErrorOrNull]>;
   delete(filter: SQL): Promise<ErrorOrNull>;
 }
@@ -117,6 +118,11 @@ class CalendarItemService implements ICalendarItemService {
     }
     if (res.length == 0) return [null, new ErrorWithCategory("Calendar item not found", ErrorCategory.ResourceNotFound)];
     return [res[0], null];
+  }
+
+  async getOneByFilter(filter: SQL): Promise<[any | null, ErrorOrNull]> {
+    // Calendar-claim lookup uses a generic filter (user + post), but the join/mapping logic is the same.
+    return this.getOneByUserId(filter);
   }
 
   async update(filter: SQL, update: Partial<CalendarItem>, trx?: typeof db): Promise<[string | null, ErrorOrNull]> {
