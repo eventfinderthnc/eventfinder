@@ -28,6 +28,7 @@
     calc(var(--radius) + 16px);
   --color-primary: var(--primary);
   --color-accent: var(--accent);
+  --color-calendar-item-hover: var(--calendar-item-hover);
   --color-background:
     var(--background);
   --color-foreground:
@@ -104,6 +105,7 @@
   --text-gray: #757575;
   --text-gray-hover: #df5c8e; 
   --text-light-gray: #949494;
+  --calendar-item-hover: #f8f8f8;
 
   --radius:
     0.625rem;
@@ -241,6 +243,18 @@
   }
   .auth-section {
     @apply h-screen w-screen flex flex-col items-center justify-center;
+  }
+}
+
+@layer utilities {
+  /* chrome, safari and operara */
+  .no-scrollbar::-webkit-scrollbar {
+      display: none;
+  }
+
+  .no-scrollbar {
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox*/
   }
 }
 

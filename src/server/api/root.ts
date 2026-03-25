@@ -1,5 +1,6 @@
 import { postRouter } from "@/server/api/routers/post";
 import { interestRouter } from "./routers/interest";
+import { interestXPostRouter } from "./routers/interestXPost";
 import { calendarItemRouter } from "@/server/api/routers/calendarItem";
 import { organizationRouter } from "@/server/api/routers/organization";
 import { facultyRouter } from "@/server/api/routers/faculty";
@@ -16,6 +17,7 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 export const appRouter = createTRPCRouter({
   post: postRouter,
   interest: interestRouter,
+  interestXPost: interestXPostRouter,
   calendarItem: calendarItemRouter,
   organization: organizationRouter,
   faculty: facultyRouter,
