@@ -7,6 +7,8 @@ export const env = createEnv({
 	 * isn't built with invalid env vars.
 	 */
 	server: {
+		/** Canonical public origin of this app (OAuth, links, trusted origins). Must match what users open in the browser. */
+		BETTER_AUTH_URL: z.string().url(),
 		DATABASE_URL: z.string().url(),
 		GOOGLE_CLIENT_ID: z.string().min(1),
 		GOOGLE_CLIENT_SECRET: z.string().min(1),
@@ -27,7 +29,8 @@ export const env = createEnv({
 	 * `NEXT_PUBLIC_`.
 	 */
 	client: {
-		// NEXT_PUBLIC_CLIENTVAR: z.string(),
+		/** Inlined for browser; omit in .env and it falls back to BETTER_AUTH_URL. */
+		NEXT_PUBLIC_BETTER_AUTH_URL: z.string().url(),
 	},
 
 	/**
@@ -35,6 +38,9 @@ export const env = createEnv({
 	 * middlewares) or client-side so we need to destruct manually.
 	 */
 	runtimeEnv: {
+		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+		NEXT_PUBLIC_BETTER_AUTH_URL:
+			process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? process.env.BETTER_AUTH_URL,
 		DATABASE_URL: process.env.DATABASE_URL,
 		GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
 		GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,

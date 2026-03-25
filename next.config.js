@@ -6,7 +6,12 @@ import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
 const config = {
+	// Mirror BETTER_AUTH_URL for client bundles (auth client, TRPC) when NEXT_PUBLIC_* is unset.
+	env: {
+		NEXT_PUBLIC_BETTER_AUTH_URL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? process.env.BETTER_AUTH_URL,
+	},
 	output: "standalone",
+	// temp fix: should use proper typing
 	eslint: {
 		ignoreDuringBuilds: true,
 	},

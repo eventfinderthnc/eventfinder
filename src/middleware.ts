@@ -13,22 +13,33 @@ import {
 
 const SESSION_COOKIE = "better-auth.session_token";
 
+/** Avoid 307 loops when the destination is already the current path. */
+function redirectIfDifferent(request: NextRequest, path: string) {
+	const target = new URL(path, request.url);
+	if (target.pathname === request.nextUrl.pathname) {
+		return NextResponse.next();
+	}
+	return NextResponse.redirect(target);
+}
+
 async function getSessionUser(request: NextRequest): Promise<SessionUserLike | null> {
 	const cookieHeader = request.headers.get("cookie");
 	if (!cookieHeader) return null;
 
 	const cached = await getCookieCache(request);
-	if (cached?.user) {
-		return cached.user as SessionUserLike;
+	const cachedUser = cached?.user as SessionUserLike | undefined;
+	// Cookie cache can omit `role`; middleware needs it for home/onboarding. Prefer full session when role is missing.
+	if (cachedUser && cachedUser.role) {
+		return cachedUser;
 	}
 
 	const res = await fetch(new URL("/api/auth/get-session", request.url), {
 		headers: { cookie: cookieHeader },
 		cache: "no-store",
 	});
-	if (!res.ok) return null;
+	if (!res.ok) return cachedUser ?? null;
 	const data = (await res.json()) as { user?: SessionUserLike } | null;
-	return data?.user ?? null;
+	return data?.user ?? cachedUser ?? null;
 }
 
 export async function middleware(request: NextRequest) {
@@ -40,16 +51,13 @@ export async function middleware(request: NextRequest) {
 		return NextResponse.redirect(loginUrl);
 	}
 
-  if(pathname.startsWith("/posts")) {
-    if(!hasSession) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-  }
+	if (pathname.startsWith("/posts")) {
+		if (!hasSession) {
+			return NextResponse.redirect(new URL("/", request.url));
+		}
+	}
 
-	if (
-		pathname.startsWith("/auth/attendee/onboarding") ||
-		pathname.startsWith("/auth/organizer/onboarding")
-	) {
+	if (pathname.startsWith("/auth/attendee/onboarding") || pathname.startsWith("/auth/organizer/onboarding")) {
 		if (!hasSession) {
 			return NextResponse.redirect(loginUrl);
 		}
@@ -77,7 +85,7 @@ export async function middleware(request: NextRequest) {
 		if (onboardingTarget) {
 			return NextResponse.redirect(new URL(onboardingTarget, request.url));
 		}
-		return NextResponse.redirect(new URL(defaultHomePathForRole(user?.role), request.url));
+		return redirectIfDifferent(request, defaultHomePathForRole(user?.role));
 	}
 
 	const isLoginPage =
@@ -89,7 +97,7 @@ export async function middleware(request: NextRequest) {
 		if (onboardingTarget) {
 			return NextResponse.redirect(new URL(onboardingTarget, request.url));
 		}
-		return NextResponse.redirect(new URL(defaultHomePathForRole(user?.role), request.url));
+		return redirectIfDifferent(request, defaultHomePathForRole(user?.role));
 	}
 
 	if (hasSession && onboardingTarget && !pathname.startsWith(onboardingTarget)) {
@@ -100,7 +108,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: [
-		"/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)",
-	],
+	matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)"],
 };

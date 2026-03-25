@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
+import { env } from "@/env"
 import { verifyToken } from "@/server/utils/signedTokens"
 import { auth } from "@/utils/auth"
 import { calendarItemServiceImpl } from "@/server/api/service/calendarItem.service"
 import { calendarItem } from "@/server/db/calendarItem"
 import { and, eq, type SQL } from "drizzle-orm"
 
-const appBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000" 
-
 export async function GET(req: NextRequest) {
+    const appBase = env.BETTER_AUTH_URL.replace(/\/$/, "")
     const { searchParams } = new URL(req.url)
     const token = searchParams.get("token")
     

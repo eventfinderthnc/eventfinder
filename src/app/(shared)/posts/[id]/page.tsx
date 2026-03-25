@@ -34,7 +34,7 @@ const PostInfo = ({ params }: { params: Promise<{ id: string }> }) => {
 
 		setPost(() => {
 			const temp = { ...fetchedData };
-			temp.date = new Date(fetchedData.date.getTime() + temp.date.getTimezoneOffset() * 60 * 1000);
+			temp.date = new Date(fetchedData.date);
 			return temp;
 		});
 	}, [isLoading]);

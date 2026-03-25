@@ -16,9 +16,9 @@ export const post = pgTable("post", {
 	instaLink: text("insta_link"), // nullable for now, but future will be required
 	image: text("image").notNull(),
 
-	date: timestamp("date").notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at")
+	date: timestamp("date", { withTimezone: true }).notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true })
 		.defaultNow()
 		.$onUpdate(() => new Date())
 		.notNull(),
