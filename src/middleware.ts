@@ -58,6 +58,12 @@ export async function middleware(request: NextRequest) {
 		}
 	}
 
+  if(pathname.startsWith("/posts")) {
+    if(!hasSession) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
 	if (
 		pathname.startsWith("/auth/attendee/onboarding") ||
 		pathname.startsWith("/auth/organizer/onboarding")
