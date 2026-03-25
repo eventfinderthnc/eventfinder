@@ -11,7 +11,16 @@ import {
 	type SessionUserLike,
 } from "@/lib/auth-paths";
 
-const SESSION_COOKIE = "better-auth.session_token";
+/** Better Auth: http dev uses `better-auth.session_token`; https (e.g. Vercel) uses `__Secure-better-auth.session_token`. */
+const SESSION_COOKIE_PLAIN = "better-auth.session_token";
+const SESSION_COOKIE_SECURE = "__Secure-better-auth.session_token";
+
+function hasBetterAuthSessionCookie(request: NextRequest): boolean {
+	return (
+		request.cookies.has(SESSION_COOKIE_PLAIN) ||
+		request.cookies.has(SESSION_COOKIE_SECURE)
+	);
+}
 
 /** Avoid 307 loops when the destination is already the current path. */
 function redirectIfDifferent(request: NextRequest, path: string) {
@@ -44,7 +53,7 @@ async function getSessionUser(request: NextRequest): Promise<SessionUserLike | n
 
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
-	const hasSession = request.cookies.has(SESSION_COOKIE);
+	const hasSession = hasBetterAuthSessionCookie(request);
 	const loginUrl = new URL(ATTENDEE_LOGIN_PATH, request.url);
 
 	if (pathname === "/auth" && !hasSession) {
