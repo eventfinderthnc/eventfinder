@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { ArrowLeft, CalendarPlus, MailPlus, Share2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
-import { getRemainingTime } from "@/app/calendar/page";
+import { getRemainingTime } from "@/app/(attendee)/calendar/page";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
 import Image from "next/image";

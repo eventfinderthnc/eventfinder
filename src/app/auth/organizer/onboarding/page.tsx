@@ -57,7 +57,7 @@ export default function Page() {
             >
               <InfoStep
                 type="organizer"
-                onBack={() => router.push("/")}
+                onBack={() => router.push("/auth/organizer/login")}
                 onNext={() => goNext("contact")}
               />
             </motion.div>

@@ -56,7 +56,7 @@ export default function Page() {
             >
               <InfoStep
                 type="attendee"
-                onBack={() => router.push("/")}
+                onBack={() => router.push("/auth/attendee/login")}
                 onNext={() => goNext("category")}
               />
             </motion.div>

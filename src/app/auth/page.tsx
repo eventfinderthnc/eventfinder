@@ -1,71 +1,21 @@
-"use client"
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { auth } from "@/utils/auth";
+import {
+	ATTENDEE_LOGIN_PATH,
+	defaultHomePathForRole,
+	pendingOnboardingPath,
+} from "@/lib/auth-paths";
 
-import { useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import ChooseRoleStep from "./_components/ChooseRoleStep"
-import { useRouter } from "next/navigation"
-
-export type Step = "role" | "orgregis"
-
-const slideVariants = {
-  initial: (direction: number) => ({
-    x: direction > 0 ? 80 : -80,
-    opacity: 0,
-  }),
-  animate: {
-    x: 0,
-    opacity: 1,
-  },
-  exit: (direction: number) => ({
-    x: direction > 0 ? -80 : 80,
-    opacity: 0,
-  }),
-}
-
-export default function Page() {
-  const [step, setStep] = useState<Step>("role")
-  const [direction, setDirection] = useState(1)
-  const router = useRouter()
-
-  const goNext = (next: Step) => {
-    setDirection(1)
-    setStep(next)
-  }
-
-  const goBack = (prev: Step) => {
-    setDirection(-1)
-    setStep(prev)
-  }
-
-  return (
-		<div className="auth-section auth-bg">
-			<div className="relative overflow-hidden flex flex-col py-10 px-6 sm:px-10 w-[320px] h-[510px] sm:w-[550px] sm:h-[660px] rounded-4xl bg-white shadow-[0_6px_16px_0_rgba(0,0,0,0.25)]">
-				<AnimatePresence custom={direction} mode="wait">
-					{step === "role" && (
-						<motion.div
-							key="contact"
-							custom={direction}
-							variants={slideVariants}
-							initial="initial"
-							animate="animate"
-							exit="exit"
-							transition={{ duration: 0.35, ease: "easeOut" }}
-							className="h-full"
-						>
-							<ChooseRoleStep
-								onBack={() => router.push("/")}
-								onNext={(role) => {
-									if (role === "organizer") {
-										router.push("/auth/organizer/login");
-									} else {
-										router.push("/auth/attendee/login");
-									}
-								}}
-							/>
-						</motion.div>
-					)}
-				</AnimatePresence>
-			</div>
-		</div>
-  );
+export default async function AuthEntryPage() {
+	const session = await auth.api.getSession({ headers: await headers() });
+	if (!session?.user) {
+		redirect(ATTENDEE_LOGIN_PATH);
+	}
+	const user = session.user as {
+		role?: string;
+		onboardingComplete?: boolean;
+	};
+	const pending = pendingOnboardingPath(user);
+	redirect(pending ?? defaultHomePathForRole(user.role));
 }

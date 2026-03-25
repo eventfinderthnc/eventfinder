@@ -97,7 +97,6 @@ const PostsBoardPage = () => {
                   setUp(current => !current);
                 }}
                 onValueChange={(value) => {
-                  console.log(choice);
                   setChoice(value);
                 }}
               >
