@@ -9,7 +9,6 @@ import { Trash2 } from 'lucide-react';
 import { api } from '@/trpc/react';
 import { useSession } from '@/lib/auth-client';
 import { ConfirmModal } from '@/components/modal/ConfirmModal';
-import CalendarItemModal, { type Info } from '@/components/modal/CalendarItemModal';
 import type { Post } from '@/server/api/dto/post.dto';
 import { ItemIndicator } from '@radix-ui/react-dropdown-menu';
 import { useRouter } from 'next/navigation';
@@ -35,25 +34,6 @@ const TypedCalendar = Calendar as unknown as React.ComponentType<{
   data: CalendarItem[];
   handleDatesSet: (updatedDates: DateRange) => void;
 }>;
-
-function mappedCalendarItemToInfo(data: any): Info {
-  const itemDate = new Date(data.date);
-  const adjustedTime = itemDate.getTime() + itemDate.getTimezoneOffset() * 60 * 1000;
-
-  return {
-    title: data.title,
-    image: data.image,
-    date: new Date(adjustedTime),
-    id: data.postId,
-    username: data.name,
-    userImage: data.userImage,
-    activityTypeId: data.activityTypeId,
-    description: data.description,
-    instaLink: data.instaLink, // link?
-    email: data.email,
-    socials: data.socials
-  }
-}
 
 // This is important!
 // When we query the date from the database, it looks like the  ime is 7 hours behind the actual time.
@@ -91,9 +71,9 @@ const CalendarPage = () => {
   // Fetching Data
   const { data: session } = useSession();
   const { data: fetchedData, isLoading } = api.calendarItem.getAllByUserId.useQuery({
-    userId: session?.user.id ?? "08ec669b-fdfc-4d7e-8b5a-4bed2477b354"
+    userId: session?.user.id ?? ""
   }, {
-    enabled: !!session?.user.id || true
+    enabled: !!session?.user.id
   });
 
 
@@ -109,7 +89,7 @@ const CalendarPage = () => {
     setData(
       fetchedData.map((item, index) => {
         const itemDate = new Date(item.date);
-        const adjustedTime = itemDate.getTime() + itemDate.getTimezoneOffset() * 60 * 1000;
+        const adjustedTime = itemDate.getTime() + new Date().getTimezoneOffset() * 60 * 1000;
 
         return {
           id: item.id,
@@ -141,23 +121,6 @@ const CalendarPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState<[boolean, string]>([false, ""]);
   const deleteMutation = api.calendarItem.delete.useMutation();
 
-  // Item Info
-  const [showCalendarItemModal, setShowCalendarItemModal] = useState<[boolean, Info]>([false,
-    {
-      title: "",
-      image: "",
-      date: new Date(),
-      id: "",
-      username: "",
-      userImage: "",
-      activityTypeId: "",
-      description: "",
-      instaLink: "", // link?
-      email: "",
-      socials: {}
-    }
-  ]);
-
   return (
     <div>
       <ConfirmModal
@@ -175,15 +138,6 @@ const CalendarPage = () => {
           }
         }
       />
-      <CalendarItemModal
-        open={showCalendarItemModal[0]} info={showCalendarItemModal[1]}
-        onCancel={() => {
-          setShowCalendarItemModal((current) => {
-            const tmp = [...current];
-            return [false, tmp[1]] as typeof current;
-          })
-        }}
-      />
       <Navbar />
       <section className="body-section">
         <div className="flex flex-col gap-4 sm:gap-5
@@ -197,7 +151,7 @@ const CalendarPage = () => {
           </div>
 
           {/* RIGHT — Scroll normally */}
-          <div className="flex flex-col gap-4 sm:gap-5">
+          <div className="flex flex-col gap-4 sm:gap-5 min-w-0">
             <h1 className="text-xl sm:text-2xl lg:text-[28px] lg:h-[42px] lg:text-white">
               รายการปฏิทินของฉัน
             </h1>
@@ -219,30 +173,41 @@ const CalendarPage = () => {
                         console.log(target.tagName);
                         if (fetchedData && target.tagName !== "svg" && target.tagName !== "path") {
                           handleRedirect(fetchedData[index].postId);
-                          // setShowCalendarItemModal([true, mappedCalendarItemToInfo(fetchedData[index])])
                         }
                       }}
                     >
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        width={110}
-                        height={150}
-                        className="hidden sm:flex h-[150px] w-[110px] rounded-xl object-cover object-center"
-                      />
-
+                      {item.image ? (
+                        <Image
+                          src={item.image}
+                          alt={item.title}
+                          width={110}
+                          height={150}
+                          className="hidden sm:flex h-[150px] w-[110px] rounded-xl object-cover object-center"
+                        />
+                      ) :
+                        (
+                          <div className="hidden sm:flex h-[150px] w-[110px] rounded-xl bg-gray-200"></div>
+                        )
+                      }
                       {/* Content */}
-                      <div className="flex flex-1 flex-col gap-5 sm:justify-between">
+                      <div className="min-w-0 flex flex-1 flex-col gap-5 sm:justify-between">
                         <div className="flex flex-col gap-1.5 h-full">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
-                              <Image
-                                src={item.profileImage}
-                                alt={item.accountName}
-                                width={24}
-                                height={24}
-                                className="h-6 w-6 rounded-full object-cover object-center"
-                              />
+                              {
+                                item.profileImage ? (
+                                  <Image
+                                    src={item.profileImage}
+                                    alt={item.accountName}
+                                    width={24}
+                                    height={24}
+                                    className="h-6 w-6 rounded-full object-cover object-center"
+                                  />
+                                ) :
+                                  (
+                                    <div className="h-6 w-6 rounded-full bg-gray-200"></div>
+                                  )
+                              }
                               <span className="text-xs sm:text-sm">
                                 {item.accountName}
                               </span>
@@ -257,7 +222,7 @@ const CalendarPage = () => {
                             {item.title}
                           </h2>
 
-                          <p className="text-text-gray text-[10px] sm:text-xs font-light
+                          <p className="break-words text-text-gray text-[10px] sm:text-xs font-light
                                                               line-clamp-2 sm:line-clamp-3">
                             {item.description}
                           </p>
